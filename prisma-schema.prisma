@@ -1,0 +1,231 @@
+// Prisma Schema for Jass Tournament Manager
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+enum UserRole {
+  SYSADMIN
+  ORGANIZER
+  PLAYER
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         UserRole
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  organizedTournaments Tournament[]
+  participations       TournamentParticipant[]
+  enteredScores        GameScore[]
+  enteredPairings      GameParticipant[]
+
+  @@index([email])
+}
+
+// ============================================
+// TOURNAMENT
+// ============================================
+
+enum TournamentStatus {
+  PLANNED
+  REGISTRATION_OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Tournament {
+  id          String           @id @default(uuid())
+  organizerId String
+  name        String
+  description String?
+  location    String?
+  startDate   DateTime
+  endDate     DateTime?
+  status      TournamentStatus @default(PLANNED)
+  qrCode      String?          @unique
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Relations
+  organizer    User                    @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  config       TournamentConfig?
+  participants TournamentParticipant[]
+  rounds       Round[]
+
+  @@index([organizerId])
+  @@index([status])
+  @@index([startDate])
+}
+
+model TournamentConfig {
+  id                         String   @id @default(uuid())
+  tournamentId               String   @unique
+  numberOfRounds             Int      @default(5)
+  gamesPerRound              Int      @default(8)
+  announcementsPerPlayer     Int      @default(2)
+  matchBonusEnabled          Boolean  @default(true)
+  fixedTeams                 Boolean  @default(false)
+  hideScoresDuringTournament Boolean  @default(false)
+  allowPlayerScoreView       Boolean  @default(true)
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+
+  // Relations
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// PARTICIPANTS
+// ============================================
+
+enum RegistrationMethod {
+  MANUAL
+  QR_CODE
+  EXCEL_IMPORT
+}
+
+model TournamentParticipant {
+  id                 String             @id @default(uuid())
+  tournamentId       String
+  userId             String?
+  email              String
+  firstName          String
+  lastName           String
+  registrationMethod RegistrationMethod
+  registeredAt       DateTime           @default(now())
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relations
+  tournament       Tournament         @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  user             User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  gameParticipants GameParticipant[]
+
+  @@unique([tournamentId, email])
+  @@index([tournamentId])
+  @@index([userId])
+  @@index([email])
+}
+
+// ============================================
+// ROUNDS & GAMES
+// ============================================
+
+enum RoundStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Round {
+  id           String      @id @default(uuid())
+  tournamentId String
+  roundNumber  Int
+  status       RoundStatus @default(PENDING)
+  startTime    DateTime?
+  endTime      DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // Relations
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  games      Game[]
+
+  @@unique([tournamentId, roundNumber])
+  @@index([tournamentId])
+  @@index([status])
+}
+
+enum GameStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Game {
+  id          String     @id @default(uuid())
+  roundId     String
+  gameNumber  Int
+  tableNumber Int?
+  status      GameStatus @default(PENDING)
+  startTime   DateTime?
+  endTime     DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  round        Round             @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  participants GameParticipant[]
+  score        GameScore?
+
+  @@unique([roundId, gameNumber])
+  @@index([roundId])
+  @@index([status])
+}
+
+// ============================================
+// GAME PARTICIPANTS & SCORES
+// ============================================
+
+enum Team {
+  TEAM_A
+  TEAM_B
+}
+
+model GameParticipant {
+  id            String   @id @default(uuid())
+  gameId        String
+  participantId String
+  team          Team
+  position      Int // 1 or 2
+  enteredBy     String? // User who created this pairing (organizer or player)
+  createdAt     DateTime @default(now())
+
+  // Relations
+  game        Game                  @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  participant TournamentParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  enterer     User?                 @relation(fields: [enteredBy], references: [id], onDelete: SetNull)
+
+  @@unique([gameId, participantId])
+  @@unique([gameId, team, position])
+  @@index([gameId])
+  @@index([participantId])
+}
+
+model GameScore {
+  id              String   @id @default(uuid())
+  gameId          String   @unique
+  teamAPoints     Int
+  teamBPoints     Int
+  teamAMatchBonus Boolean  @default(false)
+  teamBMatchBonus Boolean  @default(false)
+  enteredBy       String
+  enteredAt       DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  game    Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  enterer User @relation(fields: [enteredBy], references: [id])
+
+  @@index([gameId])
+}

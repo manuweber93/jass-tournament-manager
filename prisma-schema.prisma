@@ -32,6 +32,7 @@ model User {
 
   // Relations
   organizedTournaments Tournament[]
+  configTemplates      TournamentConfigTemplate[]
   participations       TournamentParticipant[]
   enteredScores        GameScore[]
   enteredPairings      GameParticipant[]
@@ -44,9 +45,7 @@ model User {
 // ============================================
 
 enum TournamentStatus {
-  PLANNED
-  REGISTRATION_OPEN
-  IN_PROGRESS
+  OPEN
   COMPLETED
   CANCELLED
 }
@@ -55,11 +54,9 @@ model Tournament {
   id          String           @id @default(uuid())
   organizerId String
   name        String
-  description String?
   location    String?
-  startDate   DateTime
-  endDate     DateTime?
-  status      TournamentStatus @default(PLANNED)
+  date        DateTime         @db.Date
+  status      TournamentStatus @default(OPEN)
   qrCode      String?          @unique
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
@@ -69,27 +66,60 @@ model Tournament {
   config       TournamentConfig?
   participants TournamentParticipant[]
   rounds       Round[]
+  tables       Table[]
 
   @@index([organizerId])
   @@index([status])
-  @@index([startDate])
+  @@index([date])
+}
+
+// ============================================
+// CONFIGURATION
+// ============================================
+
+enum ScoreVisibility {
+  ALWAYS_VISIBLE
+  HIDDEN_DURING_TOURNAMENT
+  ORGANIZER_ONLY
+}
+
+model TournamentConfigTemplate {
+  id                 String          @id @default(uuid())
+  organizerId        String
+  name               String
+  numberOfRounds     Int             @default(5)
+  gamesPerRound      Int             @default(8)
+  matchBonusEnabled  Boolean         @default(true)
+  fixedTeams         Boolean         @default(false)
+  scoreVisibility    ScoreVisibility @default(ALWAYS_VISIBLE)
+  isDefault          Boolean         @default(false)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  // Relations
+  organizer User               @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  configs   TournamentConfig[]
+
+  @@unique([organizerId, name])
+  @@index([organizerId])
+  @@index([organizerId, isDefault])
 }
 
 model TournamentConfig {
-  id                         String   @id @default(uuid())
-  tournamentId               String   @unique
-  numberOfRounds             Int      @default(5)
-  gamesPerRound              Int      @default(8)
-  announcementsPerPlayer     Int      @default(2)
-  matchBonusEnabled          Boolean  @default(true)
-  fixedTeams                 Boolean  @default(false)
-  hideScoresDuringTournament Boolean  @default(false)
-  allowPlayerScoreView       Boolean  @default(true)
-  createdAt                  DateTime @default(now())
-  updatedAt                  DateTime @updatedAt
+  id                String          @id @default(uuid())
+  tournamentId      String          @unique
+  templateId        String?
+  numberOfRounds    Int             @default(5)
+  gamesPerRound     Int             @default(8)
+  matchBonusEnabled Boolean         @default(true)
+  fixedTeams        Boolean         @default(false)
+  scoreVisibility   ScoreVisibility @default(ALWAYS_VISIBLE)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 
   // Relations
-  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournament Tournament                @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  template   TournamentConfigTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
 }
 
 // ============================================
@@ -105,10 +135,7 @@ enum RegistrationMethod {
 model TournamentParticipant {
   id                 String             @id @default(uuid())
   tournamentId       String
-  userId             String?
-  email              String
-  firstName          String
-  lastName           String
+  userId             String
   registrationMethod RegistrationMethod
   registeredAt       DateTime           @default(now())
   createdAt          DateTime           @default(now())
@@ -116,13 +143,12 @@ model TournamentParticipant {
 
   // Relations
   tournament       Tournament         @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  user             User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   gameParticipants GameParticipant[]
 
-  @@unique([tournamentId, email])
+  @@unique([tournamentId, userId])
   @@index([tournamentId])
   @@index([userId])
-  @@index([email])
 }
 
 // ============================================
@@ -140,8 +166,6 @@ model Round {
   tournamentId String
   roundNumber  Int
   status       RoundStatus @default(PENDING)
-  startTime    DateTime?
-  endTime      DateTime?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -154,6 +178,32 @@ model Round {
   @@index([status])
 }
 
+// ============================================
+// TABLES
+// ============================================
+
+model Table {
+  id           String   @id @default(uuid())
+  tournamentId String
+  name         String
+  displayOrder Int
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  games      Game[]
+
+  @@unique([tournamentId, name])
+  @@index([tournamentId])
+  @@index([tournamentId, isActive])
+}
+
+// ============================================
+// GAMES
+// ============================================
+
 enum GameStatus {
   PENDING
   IN_PROGRESS
@@ -165,15 +215,14 @@ model Game {
   id          String     @id @default(uuid())
   roundId     String
   gameNumber  Int
-  tableNumber Int?
+  tableId     String?
   status      GameStatus @default(PENDING)
-  startTime   DateTime?
-  endTime     DateTime?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
   // Relations
   round        Round             @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  table        Table?            @relation(fields: [tableId], references: [id], onDelete: SetNull)
   participants GameParticipant[]
   score        GameScore?
 
@@ -196,8 +245,7 @@ model GameParticipant {
   gameId        String
   participantId String
   team          Team
-  position      Int // 1 or 2
-  enteredBy     String? // User who created this pairing (organizer or player)
+  enteredBy     String?
   createdAt     DateTime @default(now())
 
   // Relations
@@ -206,7 +254,7 @@ model GameParticipant {
   enterer     User?                 @relation(fields: [enteredBy], references: [id], onDelete: SetNull)
 
   @@unique([gameId, participantId])
-  @@unique([gameId, team, position])
+  @@unique([gameId, team, participantId])
   @@index([gameId])
   @@index([participantId])
 }

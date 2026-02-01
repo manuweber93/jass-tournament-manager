@@ -26,9 +26,3 @@ Die Applikation besteht aus drei Hauptkomponenten:
 
 Siehe `architecture.md` für das detaillierte UML-Diagramm der Systemarchitektur.
 
-## Nächste Schritte
-
-1. Technologie-Stack definieren
-2. Datenmodell entwerfen
-3. API-Spezifikation erstellen
-4. Frontend-Komponenten planen

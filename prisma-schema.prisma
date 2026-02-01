@@ -36,6 +36,7 @@ model User {
   participations       TournamentParticipant[]
   enteredScores        GameScore[]
   enteredPairings      GameParticipant[]
+  tables               Table[]
 
   @@index([email])
 }
@@ -66,7 +67,6 @@ model Tournament {
   config       TournamentConfig?
   participants TournamentParticipant[]
   rounds       Round[]
-  tables       Table[]
 
   @@index([organizerId])
   @@index([status])
@@ -156,8 +156,7 @@ model TournamentParticipant {
 // ============================================
 
 enum RoundStatus {
-  PENDING
-  IN_PROGRESS
+  OPEN
   COMPLETED
 }
 
@@ -184,7 +183,7 @@ model Round {
 
 model Table {
   id           String   @id @default(uuid())
-  tournamentId String
+  organizerId  String
   name         String
   displayOrder Int
   isActive     Boolean  @default(true)
@@ -192,12 +191,12 @@ model Table {
   updatedAt    DateTime @updatedAt
 
   // Relations
-  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  games      Game[]
+  organizer User   @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  games     Game[]
 
-  @@unique([tournamentId, name])
-  @@index([tournamentId])
-  @@index([tournamentId, isActive])
+  @@unique([organizerId, name])
+  @@index([organizerId])
+  @@index([organizerId, isActive])
 }
 
 // ============================================
@@ -205,10 +204,8 @@ model Table {
 // ============================================
 
 enum GameStatus {
-  PENDING
-  IN_PROGRESS
+  OPEN
   COMPLETED
-  CANCELLED
 }
 
 model Game {
@@ -216,7 +213,7 @@ model Game {
   roundId     String
   gameNumber  Int
   tableId     String?
-  status      GameStatus @default(PENDING)
+  status      GameStatus @default(OPEN)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 

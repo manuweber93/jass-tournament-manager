@@ -144,7 +144,7 @@
 | updatedAt | DateTime | Aktualisierungszeitpunkt | NOT NULL |
 
 **Enums**:
-- `status`: `PENDING`, `IN_PROGRESS`, `COMPLETED`
+- `status`: `OPEN`, `COMPLETED`
 
 **Beziehungen**:
 - `tournamentId` → `Tournament.id` (n:1)
@@ -168,10 +168,10 @@
 | updatedAt | DateTime | Aktualisierungszeitpunkt | NOT NULL |
 
 **Beziehungen**:
-- `tournamentId` → `Tournament.id` (n:1)
+- `organizerId` → `User.id` (n:1)
 - Hat viele `Game` (1:n)
 
-**Constraints**: UNIQUE(tournamentId, name)
+**Constraints**: UNIQUE(organizerId, name)
 
 ---
 
@@ -184,12 +184,12 @@
 | roundId | UUID | Runde | FK, NOT NULL |
 | gameNumber | Integer | Spielnummer in Runde | NOT NULL |
 | tableId | UUID | Tisch | FK (optional) |
-| status | Enum | Spielstatus | NOT NULL, DEFAULT 'PENDING' |
+| status | Enum | Spielstatus | NOT NULL, DEFAULT 'OPEN' |
 | createdAt | DateTime | Erstellungszeitpunkt | NOT NULL |
 | updatedAt | DateTime | Aktualisierungszeitpunkt | NOT NULL |
 
 **Enums**:
-- `status`: `PENDING`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`
+- `status`: `OPEN`, `COMPLETED`
 
 **Beziehungen**:
 - `roundId` → `Round.id` (n:1)
@@ -269,7 +269,8 @@ erDiagram
     Tournament ||--|| TournamentConfig : "has"
     Tournament ||--o{ TournamentParticipant : "has"
     Tournament ||--o{ Round : "has"
-    Tournament ||--o{ Table : "has"
+    
+    User ||--o{ Table : "defines"
     
     TournamentConfigTemplate ||--o{ TournamentConfig : "copied to"
     
@@ -353,7 +354,7 @@ erDiagram
     
     Table {
         uuid id PK
-        uuid tournamentId FK
+        uuid organizerId FK
         string name
         int displayOrder
         bool isActive
@@ -442,10 +443,11 @@ erDiagram
 3. **Email als Identifier**: Matching via Email-Adresse
 
 ### Tisch-Regeln
-1. **Vordefinierte Tische**: Organisator definiert verfügbare Tische pro Turnier
-2. **Flexible Benennung**: Tische können beliebig benannt werden (z.B. "Tisch 1", "VIP", "Stammtisch")
-3. **Automatische Zuweisung**: Beim Auslosen werden Spiele automatisch auf Tische verteilt
-4. **Sortierung**: Tische haben displayOrder für konsistente Anzeige
+1. **Organisator-Zuweisung**: Tische gehören dem Organisator, nicht einem spezifischen Turnier
+2. **Wiederverwendung**: Tische können für alle Turniere des Organisators verwendet werden
+3. **Flexible Benennung**: Tische können beliebig benannt werden
+4. **Automatische Zuweisung**: Beim Auslosen werden Spiele auf verfügbare Tische verteilt
+5. **Sortierung**: Tische haben displayOrder für konsistente Anzeige
 5. **Deaktivierung**: Tische können deaktiviert werden (isActive = false)
 6. **Löschung**: Tisch kann nur gelöscht werden, wenn keine Spiele zugewiesen
 
@@ -466,8 +468,8 @@ CREATE INDEX idx_participant_user ON TournamentParticipant(userId);
 CREATE INDEX idx_round_tournament ON Round(tournamentId);
 CREATE INDEX idx_round_status ON Round(status);
 
-CREATE INDEX idx_table_tournament ON Table(tournamentId);
-CREATE INDEX idx_table_active ON Table(tournamentId, isActive);
+CREATE INDEX idx_table_organizer ON Table(organizerId);
+CREATE INDEX idx_table_active ON Table(organizerId, isActive);
 
 CREATE INDEX idx_game_round ON Game(roundId);
 CREATE INDEX idx_game_status ON Game(status);

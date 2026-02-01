@@ -155,12 +155,12 @@
 ---
 
 ### 7. Table (Tisch)
-**Beschreibung**: Vordefinierte Tische für ein Turnier
+**Beschreibung**: Vordefinierte Tische eines Organisators (wiederverwendbar)
 
 | Feld | Typ | Beschreibung | Constraints |
 |------|-----|--------------|-------------|
 | id | UUID | Primärschlüssel | PK, NOT NULL |
-| tournamentId | UUID | Turnier | FK, NOT NULL |
+| organizerId | UUID | Organisator | FK, NOT NULL |
 | name | String | Tisch-Bezeichnung | NOT NULL |
 | displayOrder | Integer | Sortierreihenfolge | NOT NULL |
 | isActive | Boolean | Tisch aktiv | NOT NULL, DEFAULT true |
@@ -210,6 +210,8 @@
 | gameId | UUID | Spiel | FK, NOT NULL |
 | participantId | UUID | Teilnehmer | FK, NOT NULL |
 | team | Enum | Team (A oder B) | NOT NULL |
+| points | Integer | Erzielte Punkte (denormalisiert) | |
+| matchBonus | Boolean | Match-Bonus erzielt | DEFAULT false |
 | enteredBy | UUID | Eingetragen von | FK (optional) |
 | createdAt | DateTime | Erstellungszeitpunkt | NOT NULL |
 
@@ -378,6 +380,8 @@ erDiagram
         uuid participantId FK
         uuid enteredBy FK
         enum team
+        int points
+        bool matchBonus
         datetime createdAt
     }
     
@@ -422,7 +426,8 @@ erDiagram
 2. **Punkte-Total**: 157 Punkte pro Spiel
 3. **Match-Bonus**: +100 Punkte wenn ein Team alle 157 Punkte macht (konfigurierbar)
 4. **Automatische Berechnung**: Wenn Team A Punkte einträgt, werden Team B Punkte automatisch berechnet (157 - Team A)
-5. **Tischzuweisung**: Beim Auslosen werden Tische automatisch vergeben
+5. **Denormalisierung**: Punkte werden zusätzlich direkt beim Spieler (`GameParticipant`) gespeichert für schnelle Ranglisten
+6. **Tischzuweisung**: Beim Auslosen werden Tische automatisch vergeben
 
 ### Paarungs-Regeln
 1. **Normalfall**: Wechselnde Paarungen pro Runde (Spieler spielen für sich)
@@ -476,6 +481,7 @@ CREATE INDEX idx_game_status ON Game(status);
 
 CREATE INDEX idx_game_participant_game ON GameParticipant(gameId);
 CREATE INDEX idx_game_participant_participant ON GameParticipant(participantId);
+CREATE INDEX idx_game_participant_points ON GameParticipant(participantId, points);
 
 CREATE INDEX idx_game_score_game ON GameScore(gameId);
 ```

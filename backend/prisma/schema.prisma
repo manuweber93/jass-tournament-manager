@@ -242,6 +242,8 @@ model GameParticipant {
   gameId        String
   participantId String
   team          Team
+  points        Int?
+  matchBonus    Boolean  @default(false)
   enteredBy     String?
   createdAt     DateTime @default(now())
 
@@ -254,6 +256,7 @@ model GameParticipant {
   @@unique([gameId, team, participantId])
   @@index([gameId])
   @@index([participantId])
+  @@index([participantId, points])
 }
 
 model GameScore {

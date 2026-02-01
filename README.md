@@ -1,28 +1,22 @@
 # Jass Tournament Manager
 
-Eine Web-Applikation zur Organisation von Jassturnieren.
+A web application to organize and manage Jass tournaments.
 
-## Systemarchitektur
+## Development Guidelines
 
-Die Applikation besteht aus drei Hauptkomponenten:
+> [!IMPORTANT]
+> **Version Control Rule**: Do NOT run git commands (add, commit, push) automatically. The user handles version control manually.
 
-### 1. **Frontend**
-- Benutzeroberfläche für Turnierorganisatoren und Teilnehmer
-- Verwaltung von Turnieren, Spielern und Ergebnissen
-- Responsive Design für Desktop und Mobile
+## Project Structure
 
-### 2. **Backend**
-- RESTful API für Datenverwaltung
-- Business-Logik für Turnierverwaltung
-- Authentifizierung und Autorisierung
-- Validierung von Spielergebnissen
+- `frontend/`: React application (planned)
+- `backend/`: Node.js Express application (planned)
+- `docs/`: Project documentation
+- `database-schema.md`: Database Entity Relationship Diagram and definitions
 
-### 3. **Datenbank**
-- Persistierung von Turnierdaten
-- Speicherung von Spielerinformationen
-- Verwaltung von Spielergebnissen und Ranglisten
+## Technology Stack
 
-## Architekturdiagramm
-
-Siehe `architecture.md` für das detaillierte UML-Diagramm der Systemarchitektur.
-
+- **Frontend**: React, TypeScript, Vite
+- **Backend**: Node.js, Express, TypeScript
+- **Database**: PostgreSQL, Prisma ORM
+- **Deployment**: Docker

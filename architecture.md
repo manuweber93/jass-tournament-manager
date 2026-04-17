@@ -1,336 +1,167 @@
-# Systemarchitektur: Jass Tournament Manager
+# System Architecture: Jass Tournament Manager
 
-## Übersicht
+## Overview
 
-Die Jass Tournament Manager Applikation folgt einer klassischen **3-Tier-Architektur** mit klarer Trennung zwischen Präsentationsschicht, Geschäftslogik und Datenhaltung.
+The Jass Tournament Manager application follows a classic 3-tier architecture with a clear separation between the presentation layer, application/business logic, and data storage.
 
-## Technologie-Stack (Final)
+## Technology Stack (final)
 
 ### Frontend
-- **Framework**: React 18+ mit TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS oder Material-UI
-- **State Management**: React Context API (Redux bei Bedarf)
-- **HTTP Client**: Axios
-- **Routing**: React Router v6
-- **Form Handling**: React Hook Form + Zod Validation
+- .NET MAUI (C#) for cross-platform mobile and desktop applications
 
 ### Backend
-- **Runtime**: Node.js 20+ LTS
-- **Framework**: Express.js mit TypeScript
-- **ORM**: Prisma (Type-safe Database Access)
-- **Authentifizierung**: JWT (JSON Web Tokens) + bcrypt
-- **Validierung**: Zod (TypeScript-native Schema Validation)
-- **API-Dokumentation**: Swagger/OpenAPI
-- **Testing**: Jest + Supertest
+- .NET 8 (C#) with ASP.NET Core Web API
+- API documentation: Swagger / OpenAPI
 
-### Datenbank
-- **DBMS**: PostgreSQL 16
-- **Migration**: Prisma Migrate
-- **Caching** (optional): Redis für Sessions
+### Database
+- DBMS: PostgreSQL (recommended v16)
+- Migrations & ORM: Entity Framework Core with Npgsql provider
+- Caching (optional): Redis for sessions and hot data
 
 ### DevOps & Deployment
-- **Containerisierung**: Docker + Docker Compose
-- **Hosting**: Self-hosted Server
-- **Reverse Proxy**: Nginx oder Traefik
-- **SSL/HTTPS**: Let's Encrypt (Certbot)
-- **Versionskontrolle**: Git + GitHub
-- **CI/CD**: GitHub Actions (geplant)
+- Containerization: Docker (+ Docker Compose for local stacks)
+- Hosting: self-hosted or cloud VM/container platforms
+- Reverse proxy: Nginx or Traefik
+- TLS: Let's Encrypt
+- VCS: Git (GitHub)
+- CI/CD: GitHub Actions
 
-### Vorteile dieser Stack-Kombination
-- ✅ **TypeScript End-to-End**: Konsistenz über Frontend und Backend
-- ✅ **Code-Sharing**: Type-Definitionen zwischen Client und Server
-- ✅ **Prisma**: Type-safe Database Access, automatische Migrations
-- ✅ **Schnelle Entwicklung**: Weniger Boilerplate, moderne Toolchain
-- ✅ **Docker**: Einfaches Deployment auf eigenem Server
 
 ---
 
-## Architekturdiagramm
-
-```mermaid
-graph TB
-    subgraph "Client Layer"
-        FE[Frontend<br/>React + TypeScript]
-        FE_COMP1[Turnierverwaltung]
-        FE_COMP2[Spielerverwaltung]
-        FE_COMP3[Ergebniseingabe]
-        FE_COMP4[Ranglisten]
-        FE_COMP5[Paarungsverwaltung]
-        
-        FE --> FE_COMP1
-        FE --> FE_COMP2
-        FE --> FE_COMP3
-        FE --> FE_COMP4
-        FE --> FE_COMP5
-    end
-    
-    subgraph "Application Layer"
-        BE[Backend<br/>Node.js + Express + TypeScript]
-        BE_AUTH[Authentifizierung<br/>JWT]
-        BE_TOUR[Turnier-Service]
-        BE_PLAYER[Spieler-Service]
-        BE_GAME[Spiel-Service]
-        BE_RANK[Ranglisten-Service]
-        BE_IMPORT[Excel-Import-Service]
-        
-        BE --> BE_AUTH
-        BE --> BE_TOUR
-        BE --> BE_PLAYER
-        BE --> BE_GAME
-        BE --> BE_RANK
-        BE --> BE_IMPORT
-    end
-    
-    subgraph "Data Layer"
-        DB[(PostgreSQL<br/>Datenbank)]
-        PRISMA[Prisma ORM]
-        
-        PRISMA --> DB
-    end
-    
-    FE -->|HTTP/REST<br/>JSON| BE
-    BE --> PRISMA
-    
-    style FE fill:#4A90E2,stroke:#2E5C8A,color:#fff
-    style BE fill:#50C878,stroke:#2E7D4E,color:#fff
-    style DB fill:#E94B3C,stroke:#A33327,color:#fff
-    style PRISMA fill:#2D3748,stroke:#1A202C,color:#fff
-```
-
----
-
-## Komponentenbeschreibung
+## Component Description
 
 ### Frontend (Presentation Layer)
 
-**Hauptfunktionen:**
-- **Turnierverwaltung**: Erstellen, Bearbeiten, Konfigurieren von Turnieren
-- **Spielerverwaltung**: Registrierung, Excel-Import, Teilnehmerverwaltung
-- **Paarungsverwaltung**: Manuelle Eingabe, automatische Auslosung, Spieler-Selbsteintrag
-- **Ergebniseingabe**: Punkteeingabe mit automatischer Berechnung (157 Punkte System)
-- **Ranglisten**: Live-Standings, Statistiken, Auswertungen
+Main responsibilities:
+- Tournament management: create, edit, configure tournaments
+- Player management: registration, Excel import, participant management
+- Pairing management: manual entry, automated pairing, player self-signup
+- Score entry: point entry with automatic calculations (157-point system)
+- Leaderboards: live standings, statistics, reports
 
-**Benutzerrollen:**
-- **SYSADMIN**: Vollzugriff auf alle Turniere (Support)
-- **ORGANIZER**: Eigene Turniere verwalten
-- **PLAYER**: Punkte eintragen, Partner wählen, Ranglisten ansehen
+User roles:
+- SYSADMIN: full access for support
+- ORGANIZER: manage own tournaments
+- PLAYER: enter scores, select partners, view leaderboards
 
-**Features:**
-- Responsive Design (Desktop & Mobile)
-- QR-Code-Generierung für Turnier-Teilnahme
-- Konfigurierbarer Punkte-Sichtbarkeit
-- Excel-Import für historische Daten
+Features:
+- Cross-platform UI for desktop and mobile via .NET MAUI
+- QR-code generation for tournament check-in
+- Configurable score visibility
+- Excel import for historical data (see backend service)
 
 ---
 
 ### Backend (Application Layer)
 
-**Services:**
+Services and responsibilities:
 
-#### 1. Authentifizierung-Service
-- User Registration & Login
-- JWT Token Generation & Validation
-- Role-based Access Control (RBAC)
-- Password Hashing (bcrypt)
+1) Authentication Service
+- User registration & login
+- JWT issuance and validation
+- Role-based access control (RBAC)
+- Password hashing via ASP.NET Core Identity (secure PBKDF2-based hasher)
 
-#### 2. Turnier-Service
-- CRUD-Operationen für Turniere
-- Turnier-Konfiguration (Runden, Spiele, Match-Bonus, etc.)
-- QR-Code-Generierung
-- Status-Management (PLANNED → IN_PROGRESS → COMPLETED)
+2) Tournament Service
+- CRUD operations for tournaments
+- Tournament configuration (rounds, games, match-bonus, etc.)
+- QR-code generation for check-in
+- Tournament status management (PLANNED → IN_PROGRESS → COMPLETED)
 
-#### 3. Spieler-Service
-- Teilnehmerverwaltung
-- Excel-Import für Spielerdaten
-- Email-basiertes Matching
-- Spieler-Statistiken
+3) Participant Service
+- Participant management and registration
+- Excel import handling (server-side parsing)
+- Email-based matching and lookups
+- Player statistics
 
-#### 4. Spiel-Service
-- Runden- und Spiel-Verwaltung
-- Paarungs-Logik (manuell/automatisch)
-- Spieler-Selbsteintrag von Partnern
-- Spiel-Status-Tracking
+4) Game Service
+- Round and game management
+- Pairing logic (manual and automatic)
+- Player self-signup and partner selection
+- Game status tracking
 
-#### 5. Ergebnis-Service
-- Punkteeingabe
-- Automatische Berechnung (157 - eingetragene Punkte)
-- Match-Bonus-Logik (+100 bei allen Punkten)
-- Validierung
+5) Score Service
+- Score entry and validation
+- Automatic calculations (157-point system)
+- Match-bonus logic (+100 when applicable)
 
-#### 6. Ranglisten-Service
-- Berechnung von Standings
-- Statistiken über alle Turniere eines Organisators
-- Historische Auswertungen
+6) Leaderboard Service
+- Compute standings and leaderboards
+- Aggregated statistics per organizer and tournament
 
-#### 7. Excel-Import-Service
-- Import vergangener Turnierdaten
-- Parsing von Excel-Dateien
-- Validierung und Fehlerbehandlung
-- Bulk-Insert mit Transaktionen
+7) Excel Import Service
+- Parse Excel files using .NET libraries (e.g. ClosedXML or EPPlus)
+- Validate and transform incoming data
+- Bulk insert with transactions
 
-**API-Design:**
-- RESTful Endpoints
-- JSON Request/Response
-- Standardisierte Fehlerbehandlung
-- Input-Validierung mit Zod
-- OpenAPI/Swagger Dokumentation
+API design:
+- RESTful endpoints, JSON request/response
+- Standardized error model
+- Input validation using DataAnnotations and/or FluentValidation
+- OpenAPI/Swagger documentation
 
 ---
 
-### Datenbank (Data Layer)
+### Data Layer
 
-**Datenmodell:**
-- **8 Hauptentitäten**: User, Tournament, TournamentConfig, TournamentParticipant, Round, Game, GameParticipant, GameScore
-- **Hierarchie**: Tournament → Round (5) → Game (8) → Participants (4)
-- **Beziehungen**: Klar definierte Foreign Keys mit Cascade-Regeln
+Data model highlights:
+- Core entities: User, Tournament, TournamentConfigTemplate, TournamentConfig, TournamentParticipant, Round, Game, GameParticipant, GameScore
+- Typical hierarchy: Tournament → Round → Game → Participants
+- Referential integrity enforced with FK constraints and appropriate cascade rules
 
-**Geschäftsregeln:**
-- Organisator-Isolation (außer SYSADMIN)
-- 157 Punkte pro Spiel
-- Optionaler Match-Bonus (+100)
-- Automatische Punkteberechnung
-- Flexible Paarungen (fest oder wechselnd)
+Business rules:
+- Organizer isolation (each organizer sees only their own tournaments, SYSADMIN exception)
+- 157 points per game (base rule)
+- Optional match bonus (+100)
+- Automatic score calculation where applicable
 
-**Performance:**
-- Strategische Indizes auf häufig abgefragten Spalten
-- Optimiert für: Organisator-Queries, Turnier-Navigation, Spieler-Lookups
-
----
-
-## Kommunikationsfluss
-
-### Typischer Request-Flow
-
-1. **Client** sendet HTTP-Request (z.B. GET /api/tournaments)
-2. **Express Middleware** validiert JWT Token
-3. **Controller** empfängt Request, validiert Input (Zod)
-4. **Service Layer** führt Business-Logik aus
-5. **Prisma ORM** generiert SQL-Query
-6. **PostgreSQL** führt Query aus, gibt Daten zurück
-7. **Service** formatiert Response
-8. **Controller** sendet JSON-Response an Client
-9. **Frontend** aktualisiert UI
+Performance considerations:
+- Strategic indexes on frequently queried columns (organizerId, tournamentId, userId, status)
+- Query optimization for organizer-specific views and leaderboard calculations
 
 ---
 
-## Sicherheitsaspekte
+## Security Considerations
 
-### Authentifizierung & Autorisierung
-- JWT-basierte Authentifizierung
-- HTTP-Only Cookies für Token-Speicherung
-- Role-based Access Control (SYSADMIN, ORGANIZER, PLAYER)
-- Password Hashing mit bcrypt (Salt Rounds: 10)
+Authentication & authorization:
+- JWT-based auth (tokens sent via Authorization header or HTTP-only cookies)
+- Role-based access control (SYSADMIN, ORGANIZER, PLAYER)
+- Password hashing via ASP.NET Core Identity (recommended) or a vetted hashing algorithm
 
-### API-Sicherheit
-- HTTPS/TLS für alle Kommunikation
-- CORS-Konfiguration
-- Rate Limiting (Express Rate Limit)
-- Input-Validierung auf Frontend und Backend
-- SQL-Injection-Schutz durch Prisma (Prepared Statements)
-- XSS-Schutz durch React (Auto-Escaping)
+API security:
+- HTTPS/TLS enforced
+- Proper CORS configuration
+- Input validation on both client and server
 
-### Datenschutz
-- Organisator-Isolation (jeder sieht nur eigene Turniere)
-- SYSADMIN-Zugriff für Support
-- Spieler sehen nur Turniere, an denen sie teilnehmen
+Data protection / privacy:
+- Organizer isolation and least-privilege access
+- SYSADMIN access limited to support needs
+- Players see only tournaments they participate in
 
 ---
 
-## Deployment-Architektur (Self-Hosted)
-
-### Docker-Container-Setup
-
-```
-┌─────────────────────────────────────────┐
-│  Nginx Reverse Proxy                    │
-│  - SSL/TLS Termination (Let's Encrypt)  │
-│  - Static File Serving (Frontend)       │
-│  - Proxy zu Backend                     │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│  Frontend Container (Optional)          │
-│  - React Build (Static Files)           │
-│  - Nginx Server                         │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│  Backend Container                      │
-│  - Node.js + Express                    │
-│  - Port 3000 (intern)                   │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│  PostgreSQL Container                   │
-│  - Port 5432 (intern)                   │
-│  - Volume: /var/lib/postgresql/data     │
-└─────────────────────────────────────────┘
-```
-
-### Backup-Strategie
-- Automatische PostgreSQL Backups (pg_dump)
-- Tägliche Backups mit Rotation (7 Tage)
-- Volume-Backups für Datenpersistenz
+Backup strategy:
+- Regular PostgreSQL backups (pg_dump or base backups)
+- Daily retention/rotation (e.g. 7 days) and offsite copies
+- Persistent volumes for database containers
 
 ---
 
-## Skalierbarkeit
+## Scalability
 
-### Horizontale Skalierung
-- **Backend**: Mehrere Container hinter Load Balancer
-- **Datenbank**: PostgreSQL Replication (Read Replicas)
-- **Caching**: Redis für Session-Management und häufige Queries
+Horizontal scaling:
+- Backend: multiple API instances behind a load balancer
+- Database: PostgreSQL replication and read replicas for heavy read workloads
+- Caching: Redis for sessions, rate-limiting and hot data
 
-### Vertikale Skalierung
-- CPU/RAM-Erhöhung bei Bedarf
-- SSD-Storage für Datenbank
+Vertical scaling:
+- Increase CPU/RAM / use faster storage (SSD) for DB when needed
 
-### Performance-Optimierungen
-- Datenbank-Indizes (siehe database-schema.md)
-- API Response Caching
-- Frontend Code-Splitting
-- Lazy Loading von Komponenten
-
----
-
-## Entwicklungs-Workflow
-
-### Lokale Entwicklung
-```bash
-# Backend
-cd backend
-npm run dev          # TypeScript + Nodemon
-
-# Frontend
-cd frontend
-npm run dev          # Vite Dev Server
-
-# Datenbank
-docker-compose up db # PostgreSQL Container
-```
-
-### Production Build
-```bash
-# Backend
-npm run build        # TypeScript → JavaScript
-npm run start        # Production Server
-
-# Frontend
-npm run build        # Vite Build → dist/
-
-# Docker
-docker-compose up -d # Alle Container starten
-```
+Performance optimizations:
+- Database indexes (see database-schema.md)
+- API response caching for non-critical endpoints
+- Efficient leaderboard aggregation (pre-aggregation where necessary)
+- Lazy loading and prudent resource usage in MAUI client
 
 ---
-
-## Nächste Schritte
-
-1. ✅ Architektur definiert
-2. ⏭️ Backend-Projekt initialisieren
-3. ⏭️ Prisma Setup & Migrations
-4. ⏭️ API-Endpoints implementieren
-5. ⏭️ Frontend-Projekt initialisieren
-6. ⏭️ Docker-Setup erstellen
-7. ⏭️ Deployment auf Server

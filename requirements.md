@@ -1,131 +1,125 @@
-# Jass Tournament Manager - Anforderungen & Kontext
+# Jass Tournament Manager - Requirements & Context
 
-## Übersicht
-Web-Applikation für Jass-Turnier-Organisatoren zur Verwaltung von Schieber-Turnieren.
+## Overview
+Web application for Jass tournament organizers to manage Schieber tournaments.
 
-## Benutzerrollen
+## User Roles
 
-### System-Administrator (SYSADMIN)
-- Kann alle Turniere aller Organisatoren einsehen und verwalten
-- Für Support-Zwecke
-- Vollzugriff auf alle Daten und Funktionen
-- Kann Organisatoren und Spieler verwalten
+### System Administrator (SYSADMIN)
+- Can view and manage all tournaments from all organizers
+- For support purposes
+- Full access to all data and functions
+- Can manage organizers and players
 
-### Organisatoren
-- Können sich selbst registrieren
-- Erstellen und verwalten eigene Turniere
-- Sehen nur ihre eigenen Turniere (logische Abgrenzung, außer SYSADMIN)
-- Können Teilnehmer manuell erfassen oder via QR-Code einladen
-- Können Paarungen manuell festlegen oder automatisch auslosen
-- Haben erweiterte Rechte (Turnierverwaltung, Konfiguration)
-- Können Auswertungen über alle ihre Turniere machen
-- Können vergangene Turnierdaten via Excel importieren
+### Organizers
+- Can register themselves
+- Create and manage their own tournaments
+- See only their own tournaments (logical separation, except SYSADMIN)
+- Can register participants manually or invite via QR code
+- Can set pairings manually or run automatic draws
+- Have extended permissions (tournament management, configuration)
+- Can run reports across all their tournaments
+- Can import past tournament data via Excel
 
-### Spieler
-- Können sich einloggen
-- Können Punkte von Runden eintragen
-- Können Punkte einsehen (falls vom Organisator freigegeben)
-- Sehen alle Turniere, an denen sie teilgenommen haben
-- Können Ranglisten von Turnieren eines Organisators einsehen
-- Können via QR-Code an Turnieren teilnehmen
+### Players
+- Can log in
+- Can enter scores for rounds
+- Can view scores (if allowed by the organizer)
+- See all tournaments they participated in
+- Can view leaderboards for an organizer's tournaments
+- Can join tournaments via QR code
 
-## Jass-Variante: Schieber
+## Jass Variant: Schieber
 
-- **Teams**: 2 Personen pro Team (2vs2)
-- **Ansagen**: Jeweils ein Team sagt Trumpf an
-- **Ansagen pro Person**: Standardmäßig 2x pro Partie (konfigurierbar)
+- Teams: 2 players per team (2 vs 2)
+- Declarations: a team declares trump
+- Declarations per player: typically 2 per game (configurable)
 
-## Turnier-Struktur
+## Tournament Structure
 
-### Hierarchie
-```
-Turnier
-  └── Runden (Standard: 5 Runden, konfigurierbar)
-        └── Spiele (Standard: 8 Spiele pro Runde, konfigurierbar)
-              └── Paarungen (4 Spieler pro Spiel: 2vs2)
-```
+### Hierarchy
 
-### Turniere
-- Gehören zu einem Organisator
-- Wiederkehrende Veranstaltungen möglich
-- Auswertungen über alle Turniere eines Organisators
-- Anzahl Runden konfigurierbar (Standard: 5)
-- Anzahl Spiele pro Runde konfigurierbar (Standard: 8)
-- QR-Code für Teilnahme-Link generierbar
-- Match-Bonus konfigurierbar (an/aus)
+Turnament
+  └── Rounds (default: 5 rounds, configurable)
+        └── Games (default: 8 games per round, configurable)
+              └── Pairings (4 players per game: 2 vs 2)
 
-### Runden
-- Eine Runde besteht aus mehreren Spielen (Standard: 8)
-- Neue Paarungen können pro Runde definiert werden
+### Tournaments
+- Belong to an organizer
+- Can be recurring events
+- Reports across all tournaments of an organizer
+- Number of rounds configurable (default: 5)
+- Number of games per round configurable (default: 8)
+- QR code for participation link can be generated
+- Match bonus configurable (on/off)
 
-### Spiele
-- Ein Spiel = eine Partie zwischen zwei Zweier-Paarungen (2vs2)
-- Total 157 Punkte pro Spiel
-- Match-Bonus: +100 Punkte wenn ein Team alle Punkte macht (konfigurierbar)
-- Nur ein Team muss Punkte eintragen, das andere wird automatisch berechnet (157 - Punkte)
+### Rounds
+- A round consists of multiple games (default: 8)
+- New pairings can be defined per round
 
-### Paarungen
-- **Normalfall**: Spieler spielen für sich selbst, Paarungen wechseln pro Runde
-- **Alternative**: Feste Teams über gesamtes Turnier (seltener)
-- **Eingabe**: Manuelle Festlegung oder automatische Auslosung
+### Games
+- A game = one match between two pairs (2 vs 2)
+- Total 157 points per game
+- Match bonus: +100 points when a team takes all points (configurable)
+- Only one team needs to enter points; the other is calculated as (157 - entered points)
 
-### Paarungen
-- **Option 1**: Feste Teams über gesamtes Turnier
-- **Option 2**: Neue Paarungen pro Runde
-- **Eingabe**: Manuelle Festlegung oder automatische Auslosung
+### Pairings
+- Normal mode: players play individually and pairings change per round
+- Alternative: fixed teams for the whole tournament
+- Input: manual assignment or automatic draw
 
-### Teilnehmer
-- Organisatoren erfassen Teilnehmer manuell ODER
-- Spieler fügen sich via QR-Code selbst hinzu
-- Gleiche Spieler können an verschiedenen Turnieren teilnehmen
-- Spieler-Identifikation via E-Mail-Adresse (für Excel-Export)
+### Participants
+- Organizers can register participants manually OR
+- Players can add themselves via QR code
+- Same players can participate in different tournaments
+- Player identification via email address (for Excel export/matching)
 
-## Funktionen
+## Features
 
-### Paarungsverwaltung
-- Organisatoren können Paarungen manuell festlegen
-- Organisatoren können Paarungen automatisch auslosen
-- **Spieler können ihren zugelosten Partner selbst eintragen**
+### Pairing Management
+- Organizers can assign pairings manually
+- Organizers can run automatic pairing draws
+- Players can confirm or enter their assigned partner themselves
 
-### Punkteverwaltung
-- Spieler können Punkte eintragen
-- Punkte können während Turnier ausgeblendet werden (Spannungsfaktor)
-- Punkte-Einsicht kann vom Organisator freigegeben/gesperrt werden
+### Score Management
+- Players can enter scores
+- Scores can be hidden during the tournament (for suspense)
+- Score visibility can be toggled by the organizer
 
-### Ranglisten
-- Spieler können Ranglisten von Turnieren einsehen
-- Auswertungen über alle Turniere eines Organisators
+### Leaderboards
+- Players can view leaderboards for tournaments
+- Reports across all tournaments of an organizer
 
-### Excel-Import
-- **Primärer Zweck**: Import vergangener Turnierdaten
-- **Verfügbar für**: Organisatoren (für ihre eigenen Turniere)
-- Import von:
-  - Turnierinformationen
-  - Teilnehmerdaten
-  - Spielergebnissen
-  - Paarungen
-- Spieler-Identifikation via E-Mail-Adresse (für Matching bestehender Spieler)
-- Details werden später spezifiziert
-- Ermöglicht Migration historischer Daten in das System
+### Excel Import
+- Primary purpose: import historical tournament data
+- Available for: Organizers (for their own tournaments)
+- Import includes:
+  - Tournament metadata
+  - Participant data
+  - Game results
+  - Pairings
+- Player matching via email address
+- Details to be specified later
+- Enables migration of historical data into the system
 
-## Datenschutz & Isolation
-- Turniere verschiedener Organisatoren sind logisch abgegrenzt
-- Organisator sieht nur eigene Turniere
-- Spieler sieht nur Turniere, an denen er teilgenommen hat
+## Privacy & Isolation
+- Tournaments of different organizers are logically separated
+- Organizer sees only their own tournaments
+- Player sees only tournaments they participated in
 
-## Konfigurierbare Parameter (pro Turnier)
-- Anzahl Ansagen pro Person (Standard: 2)
-- Anzahl Runden (Standard: 5)
-- Anzahl Spiele pro Runde (Standard: 8)
-- Match-Bonus aktiviert/deaktiviert (Standard: aktiviert, +100 Punkte)
-- Paarungs-Modus (wechselnde Paarungen vs. feste Teams, Standard: wechselnd)
-- Punkte-Sichtbarkeit für Spieler während Turnier
-- Punkte-Einsicht für Spieler nach Turnier
+## Configurable Parameters (per tournament)
+- Number of declarations per player (default: 2)
+- Number of rounds (default: 5)
+- Number of games per round (default: 8)
+- Match bonus enabled/disabled (default: enabled, +100 points)
+- Pairing mode (rotating pairings vs fixed teams, default: rotating)
+- Score visibility to players during the tournament
+- Score visibility to players after the tournament
 
-## Technische Anforderungen
-- QR-Code-Generierung für Turnier-Teilnahme
-- Excel-Import-Funktionalität für Spielerdaten
-- Automatische Auslosung von Paarungen
-- Manuelle Paarungs-Eingabe
-- Automatische Punkteberechnung (157 - eingetragene Punkte)
-- Match-Bonus-Berechnung (+100 bei allen Punkten)
+## Technical Requirements
+- QR code generation for tournament participation links
+- Excel import functionality for historical player and result data
+- Automatic pairing draw for games
+- Manual pairing entry
+- Automatic score calculation (157 - entered points)
+- Match bonus calculation (+100 when applicable)

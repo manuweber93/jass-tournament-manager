@@ -68,22 +68,37 @@ Players only see tournaments they participate in.
 
 The system follows a layered architecture with clear separation of concerns.
 
-Frontend (.NET MAUI)
-        │
-        ▼
-Backend (.NET Web API)
-        │
-        ▼
-Application Layer
-        │
-        ▼
-Domain Layer
-        │
-        ▼
-Infrastructure Layer
-        │
-        ▼
-PostgreSQL Database
+```text
+┌─────────────────────────────┐
+│ Frontend (.NET MAUI)        │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│ Backend (.NET Web API)      │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│ Application Layer           │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│ Domain Layer                │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│ Infrastructure Layer        │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│ PostgreSQL Database         │
+└─────────────────────────────┘
+```text
+
 
 This architecture ensures:
 
@@ -129,6 +144,7 @@ This architecture ensures:
 
 # Project Structure
 
+```text
 JassTournamentManager
 ├─ src
 │  ├─ JassTournamentManager.Api
@@ -166,6 +182,7 @@ JassTournamentManager
 │  ├─ database-schema.md
 │
 └─ JassTournamentManager.sln
+```text
 
 ---
 
@@ -173,11 +190,13 @@ JassTournamentManager
 
 The core tournament hierarchy is structured as follows:
 
+```text
 Tournament
   └── Round
         └── Game
               ├── GameParticipant
               └── GameScore
+```text
 
 ## Game Rules
 
@@ -242,13 +261,14 @@ GameScore
 Table  
 
 Relationship overview:
-
+```text
 User  
  └── Tournament  
        └── Round  
              └── Game  
                    ├── GameParticipant  
-                   └── GameScore  
+                   └── GameScore 
+```text				   
 
 ---
 
@@ -301,9 +321,11 @@ In Visual Studio:
 
 Dependency direction:
 
+```text
 Api → Application → Domain  
              ↓  
        Infrastructure  
+```text
 
 The Domain layer must not depend on technical frameworks.
 

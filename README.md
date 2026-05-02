@@ -97,7 +97,7 @@ The system follows a layered architecture with clear separation of concerns.
 ┌─────────────────────────────┐
 │ PostgreSQL Database         │
 └─────────────────────────────┘
-```text
+```
 
 
 This architecture ensures:
@@ -182,7 +182,7 @@ JassTournamentManager
 │  ├─ database-schema.md
 │
 └─ JassTournamentManager.sln
-```text
+```
 
 ---
 
@@ -196,7 +196,7 @@ Tournament
         └── Game
               ├── GameParticipant
               └── GameScore
-```text
+```
 
 ## Game Rules
 
@@ -268,7 +268,7 @@ User
              └── Game  
                    ├── GameParticipant  
                    └── GameScore 
-```text				   
+```		   
 
 ---
 
@@ -295,7 +295,7 @@ dotnet run --project src/JassTournamentManager.Api
 
 Swagger UI:
 
-http://localhost:xxxx/swagger
+http://localhost:5272/swagger
 
 ---
 
@@ -325,7 +325,7 @@ Dependency direction:
 Api → Application → Domain  
              ↓  
        Infrastructure  
-```text
+```
 
 The Domain layer must not depend on technical frameworks.
 
@@ -394,4 +394,4 @@ These documents provide detailed functional and technical specifications.
 
 # License
 
-To be defined.
+This project is licensed under the MIT License — see the LICENSE file for details.

@@ -1,99 +1,69 @@
 # =========================
-
 # .NET / Visual Studio
-
 # =========================
 
 ## Build results
-
 [Bb]in/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
 
 ## Visual Studio
-
 .vs/
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
 
-
 # =========================
-
 # .NET specific
-
 # =========================
 
 *.dll
 *.exe
 *.pdb
 *.cache
-*.tmp
 
 # NuGet
-
 *.nupkg
-.nuget/packages/
 
 # =========================
-
 # ASP.NET Core
-
 # =========================
 
 wwwroot/lib/
 
 # Secret configuration
-
 appsettings.Development.json
 appsettings.Local.json
 
 # User secrets
-
 secrets.json
 
 # =========================
-
-# Entity Framework
-
-# =========================
-
-Migrations/*.Designer.cs
-
-# (Migrationen selbst NICHT ignorieren!)
-
-# =========================
-
 # MAUI / Xamarin
-
 # =========================
 
 # Android
-
 *.apk
 *.aab
 *.ap_
 *.dex
+*.keystore
+*.jks
 
 # iOS
-
 *.ipa
 
 # macOS
-
 *.app
 
 # Windows App Packages
-
 AppPackages/
 BundleArtifacts/
 
 # =========================
-
-# SQLite (lokale DB)
-
+# SQLite (local dev DB)
 # =========================
 
 *.db
@@ -102,44 +72,33 @@ BundleArtifacts/
 *.sqlite
 
 # =========================
-
 # Logs
-
 # =========================
 
 *.log
 
 # =========================
-
 # OS files
-
 # =========================
 
 # Windows
-
 Thumbs.db
 Desktop.ini
 
 # macOS
-
 .DS_Store
 
 # Linux
-
 *~
 
 # =========================
-
 # Docker
-
 # =========================
 
 docker-compose.override.yml
 
 # =========================
-
 # Temporary files
-
 # =========================
 
 *.bak
@@ -147,10 +106,11 @@ docker-compose.override.yml
 *.temp
 
 # =========================
-
 # Publish output
-
 # =========================
 
 publish/
 artifacts/
+
+# Optional
+.idea/

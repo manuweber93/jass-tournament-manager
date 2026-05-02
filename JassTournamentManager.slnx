@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/JassTournamentManager.Api/JassTournamentManager.Api.csproj" />
+    <Project Path="src/JassTournamentManager.App/JassTournamentManager.App.csproj" />
+    <Project Path="src/JassTournamentManager.Application/JassTournamentManager.Application.csproj" />
+    <Project Path="src/JassTournamentManager.Contracts/JassTournamentManager.Contracts.csproj" />
+    <Project Path="src/JassTournamentManager.Domain/JassTournamentManager.Domain.csproj" />
+    <Project Path="src/JassTournamentManager.Infrastructure/JassTournamentManager.Infrastructure.csproj" />
+  </Folder>
+</Solution>

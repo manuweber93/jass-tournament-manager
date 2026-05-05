@@ -6,8 +6,7 @@ namespace JassTournamentManager.Domain.Enums
 {
     public enum UserRole
     {
-        SysAdmin = 1,
-        Organizer = 2,
-        Player = 3
+        Organizer = 1,
+        Player = 2
     }
 }

@@ -8,19 +8,19 @@ namespace JassTournamentManager.Domain.Entities
     public class User : Common.BaseEntity
     {
 
-        public String Email { get; private set; } = String.Empty;
+        public string Email { get; private set; } = string.Empty;
 
-        public String PasswordHash { get; private set; } = String.Empty;
+        public string PasswordHash { get; private set; } = string.Empty;
 
-        public String FirstName { get; private set; } = String.Empty;
+        public string FirstName { get; private set; } = string.Empty;
 
-        public String LastName { get; private set;} = String.Empty;
+        public string LastName { get; private set; } = string.Empty;
 
-        public UserRole Role { get; private set; }
+        public bool IsSysAdmin { get; private set; } = false;
 
         private User() { }
 
-        public User(string email, string passwordHash, string firstName, string lastName, UserRole role)
+        public User(string email, string passwordHash, string firstName, string lastName, bool isSysAdmin)
         {
             if (string.IsNullOrWhiteSpace(email))
             {
@@ -46,7 +46,7 @@ namespace JassTournamentManager.Domain.Entities
             PasswordHash = passwordHash;
             FirstName = firstName.Trim();
             LastName = lastName.Trim();
-            Role = role;
+            IsSysAdmin = isSysAdmin;
         }
 
     }

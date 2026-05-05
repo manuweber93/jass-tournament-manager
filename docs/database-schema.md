@@ -13,11 +13,9 @@
 | passwordHash | String | Hashed password | NOT NULL |
 | firstName | String | First name | NOT NULL |
 | lastName | String | Last name | NOT NULL |
-| role | Enum | User role | NOT NULL |
+| isSysAdmin | Boolean | Whether user is sysAdmin | NOT NULL, DEFAULT false |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
-
-**Roles**: `SYSADMIN`, `ORGANIZER`, `PLAYER`
 
 **Relationships**:
 - Has many `Tournament` as organizer (1:n)
@@ -37,12 +35,12 @@
 | location | String | Venue/location | |
 | date | Date | Tournament date | NOT NULL |
 | status | Enum | Tournament status | NOT NULL, DEFAULT 'PLANNED' |
-| qrCode | String | QR code for check-in | UNIQUE |
+| tournamentCode | String | Code which is used to join tournament | UNIQUE |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
 **Enums**:
-- `status`: `OPEN`, `COMPLETED`, `CANCELLED`
+- `status`: `ACITVE`, `COMPLETED`, `CANCELLED`
 
 **Relationships**:
 - `organizerId` → `User.id` (n:1)
@@ -59,13 +57,11 @@
 |------|-----|--------------|-------------|
 | id | UUID | Primary key | PK, NOT NULL |
 | organizerId | UUID | Organizer | FK, NOT NULL |
-| name | String | Template name | NOT NULL |
 | numberOfRounds | Integer | Number of rounds | NOT NULL, DEFAULT 5 |
 | gamesPerRound | Integer | Games per round | NOT NULL, DEFAULT 8 |
 | matchBonusEnabled | Boolean | Match bonus enabled | NOT NULL, DEFAULT true |
 | fixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
 | scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'ALWAYS_VISIBLE' |
-| isDefault | Boolean | Default template | NOT NULL, DEFAULT false |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
@@ -73,10 +69,8 @@
 - `scoreVisibility`: `ALWAYS_VISIBLE`, `HIDDEN_DURING_TOURNAMENT`, `ORGANIZER_ONLY`
 
 **Relationships**:
-- `organizerId` → `User.id` (n:1)
-- Copied to `TournamentConfig` when creating a tournament
-
-**Constraints**: UNIQUE(organizerId, name)
+- `organizerId` → `User.id` (1:1)
+- Applied to newly created tournaments (but changes here have no effect on existing tournaments)
 
 ---
 
@@ -113,13 +107,15 @@
 | id | UUID | Primary key | PK, NOT NULL |
 | tournamentId | UUID | Tournament | FK, NOT NULL |
 | userId | UUID | User | FK, NOT NULL |
+| role | Enum | Role | NOT NULL |
 | registrationMethod | Enum | Registration method | NOT NULL |
 | registeredAt | DateTime | Registration timestamp | NOT NULL |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
 **Enums**:
-- `registrationMethod`: `MANUAL`, `QR_CODE`, `EXCEL_IMPORT`
+- `registrationMethod`: `MANUAL`, `LINK`, `EXCEL_IMPORT`
+- `role`: `ORGANIZER`, `PLAYER`
 
 **Relationships**:
 - `tournamentId` → `Tournament.id` (n:1)
@@ -145,7 +141,7 @@
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
 **Enums**:
-- `status`: `OPEN`, `COMPLETED`
+- `status`: `PENDING`, `COMPLETED`
 
 **Relationships**:
 - `tournamentId` → `Tournament.id` (n:1)
@@ -176,15 +172,70 @@
 
 ---
 
-### 8. Game
-**Description**: A single game (2 vs 2) within a round
+### 8. Pairing
+**Description**: A single pairing consisting of four players within a round which plays a certain amount of games at a table.
 
 | Field | Type | Description | Constraints |
 |------|-----|--------------|-------------|
 | id | UUID | Primary key | PK, NOT NULL |
 | roundId | UUID | Round | FK, NOT NULL |
-| gameNumber | Integer | Game number within the round | NOT NULL |
 | tableId | UUID | Table | FK (optional) |
+| status | Enum | Pairing status | NOT NULL, DEFAULT 'PENDING' |
+| totalPointsTeamA | Integer | total points of team A for this round | NOT NULL |
+| totalPointsTeamB | Integer | total points of team B for this round | NOT NULL |
+| createdAt | DateTime | Creation timestamp | NOT NULL |
+| updatedAt | DateTime | Update timestamp | NOT NULL |
+
+**Enums**:
+- `status`: `PENDING`, `COMPLETED`
+
+**Constraints**: UNIQUE(roundId, tableId)
+
+**Relationships**:
+- `roundId` → `Round.id` (n:1)
+- `tableId` → `Table.id` (n:1)
+- has many `PairingParticipant` (1:n) (exactly 4)
+
+---
+
+### 9. PairingParticipant
+**Description**: Participants for a pairing (4 players: 2 vs 2)
+
+| Field | Type | Description | Constraints |
+|------|-----|--------------|-------------|
+| id | UUID | Primary key | PK, NOT NULL |
+| pairingId | UUID | Game | FK, NOT NULL |
+| participantId | UUID | TournamentParticipant | FK, NOT NULL |
+| team | Enum | Team (A or B) | NOT NULL |
+| enteredBy | UUID | Entered by | FK (optional) |
+| createdAt | DateTime | Creation timestamp | NOT NULL |
+
+**Enums**:
+- `team`: `TEAM_A`, `TEAM_B`
+
+**Relationships**:
+- `pairingId` → `Pairing.id` (n:1)
+- `participantId` → `TournamentParticipant.id` (n:1)
+- `enteredBy` → `User.id` (n:1, optional)
+
+**Constraints**: 
+- UNIQUE(pairingId, participantId)
+- UNIQUE(pairingId, team, participantId)
+
+**Business rule**: Exactly 4 participants per pairing (2 per team)
+
+---
+
+### 10. Game
+TODO: Kann Game und GameScore zusammengelegt werden? Was ist besser?
+
+**Description**: A single game (2 vs 2) within a round
+
+| Field | Type | Description | Constraints |
+|------|-----|--------------|-------------|
+| id | UUID | Primary key | PK, NOT NULL |
+| pairingId | UUID | Pairing | FK, NOT NULL |
+| gameNumber | Integer | Game number within the round | NOT NULL |
 | status | Enum | Game status | NOT NULL, DEFAULT 'OPEN' |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
@@ -193,46 +244,14 @@
 - `status`: `OPEN`, `COMPLETED`
 
 **Relationships**:
-- `roundId` → `Round.id` (n:1)
-- `tableId` → `Table.id` (n:1, optional)
-- Has many `GameParticipant` (1:n, exactly 4)
+- `pairingId` → `Pairing.id` (n:1)
 - Has one `GameScore` (1:1, optional)
 
-**Constraints**: UNIQUE(roundId, gameNumber)
+**Constraints**: UNIQUE(pairingId, gameNumber)
 
 ---
 
-### 9. GameParticipant
-**Description**: Participants for a game (4 players: 2 vs 2)
-
-| Field | Type | Description | Constraints |
-|------|-----|--------------|-------------|
-| id | UUID | Primary key | PK, NOT NULL |
-| gameId | UUID | Game | FK, NOT NULL |
-| participantId | UUID | Participant | FK, NOT NULL |
-| team | Enum | Team (A or B) | NOT NULL |
-| points | Integer | Points scored (denormalized) | |
-| matchBonus | Boolean | Match bonus achieved | DEFAULT false |
-| enteredBy | UUID | Entered by | FK (optional) |
-| createdAt | DateTime | Creation timestamp | NOT NULL |
-
-**Enums**:
-- `team`: `TEAM_A`, `TEAM_B`
-
-**Relationships**:
-- `gameId` → `Game.id` (n:1)
-- `participantId` → `TournamentParticipant.id` (n:1)
-- `enteredBy` → `User.id` (n:1, optional)
-
-**Constraints**: 
-- UNIQUE(gameId, participantId)
-- UNIQUE(gameId, team, participantId)
-
-**Business rule**: Exactly 4 participants per game (2 per team)
-
----
-
-### 10. GameScore
+### 11. GameScore
 **Description**: Score/result of a game
 
 | Field | Type | Description | Constraints |
@@ -259,154 +278,15 @@
 
 ---
 
-## Entity Relationship Diagram (ERD)
 
-```mermaid
-erDiagram
-    User ||--o{ Tournament : "organizes"
-    User ||--o{ TournamentConfigTemplate : "creates"
-    User ||--o{ TournamentParticipant : "registers as"
-    User ||--o{ GameScore : "enters"
-    User ||--o{ GameParticipant : "enters pairing"
-
-    Tournament ||--|| TournamentConfig : "has"
-    Tournament ||--o{ TournamentParticipant : "has"
-    Tournament ||--o{ Round : "has"
-
-    User ||--o{ Table : "defines"
-
-    TournamentConfigTemplate ||--o{ TournamentConfig : "copied to"
-
-    Round ||--o{ Game : "contains"
-
-    Table ||--o{ Game : "assigned to"
-
-    Game ||--o{ GameParticipant : "has"
-    Game ||--o| GameScore : "has result"
-
-    TournamentParticipant ||--o{ GameParticipant : "plays in"
-
-    User {
-        uuid id PK
-        string email UK
-        string passwordHash
-        string firstName
-        string lastName
-        enum role
-        datetime createdAt
-        datetime updatedAt
-    }
-
-    Tournament {
-        uuid id PK
-        uuid organizerId FK
-        string name
-        string location
-        date date
-        enum status
-        string qrCode UK
-        datetime createdAt
-        datetime updatedAt
-    }
-
-    TournamentConfigTemplate {
-        uuid id PK
-        uuid organizerId FK
-        string name
-        int numberOfRounds
-        int gamesPerRound
-        bool matchBonusEnabled
-        bool fixedTeams
-        enum scoreVisibility
-        bool isDefault
-        datetime createdAt
-        datetime updatedAt
-    }
-
-    TournamentConfig {
-        uuid id PK
-        uuid tournamentId FK
-        uuid templateId FK
-        int numberOfRounds
-        int gamesPerRound
-        bool matchBonusEnabled
-        bool fixedTeams
-        enum scoreVisibility
-        datetime createdAt
-        datetime updatedAt
-    }
-
-    TournamentParticipant {
-        uuid id PK
-        uuid tournamentId FK
-        uuid userId FK
-        enum registrationMethod
-        datetime registeredAt
-        datetime createdAt
-        datetime updatedAt
-    }
-
-    Round {
-        uuid id PK
-        uuid tournamentId FK
-        int roundNumber
-        enum status
-        datetime createdAt
-        datetime updatedAt
-    }
-
-    Table {
-        uuid id PK
-        uuid organizerId FK
-        string name
-        int displayOrder
-        bool isActive
-        datetime createdAt
-        datetime updatedAt
-    }
-
-    Game {
-        uuid id PK
-        uuid roundId FK
-        int gameNumber
-        uuid tableId FK
-        enum status
-        datetime createdAt
-        datetime updatedAt
-    }
-
-    GameParticipant {
-        uuid id PK
-        uuid gameId FK
-        uuid participantId FK
-        uuid enteredBy FK
-        enum team
-        int points
-        bool matchBonus
-        datetime createdAt
-    }
-
-    GameScore {
-        uuid id PK
-        uuid gameId FK
-        int teamAPoints
-        int teamBPoints
-        bool teamAMatchBonus
-        bool teamBMatchBonus
-        uuid enteredBy FK
-        datetime enteredAt
-        datetime createdAt
-        datetime updatedAt
-    }
-```
-
-## Geschäftsregeln
+## Business Rules
+TODO: Translate to English
 
 ### Turnier-Regeln
 1. **Organisator-Isolation**: Organisatoren sehen nur ihre eigenen Turniere
 2. **SYSADMIN-Zugriff**: System-Administratoren können alle Turniere aller Organisatoren einsehen und verwalten
 3. **Spieler-Sicht**: Spieler sehen nur Turniere, an denen sie teilnehmen
-4. **QR-Code**: Jedes Turnier hat einen eindeutigen QR-Code für Teilnahme
+4. **QR-Code**: Jedes Turnier hat einen eindeutigen Link über welchen Teilnehmer am Turnier teilnehmen können
 5. **Ein-Tages-Turniere**: Alle Turniere dauern einen Tag
 6. **Turnier-Status**: Einfache Status (OPEN, COMPLETED, CANCELLED) für einfache Bedienung
 
@@ -427,8 +307,6 @@ erDiagram
 2. **Punkte-Total**: 157 Punkte pro Spiel
 3. **Match-Bonus**: +100 Punkte wenn ein Team alle 157 Punkte macht (konfigurierbar)
 4. **Automatische Berechnung**: Wenn Team A Punkte einträgt, werden Team B Punkte automatisch berechnet (157 - Team A)
-5. **Denormalisierung**: Punkte werden zusätzlich direkt beim Spieler (`GameParticipant`) gespeichert für schnelle Ranglisten
-6. **Tischzuweisung**: Beim Auslosen werden Tische automatisch vergeben
 
 ### Paarungs-Regeln
 1. **Normalfall**: Wechselnde Paarungen pro Runde (Spieler spielen für sich)
@@ -436,7 +314,7 @@ erDiagram
 3. **Paarungs-Eingabe**:
    - Organisator: Manuelle Eingabe oder automatische Zufallsauslosung
    - Spieler: Können ihren zugelosten Partner selbst eintragen
-4. **Tracking**: `enteredBy` in `GameParticipant` zeigt, wer die Paarung erfasst hat
+4. **Tracking**: `enteredBy` in `PairingParticipant` zeigt, wer die Paarung erfasst hat
 
 ### Sichtbarkeits-Regeln
 1. **ALWAYS_VISIBLE**: Spieler sehen immer alle Punkte
@@ -444,7 +322,7 @@ erDiagram
 3. **ORGANIZER_ONLY**: Nur Organisator sieht Punkte
 
 ### Teilnehmer-Regeln
-1. **Nur registrierte Benutzer**: Alle Teilnehmer müssen User-Account haben
+1. **Nur registrierte Benutzer**: Alle Teilnehmer müssen einen User-Account haben
 2. **Excel-Import**: Erstellt neue User-Accounts oder verknüpft bestehende
 3. **Email als Identifier**: Matching via Email-Adresse
 
@@ -452,8 +330,7 @@ erDiagram
 1. **Organisator-Zuweisung**: Tische gehören dem Organisator, nicht einem spezifischen Turnier
 2. **Wiederverwendung**: Tische können für alle Turniere des Organisators verwendet werden
 3. **Flexible Benennung**: Tische können beliebig benannt werden
-4. **Automatische Zuweisung**: Beim Auslosen werden Spiele auf verfügbare Tische verteilt
-5. **Sortierung**: Tische haben displayOrder für konsistente Anzeige
+4. **Sortierung**: Tische haben displayOrder für konsistente Anzeige
 5. **Deaktivierung**: Tische können deaktiviert werden (isActive = false)
 6. **Löschung**: Tisch kann nur gelöscht werden, wenn keine Spiele zugewiesen
 
@@ -500,33 +377,3 @@ CREATE INDEX idx_game_score_game ON GameScore(gameId);
 - Automatische Erstellung aller relevanten Entitäten
 - Validierung der importierten Daten
 
-## Änderungen gegenüber vorheriger Version
-
-### Entfernt
-- ❌ `Tournament.description`
-- ❌ `Tournament.startDate/endDate` → nur `date`
-- ❌ `TournamentConfig.announcementsPerPlayer`
-- ❌ `TournamentConfig.hideScoresDuringTournament`
-- ❌ `TournamentConfig.allowPlayerScoreView`
-- ❌ `TournamentParticipant.email/firstName/lastName`
-- ❌ `Round.startTime/endTime`
-- ❌ `Game.startTime/endTime`
-- ❌ `GameParticipant.position`
-
-### Hinzugefügt
-- ✅ `TournamentConfigTemplate` (neue Tabelle)
-- ✅ `TournamentConfig.templateId`
-- ✅ `TournamentConfig.scoreVisibility` (ENUM)
-- ✅ `TournamentConfigTemplate.isDefault`
-
-### Geändert
-- 🔄 `TournamentParticipant.userId` → NOT NULL (immer Account erforderlich)
-- 🔄 `Tournament` → nur ein `date` statt `startDate/endDate`
-- 🔄 Score Visibility → vereinfacht zu einem ENUM
-
-## Nächste Schritte
-
-1. ✅ Datenmodell überarbeitet
-2. ⏭️ Prisma Schema aktualisieren
-3. ⏭️ Migrations erstellen
-4. ⏭️ Seed-Daten für Entwicklung

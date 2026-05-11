@@ -91,7 +91,7 @@
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
 **Enums**:
-- `scoreVisibility`: `ALWAYS_VISIBLE`, `HIDDEN_DURING_TOURNAMENT`, `ORGANIZER_ONLY`
+- `scoreVisibility`: `ALWAYS_VISIBLE_FOR_EVERYONE`, `HIDDEN_DURING_ACTIVE_TOURNAMENT`, `ORGANIZER_ONLY`
 
 **Relationships**:
 - `tournamentId` → `Tournament.id` (1:1)
@@ -108,13 +108,14 @@
 | tournamentId | UUID | Tournament | FK, NOT NULL |
 | userId | UUID | User | FK, NOT NULL |
 | role | Enum | Role | NOT NULL |
+| isPlaying | Boolean | Indicates whether the participant plays in the tournament | NOT NULL, DEFAULT true|
 | registrationMethod | Enum | Registration method | NOT NULL |
 | registeredAt | DateTime | Registration timestamp | NOT NULL |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
 **Enums**:
-- `registrationMethod`: `MANUAL`, `LINK`, `EXCEL_IMPORT`
+- `registrationMethod`: `BY_ORGANIZER`, `VIA_TOURNAMENT_CODE`, `EXCEL_IMPORT`
 - `role`: `ORGANIZER`, `PLAYER`
 
 **Relationships**:
@@ -141,7 +142,7 @@
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
 **Enums**:
-- `status`: `PENDING`, `COMPLETED`
+- `status`: `PENDING`, `ACTIVE`, `COMPLETED`
 
 **Relationships**:
 - `tournamentId` → `Tournament.id` (n:1)

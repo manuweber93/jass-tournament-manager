@@ -7,6 +7,7 @@ namespace JassTournamentManager.Domain.Entities
 {
     public class User : Common.BaseEntity
     {
+        private const bool DefaultIsSysAdmin = false;
 
         public string Email { get; private set; } = string.Empty;
 
@@ -16,11 +17,11 @@ namespace JassTournamentManager.Domain.Entities
 
         public string LastName { get; private set; } = string.Empty;
 
-        public bool IsSysAdmin { get; private set; } = false;
+        public bool IsSysAdmin { get; private set; }
 
         private User() { }
 
-        public User(string email, string passwordHash, string firstName, string lastName, bool isSysAdmin)
+        public User(string email, string passwordHash, string firstName, string lastName, bool isSysAdmin = DefaultIsSysAdmin)
         {
             if (string.IsNullOrWhiteSpace(email))
             {

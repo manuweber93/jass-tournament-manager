@@ -4,9 +4,9 @@ using System.Text;
 
 namespace JassTournamentManager.Domain.Enums
 {
-    public enum UserRole
+    public enum ParticipantRole
     {
-        Organizer = 1,
-        Player = 2
+        Organizer = 0,
+        Player = 1,
     }
 }

@@ -105,11 +105,6 @@ API design:
 
 ### Data Layer
 
-Data model highlights:
-- Core entities: User, Tournament, TournamentConfigTemplate, TournamentConfig, TournamentParticipant, Round, Game, GameParticipant, GameScore
-- Typical hierarchy: Tournament → Round → Game → Participants
-- Referential integrity enforced with FK constraints and appropriate cascade rules
-
 Business rules:
 - Organizer isolation (each organizer sees only their own tournaments, SYSADMIN exception)
 - 157 points per game (base rule)

@@ -3,7 +3,7 @@
 ## Overview
 Web application for Jass tournament organizers to manage Schieber tournaments.
 
-## User Roles
+## Types of Users
 
 ### System Administrator (SYSADMIN)
 - Can view and manage all tournaments from all organizers
@@ -27,7 +27,8 @@ Web application for Jass tournament organizers to manage Schieber tournaments.
 - Can view scores (if allowed by the organizer)
 - See all tournaments they participated in
 - Can view leaderboards for an organizer's tournaments
-- Can join tournaments via QR code
+- Can join tournaments via code
+- Can select an existing user during first login/registration, so that they can reuse a user that was created during an import
 
 ## Jass Variant: Schieber
 
@@ -41,8 +42,9 @@ Web application for Jass tournament organizers to manage Schieber tournaments.
 
 Turnament
   └── Rounds (default: 5 rounds, configurable)
-        └── Games (default: 8 games per round, configurable)
-              └── Pairings (4 players per game: 2 vs 2)
+        └── Pairings (4 players per pairing: 2 vs 2)
+                └── Games (default: 8 games per pairing/round, configurable)
+              
 
 ### Tournaments
 - Belong to an organizer
@@ -50,7 +52,7 @@ Turnament
 - Reports across all tournaments of an organizer
 - Number of rounds configurable (default: 5)
 - Number of games per round configurable (default: 8)
-- QR code for participation link can be generated
+- Code for participation can be generated (maybe QR code to scan)
 - Match bonus configurable (on/off)
 
 ### Rounds
@@ -70,7 +72,7 @@ Turnament
 
 ### Participants
 - Organizers can register participants manually OR
-- Players can add themselves via QR code
+- Players can add themselves via code
 - Same players can participate in different tournaments
 - Player identification via email address (for Excel export/matching)
 
@@ -108,7 +110,6 @@ Turnament
 - Player sees only tournaments they participated in
 
 ## Configurable Parameters (per tournament)
-- Number of declarations per player (default: 2)
 - Number of rounds (default: 5)
 - Number of games per round (default: 8)
 - Match bonus enabled/disabled (default: enabled, +100 points)
@@ -117,9 +118,9 @@ Turnament
 - Score visibility to players after the tournament
 
 ## Technical Requirements
-- QR code generation for tournament participation links
+- Code generation for tournament participation
 - Excel import functionality for historical player and result data
-- Automatic pairing draw for games
 - Manual pairing entry
 - Automatic score calculation (157 - entered points)
 - Match bonus calculation (+100 when applicable)
+- (Automatic pairing draw for games)

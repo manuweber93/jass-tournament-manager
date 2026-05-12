@@ -1,7 +1,35 @@
 
 # Data Model: Jass Tournament Manager
 
-## Entities and Relationships
+## Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    User ||--o{ Tournament : "organizes"
+    User ||--|| TournamentConfigTemplate : "manages"
+    User ||--o{ TournamentParticipant : "participates as"
+    User ||--o{ JassTable : "owns"
+    User ||--o{ Game : "enters result of"
+    User ||--o{ PairingParticipant : "enters"
+    User o|--o{ User : "is merged into"
+
+    Tournament ||--|| TournamentConfig : "has"
+    TournamentConfigTemplate ||--o{ TournamentConfig : "serves as template for"
+
+    Tournament ||--o{ TournamentParticipant : "has"
+    Tournament ||--o{ Round : "consists of"
+
+    Round ||--o{ Pairing : "has"
+
+    JassTable ||--o{ Pairing : "hosts"
+
+    Pairing ||--o{ PairingParticipant : "has"
+    TournamentParticipant ||--o{ PairingParticipant : "appears as"
+
+    Pairing ||--o{ Game : "consists of"
+```
+
+## Entities
 
 ### 1. User
 **Description**: Authenticated users of the system (organizers and players)
@@ -14,13 +42,15 @@
 | firstName | String | First name | NOT NULL |
 | lastName | String | Last name | NOT NULL |
 | isSysAdmin | Boolean | Whether user is sysAdmin | NOT NULL, DEFAULT false |
+| sourceType | Enum | How was the user created? | NOT NULL|
+| mergedIntoUserId | UUID | merge target user id | |
+| mergedAt | DateTime | merge time | |
+| mergedBy | UUID | user id of merging user | FK |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
-**Relationships**:
-- Has many `Tournament` as organizer (1:n)
-- Has many `TournamentConfigTemplate` (1:n)
-- Has many `TournamentParticipant` as player (1:n)
+**Enums**:
+- `sourceTypes`: `MANUAL`, `EXCEL_IMPORT`, `SELF_REGISTERED`
 
 ---
 
@@ -42,12 +72,6 @@
 **Enums**:
 - `status`: `ACITVE`, `COMPLETED`, `CANCELLED`
 
-**Relationships**:
-- `organizerId` → `User.id` (n:1)
-- Has one `TournamentConfig` (1:1)
-- Has many `TournamentParticipant` (1:n)
-- Has many `Round` (1:n)
-
 ---
 
 ### 3. TournamentConfigTemplate
@@ -68,9 +92,7 @@
 **Enums**:
 - `scoreVisibility`: `ALWAYS_VISIBLE`, `HIDDEN_DURING_TOURNAMENT`, `ORGANIZER_ONLY`
 
-**Relationships**:
-- `organizerId` → `User.id` (1:1)
-- Applied to newly created tournaments (but changes here have no effect on existing tournaments)
+**Note**: Applied to newly created tournaments (but changes here have no effect on existing tournaments)
 
 ---
 
@@ -93,10 +115,6 @@
 **Enums**:
 - `scoreVisibility`: `ALWAYS_VISIBLE_FOR_EVERYONE`, `HIDDEN_DURING_ACTIVE_TOURNAMENT`, `ORGANIZER_ONLY`
 
-**Relationships**:
-- `tournamentId` → `Tournament.id` (1:1)
-- `templateId` → `TournamentConfigTemplate.id` (n:1, optional)
-
 ---
 
 ### 5. TournamentParticipant
@@ -117,11 +135,6 @@
 **Enums**:
 - `registrationMethod`: `BY_ORGANIZER`, `VIA_TOURNAMENT_CODE`, `EXCEL_IMPORT`
 - `role`: `ORGANIZER`, `PLAYER`
-
-**Relationships**:
-- `tournamentId` → `Tournament.id` (n:1)
-- `userId` → `User.id` (n:1)
-- Has many `GameParticipant` (1:n)
 
 **Constraints**: UNIQUE(tournamentId, userId)
 
@@ -144,30 +157,22 @@
 **Enums**:
 - `status`: `PENDING`, `ACTIVE`, `COMPLETED`
 
-**Relationships**:
-- `tournamentId` → `Tournament.id` (n:1)
-- Has many `Game` (1:n)
-
 **Constraints**: UNIQUE(tournamentId, roundNumber)
 
 ---
 
-### 7. Table
-**Description**: Predefined tables for an organizer (reusable)
+### 7. JassTable
+**Description**: Predefined jass tables for an organizer (reusable)
 
 | Field | Type | Description | Constraints |
 |------|-----|--------------|-------------|
 | id | UUID | Primary key | PK, NOT NULL |
 | organizerId | UUID | Organizer | FK, NOT NULL |
-| name | String | Table name/label | NOT NULL |
+| name | String | Jass table name/label | NOT NULL |
 | displayOrder | Integer | Sort order | NOT NULL |
 | isActive | Boolean | Table active | NOT NULL, DEFAULT true |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
-
-**Relationships**:
-- `organizerId` → `User.id` (n:1)
-- Has many `Game` (1:n)
 
 **Constraints**: UNIQUE(organizerId, name)
 
@@ -180,22 +185,17 @@
 |------|-----|--------------|-------------|
 | id | UUID | Primary key | PK, NOT NULL |
 | roundId | UUID | Round | FK, NOT NULL |
-| tableId | UUID | Table | FK (optional) |
+| jassTableId | UUID | JassTable | FK (optional) | NOT NULL
 | status | Enum | Pairing status | NOT NULL, DEFAULT 'PENDING' |
-| totalPointsTeamA | Integer | total points of team A for this round | NOT NULL |
-| totalPointsTeamB | Integer | total points of team B for this round | NOT NULL |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
 **Enums**:
 - `status`: `PENDING`, `COMPLETED`
 
-**Constraints**: UNIQUE(roundId, tableId)
+**Constraints**: UNIQUE(roundId, jassTableId)
 
-**Relationships**:
-- `roundId` → `Round.id` (n:1)
-- `tableId` → `Table.id` (n:1)
-- has many `PairingParticipant` (1:n) (exactly 4)
+**Business rule**: Exactly 4 participants per pairing (2 per team)
 
 ---
 
@@ -214,21 +214,12 @@
 **Enums**:
 - `team`: `TEAM_A`, `TEAM_B`
 
-**Relationships**:
-- `pairingId` → `Pairing.id` (n:1)
-- `participantId` → `TournamentParticipant.id` (n:1)
-- `enteredBy` → `User.id` (n:1, optional)
-
 **Constraints**: 
 - UNIQUE(pairingId, participantId)
-- UNIQUE(pairingId, team, participantId)
-
-**Business rule**: Exactly 4 participants per pairing (2 per team)
 
 ---
 
 ### 10. Game
-TODO: Kann Game und GameScore zusammengelegt werden? Was ist besser?
 
 **Description**: A single game (2 vs 2) within a round
 
@@ -237,144 +228,135 @@ TODO: Kann Game und GameScore zusammengelegt werden? Was ist besser?
 | id | UUID | Primary key | PK, NOT NULL |
 | pairingId | UUID | Pairing | FK, NOT NULL |
 | gameNumber | Integer | Game number within the round | NOT NULL |
-| status | Enum | Game status | NOT NULL, DEFAULT 'OPEN' |
+| status | Enum | Game status | NOT NULL, DEFAULT 'PENDING' |
+| teamAPoints | Integer | Team A points | |
+| teamBPoints | Integer | Team B points | |
+| teamAMatchBonus | Boolean | Team A has match bonus | DEFAULT false |
+| teamBMatchBonus | Boolean | Team B has match bonus | DEFAULT false |
+| enteredBy | UUID | Entered by (User) | FK |
+| enteredAt | DateTime | Entry timestamp | |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
 **Enums**:
-- `status`: `OPEN`, `COMPLETED`
-
-**Relationships**:
-- `pairingId` → `Pairing.id` (n:1)
-- Has one `GameScore` (1:1, optional)
+- `status`: `PENDING`, `COMPLETED`
 
 **Constraints**: UNIQUE(pairingId, gameNumber)
 
----
-
-### 11. GameScore
-**Description**: Score/result of a game
-
-| Field | Type | Description | Constraints |
-|------|-----|--------------|-------------|
-| id | UUID | Primary key | PK, NOT NULL |
-| gameId | UUID | Game | FK, UNIQUE, NOT NULL |
-| teamAPoints | Integer | Team A points | NOT NULL |
-| teamBPoints | Integer | Team B points | NOT NULL |
-| teamAMatchBonus | Boolean | Team A has match bonus | NOT NULL, DEFAULT false |
-| teamBMatchBonus | Boolean | Team B has match bonus | NOT NULL, DEFAULT false |
-| enteredBy | UUID | Entered by (User) | FK, NOT NULL |
-| enteredAt | DateTime | Entry timestamp | NOT NULL |
-| createdAt | DateTime | Creation timestamp | NOT NULL |
-| updatedAt | DateTime | Update timestamp | NOT NULL |
-
-**Relationships**:
-- `gameId` → `Game.id` (1:1)
-- `enteredBy` → `User.id` (n:1)
-
 **Business rules**:
 - `teamAPoints + teamBPoints = 157` (without match bonus)
-- Match bonus: +100 points when a team scores 157 points
+- Match bonus: +100 points when a team takes all tricks
 - Only one team can have the match bonus
 
 ---
 
-
 ## Business Rules
-TODO: Translate to English
 
-### Turnier-Regeln
-1. **Organisator-Isolation**: Organisatoren sehen nur ihre eigenen Turniere
-2. **SYSADMIN-Zugriff**: System-Administratoren können alle Turniere aller Organisatoren einsehen und verwalten
-3. **Spieler-Sicht**: Spieler sehen nur Turniere, an denen sie teilnehmen
-4. **QR-Code**: Jedes Turnier hat einen eindeutigen Link über welchen Teilnehmer am Turnier teilnehmen können
-5. **Ein-Tages-Turniere**: Alle Turniere dauern einen Tag
-6. **Turnier-Status**: Einfache Status (OPEN, COMPLETED, CANCELLED) für einfache Bedienung
+### Tournament Rules
+1. **Organizer Isolation**: Organizers can only see their own tournaments (and tournaments they participated as player)
+2. **SYSADMIN Access**: System administrators can view and manage all tournaments of all organizers
+3. **Player Visibility**: Players can only see tournaments in which they participate
+4. **Tournament Code / QR Code**: Each tournament has a unique link/code which participants can use to join the tournament
+5. **Single-Day Tournaments**: All tournaments last one day
 
-### Config-Template-Regeln
-1. **Wiederverwendbarkeit**: Templates können für mehrere Turniere verwendet werden
-2. **Kopie beim Erstellen**: Beim Turnier-Erstellen wird Config vom Template kopiert
-3. **Unabhängigkeit**: Änderungen am Template betreffen nur neue Turniere
-4. **Default-Template**: Organisator kann ein Standard-Template markieren
-5. **Template-Referenz**: TournamentConfig behält Referenz zum ursprünglichen Template
+### Config Template Rules
+1. **Reusability**: Templates can be used for multiple tournaments
+2. **Copy on Creation**: Tournament configuration is copied from the template when creating a tournament
+3. **Independence**: Changes to a template only affect newly created tournaments
+4. **Template Reference**: `TournamentConfig` keeps a reference to the original template
+5. **One template per organizer**: Each organizer has one template
 
-### Runden-Regeln
-1. **Anzahl Runden**: Konfigurierbar, Standard 5
-2. **Spiele pro Runde**: Konfigurierbar, Standard 8
-3. **Rundennummern**: Fortlaufend, 1-basiert
+### Round Rules
+1. **Number of Rounds**: Configurable, default is 5
+2. **Games per Round**: Configurable, default is 8
+3. **Round Numbers**: Sequential, 1-based
 
-### Spiel-Regeln
-1. **Teilnehmer**: Genau 4 Spieler pro Spiel (2 Teams à 2 Spieler)
-2. **Punkte-Total**: 157 Punkte pro Spiel
-3. **Match-Bonus**: +100 Punkte wenn ein Team alle 157 Punkte macht (konfigurierbar)
-4. **Automatische Berechnung**: Wenn Team A Punkte einträgt, werden Team B Punkte automatisch berechnet (157 - Team A)
+### Game Rules
+1. **Participants**: Exactly 4 players per game (2 teams of 2 players)
+2. **Total Points**: 157 points per game
+3. **Match Bonus**: +100 points if one team scores all 157 points (configurable)
+4. **Automatic Calculation**: When Team A enters points, Team B points are calculated automatically (`157 - Team A`)
 
-### Paarungs-Regeln
-1. **Normalfall**: Wechselnde Paarungen pro Runde (Spieler spielen für sich)
-2. **Alternative**: Feste Teams über gesamtes Turnier (konfigurierbar)
-3. **Paarungs-Eingabe**:
-   - Organisator: Manuelle Eingabe oder automatische Zufallsauslosung
-   - Spieler: Können ihren zugelosten Partner selbst eintragen
-4. **Tracking**: `enteredBy` in `PairingParticipant` zeigt, wer die Paarung erfasst hat
+### Pairing Rules
+1. **Default Case**: Pairings change every round (players compete individually)
+2. **Alternative**: Fixed teams throughout the entire tournament (configurable)
+3. **Pairing Entry**:
+   - Organizer: Manual entry (or automatic random draw)
+   - Players: Can enter their assigned partner themselves
+4. **Tracking**: `enteredBy` in `PairingParticipant` indicates who entered the pairing
 
-### Sichtbarkeits-Regeln
-1. **ALWAYS_VISIBLE**: Spieler sehen immer alle Punkte
-2. **HIDDEN_DURING_TOURNAMENT**: Punkte während Turnier ausgeblendet, danach sichtbar
-3. **ORGANIZER_ONLY**: Nur Organisator sieht Punkte
+### Visibility Rules
+1. Players can always see all scores
+2. Scores are hidden during the tournament and visible afterwards
+3. Only the organizer can see scores
 
-### Teilnehmer-Regeln
-1. **Nur registrierte Benutzer**: Alle Teilnehmer müssen einen User-Account haben
-2. **Excel-Import**: Erstellt neue User-Accounts oder verknüpft bestehende
-3. **Email als Identifier**: Matching via Email-Adresse
+### Participant Rules
+1. **Registered Users Only**: All participants must have a user account
+2. **Excel Import**: Creates new user accounts or links existing ones
+3. **Email as Identifier**: Matching is performed via email address
 
-### Tisch-Regeln
-1. **Organisator-Zuweisung**: Tische gehören dem Organisator, nicht einem spezifischen Turnier
-2. **Wiederverwendung**: Tische können für alle Turniere des Organisators verwendet werden
-3. **Flexible Benennung**: Tische können beliebig benannt werden
-4. **Sortierung**: Tische haben displayOrder für konsistente Anzeige
-5. **Deaktivierung**: Tische können deaktiviert werden (isActive = false)
-6. **Löschung**: Tisch kann nur gelöscht werden, wenn keine Spiele zugewiesen
+### JassTable Rules
+1. **Organizer Ownership**: JassTables belong to the organizer, not to a specific tournament
+2. **Reusability**: JassTables can be reused for all tournaments of the organizer
+3. **Flexible Naming**: JassTables can be named freely
+4. **Sorting**: JassTables have a `displayOrder` for consistent display
+5. **Deactivation**: JassTables can be deactivated (`isActive = false`)
+6. **Deletion**: A table can only be deleted if no games/pairings are assigned to it
 
-## Indizes (Performance-Optimierung)
+### Player Merge Rules
+1. Organizers can merge imported player accounts with manually created or self-registered user accounts.
+2. The target user remains active; the source user is marked as merged.
+3. Merged users must not be usable for authentication or new tournament registrations.
+4. Existing tournament participations remain assigned to the merged user account.
+
+## Indices (Performance optimization)
 
 ```sql
--- Häufige Abfragen
+-- Tournament
 CREATE INDEX idx_tournament_organizer ON Tournament(organizerId);
 CREATE INDEX idx_tournament_status ON Tournament(status);
 CREATE INDEX idx_tournament_date ON Tournament(date);
 
+-- TournamentConfigTemplate
 CREATE INDEX idx_config_template_organizer ON TournamentConfigTemplate(organizerId);
-CREATE INDEX idx_config_template_default ON TournamentConfigTemplate(organizerId, isDefault);
 
+-- TournamentParticipant
 CREATE INDEX idx_participant_tournament ON TournamentParticipant(tournamentId);
 CREATE INDEX idx_participant_user ON TournamentParticipant(userId);
 
+-- Round
 CREATE INDEX idx_round_tournament ON Round(tournamentId);
-CREATE INDEX idx_round_status ON Round(status);
+CREATE INDEX idx_round_tournament_status ON Round(tournamentId, status);
 
-CREATE INDEX idx_table_organizer ON Table(organizerId);
-CREATE INDEX idx_table_active ON Table(organizerId, isActive);
+-- JassTable
+CREATE INDEX idx_table_organizer ON JassTable(organizerId);
+CREATE INDEX idx_table_active ON JassTable(organizerId, isActive);
 
-CREATE INDEX idx_game_round ON Game(roundId);
-CREATE INDEX idx_game_status ON Game(status);
+-- Pairing
+CREATE INDEX idx_pairing_round ON Pairing(roundId);
+CREATE INDEX idx_pairing_round_status ON Pairing(roundId, status);
 
-CREATE INDEX idx_game_participant_game ON GameParticipant(gameId);
-CREATE INDEX idx_game_participant_participant ON GameParticipant(participantId);
-CREATE INDEX idx_game_participant_points ON GameParticipant(participantId, points);
+-- PairingParticipant
+CREATE INDEX idx_pairing_participant_pairing ON PairingParticipant(pairingId);
+CREATE INDEX idx_pairing_participant_participant ON PairingParticipant(participantId);
+CREATE INDEX idx_pairing_participant_team ON PairingParticipant(pairingId, team);
 
-CREATE INDEX idx_game_score_game ON GameScore(gameId);
+-- Game
+CREATE INDEX idx_game_pairing ON Game(pairingId);
+CREATE INDEX idx_game_pairing_status ON Game(pairingId, status);
+
 ```
 
-## Datenmigration & Import
+## Data Migration & Import
 
-### Excel-Import (für Organisatoren)
-- **Primärer Zweck**: Import vergangener Turnierdaten
-- Import von kompletten Turnieren inkl.:
-  - Turnierinformationen (Name, Datum, Ort)
-  - Teilnehmerdaten → User-Accounts erstellen/verknüpfen
-  - Runden und Spiele
-  - Spielergebnisse und Paarungen
-- Matching bestehender Spieler via E-Mail-Adresse
-- Automatische Erstellung aller relevanten Entitäten
-- Validierung der importierten Daten
+### Excel Import (for Organizers)
+- **Primary purpose**: Import historical tournament data
+- Import of complete tournaments including:
+  - Tournament information (name, date, location)
+  - Participant data → create or link user accounts
+  - Rounds and games
+  - Game results and pairings
+- Matching existing players via email address
+- Automatic creation of all relevant entities
+- Validation of imported data
 

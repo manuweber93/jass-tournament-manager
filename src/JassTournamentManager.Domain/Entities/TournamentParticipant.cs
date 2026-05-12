@@ -21,7 +21,7 @@ namespace JassTournamentManager.Domain.Entities
 
         public bool IsPlaying { get; private set; }
 
-        public DateTime RegistratedAt { get; private set; }
+        public DateTime RegisteredAt { get; private set; }
 
         private TournamentParticipant() { }
 
@@ -47,7 +47,7 @@ namespace JassTournamentManager.Domain.Entities
             Role = role;
             IsPlaying = isPlaying;
             RegistrationMethod = registrationMethod;
-            RegistratedAt = DateTime.UtcNow;
+            RegisteredAt = DateTime.UtcNow;
         }
 
         public void UpdateDetails(ParticipantRole role, bool isPlaying)

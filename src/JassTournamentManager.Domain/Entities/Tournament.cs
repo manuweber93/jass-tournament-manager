@@ -37,7 +37,7 @@ namespace JassTournamentManager.Domain.Entities
             string name,
             string? location,
             DateOnly date,
-            string tournamenetCode,
+            string tournamentCode,
             TournamentStatus status = DefaultTournamentStatus)
         {
             if (organizerId == Guid.Empty)
@@ -55,7 +55,21 @@ namespace JassTournamentManager.Domain.Entities
             Location = location?.Trim();
             Date = date;
             Status = status;
-            TournamentCode = tournamenetCode;
+            TournamentCode = tournamentCode;
+        }
+
+        public void AddRound(Round round, int numberOfRounds)
+        {
+            // TODO: validate against tournament config
+
+            _rounds.Add(round);
+            MarkAsUpdated();
+        }
+
+        public void AddParticipant(TournamentParticipant participant)
+        {
+            _participants.Add(participant);
+            MarkAsUpdated();
         }
 
         public void Complete()
@@ -67,6 +81,12 @@ namespace JassTournamentManager.Domain.Entities
         public void Cancel()
         {
             Status = TournamentStatus.Canceled;
+            MarkAsUpdated();
+        }
+
+        public void Reactivate()
+        {
+            Status = TournamentStatus.Active;
             MarkAsUpdated();
         }
 
@@ -90,6 +110,8 @@ namespace JassTournamentManager.Domain.Entities
             }
 
             Config = config ?? throw new ArgumentNullException(nameof(Config));
+
+            // TODO: Handle creation/deletion of rounds, games, etc.
 
             MarkAsUpdated();
         }

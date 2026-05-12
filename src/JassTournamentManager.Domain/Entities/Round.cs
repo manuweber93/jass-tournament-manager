@@ -10,29 +10,54 @@ namespace JassTournamentManager.Domain.Entities
     {
         private const RoundStatus DefaultRoundStatus = RoundStatus.Pending;
 
-        public Guid TournamentId { get; private set; }
+        private readonly List<Pairing> _pairings = [];
 
-        public Tournament Tournament { get; private set; } = null!;
+        public Guid TournamentId { get; private set; }
 
         public int RoundNumber { get; private set; }
 
         public RoundStatus Status { get; private set; }
 
+        public IReadOnlyCollection<Pairing> Pairings => _pairings.AsReadOnly();
+
         private Round() { }
 
-        public Round(Tournament tournament, int roundNumber, RoundStatus status = DefaultRoundStatus)
+        public Round(Guid tournamentId, int roundNumber, RoundStatus status = DefaultRoundStatus)
         {
-            ArgumentNullException.ThrowIfNull(tournament);
-
-            if (roundNumber < 1 || roundNumber > tournament.Config.ConfigValues.NumberOfRounds)
+            if (tournamentId == Guid.Empty)
             {
-                throw new ArgumentOutOfRangeException(nameof(roundNumber), "Round number must be greater than null and not greater than the number of rounds of the tournament");
+                throw new ArgumentException("Tournament id must not be empty.", nameof(tournamentId));
             }
 
-            Tournament = tournament;
-            TournamentId = tournament.Id;
+            ArgumentOutOfRangeException.ThrowIfLessThan(roundNumber, 1);
+
+            TournamentId = tournamentId;
             RoundNumber = roundNumber;
             Status = status;
+        }
+
+        public void AddPairing(Pairing pairing)
+        {
+            _pairings.Add(pairing);
+            MarkAsUpdated();
+        }
+
+        public void Activate()
+        {
+            Status = RoundStatus.Active;
+            MarkAsUpdated();
+        }
+
+        public void Complete()
+        {
+            Status = RoundStatus.Completed;
+            MarkAsUpdated();
+        }
+
+        public void SetBackToPending()
+        {
+            Status = RoundStatus.Pending;
+            MarkAsUpdated();
         }
     }
 }

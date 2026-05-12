@@ -37,13 +37,13 @@ erDiagram
 | Field | Type | Description | Constraints |
 |------|-----|--------------|-------------|
 | id | UUID | Primary key | PK, NOT NULL |
-| email | String | Email address | UNIQUE, NOT NULL |
-| passwordHash | String | Hashed password | NOT NULL |
+| email | String | Email address | UNIQUE |
+| passwordHash | String | Hashed password | |
 | firstName | String | First name | NOT NULL |
 | lastName | String | Last name | NOT NULL |
 | isSysAdmin | Boolean | Whether user is sysAdmin | NOT NULL, DEFAULT false |
 | sourceType | Enum | How was the user created? | NOT NULL|
-| mergedIntoUserId | UUID | merge target user id | |
+| mergeTargetUserId | UUID | merge target user id | |
 | mergedAt | DateTime | merge time | |
 | mergedBy | UUID | user id of merging user | FK |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
@@ -84,7 +84,7 @@ erDiagram
 | numberOfRounds | Integer | Number of rounds | NOT NULL, DEFAULT 5 |
 | gamesPerRound | Integer | Games per round | NOT NULL, DEFAULT 8 |
 | matchBonusEnabled | Boolean | Match bonus enabled | NOT NULL, DEFAULT true |
-| fixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
+| isFixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
 | scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'ALWAYS_VISIBLE_FOR_EVERYONE' |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
@@ -107,7 +107,7 @@ erDiagram
 | numberOfRounds | Integer | Number of rounds | NOT NULL, DEFAULT 5 |
 | gamesPerRound | Integer | Games per round | NOT NULL, DEFAULT 8 |
 | matchBonusEnabled | Boolean | Match bonus enabled | NOT NULL, DEFAULT true |
-| fixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
+| isFixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
 | scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'ALWAYS_VISIBLE_FOR_EVERYONE' |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
@@ -185,7 +185,7 @@ erDiagram
 |------|-----|--------------|-------------|
 | id | UUID | Primary key | PK, NOT NULL |
 | roundId | UUID | Round | FK, NOT NULL |
-| jassTableId | UUID | JassTable | FK (optional) | NOT NULL
+| jassTableId | UUID | JassTable | FK, NOT NULL|
 | status | Enum | Pairing status | NOT NULL, DEFAULT 'PENDING' |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
@@ -206,10 +206,11 @@ erDiagram
 |------|-----|--------------|-------------|
 | id | UUID | Primary key | PK, NOT NULL |
 | pairingId | UUID | Game | FK, NOT NULL |
-| participantId | UUID | TournamentParticipant | FK, NOT NULL |
+| tournamentParticipantId | UUID | TournamentParticipant | FK, NOT NULL |
 | team | Enum | Team (A or B) | NOT NULL |
 | enteredBy | UUID | Entered by | FK (optional) |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
+| updatedAt | DateTime | Update timestamp | NOT NULL |
 
 **Enums**:
 - `team`: `TEAM_A`, `TEAM_B`
@@ -227,12 +228,12 @@ erDiagram
 |------|-----|--------------|-------------|
 | id | UUID | Primary key | PK, NOT NULL |
 | pairingId | UUID | Pairing | FK, NOT NULL |
-| gameNumber | Integer | Game number within the round | NOT NULL |
+| gameNumber | Integer (1-based) | Game number within the round | NOT NULL |
 | status | Enum | Game status | NOT NULL, DEFAULT 'PENDING' |
 | teamAPoints | Integer | Team A points | |
 | teamBPoints | Integer | Team B points | |
-| teamAMatchBonus | Boolean | Team A has match bonus | DEFAULT false |
-| teamBMatchBonus | Boolean | Team B has match bonus | DEFAULT false |
+| teamAMatchBonusReceived | Boolean | Team A has match bonus | DEFAULT false |
+| teamBMatchBonusReceived | Boolean | Team B has match bonus | DEFAULT false |
 | enteredBy | UUID | Entered by (User) | FK |
 | enteredAt | DateTime | Entry timestamp | |
 | createdAt | DateTime | Creation timestamp | NOT NULL |

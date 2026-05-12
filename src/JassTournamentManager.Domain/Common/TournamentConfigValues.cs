@@ -10,7 +10,7 @@ namespace JassTournamentManager.Domain.Common
         private const int DefaultNumberOfRounds = 5;
         private const int DefaultGamesPerRound = 8;
         private const bool DefaultMatchBonusEnabled = true;
-        private const bool DefaultFixedTeams = false;
+        private const bool DefaultIsFixedTeams = false;
         private const ScoreVisibility DefaultScoreVisibility = ScoreVisibility.HiddenDuringActiveTournament;
 
         public int NumberOfRounds { get; }
@@ -19,7 +19,7 @@ namespace JassTournamentManager.Domain.Common
 
         public bool MatchBonusEnabled { get; }
 
-        public bool FixedTeams { get; }
+        public bool IsFixedTeams { get; }
 
         public ScoreVisibility ScoreVisibility { get; }
 
@@ -27,7 +27,7 @@ namespace JassTournamentManager.Domain.Common
             int numberOfRounds = DefaultNumberOfRounds,
             int gamesPerRound = DefaultGamesPerRound,
             bool matchBonusEnabled = DefaultMatchBonusEnabled,
-            bool fixedTeams = DefaultFixedTeams,
+            bool isFixedTeams = DefaultIsFixedTeams,
             ScoreVisibility scoreVisibility = DefaultScoreVisibility)
         {
             if (numberOfRounds <= 0)
@@ -43,7 +43,7 @@ namespace JassTournamentManager.Domain.Common
             NumberOfRounds = numberOfRounds;
             GamesPerRound = gamesPerRound;
             MatchBonusEnabled = matchBonusEnabled;
-            FixedTeams = fixedTeams;
+            IsFixedTeams = isFixedTeams;
             ScoreVisibility = scoreVisibility;
         }
     }

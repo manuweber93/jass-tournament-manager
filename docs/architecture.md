@@ -4,28 +4,35 @@
 
 The Jass Tournament Manager application follows a classic 3-tier architecture with a clear separation between the presentation layer, application/business logic, and data storage.
 
-## Technology Stack (final)
+# Technology Stack
 
-### Frontend
-- .NET MAUI (C#) for cross-platform mobile and desktop applications
+## Frontend
 
-### Backend
-- .NET 8 (C#) with ASP.NET Core Web API
-- API documentation: Swagger / OpenAPI
+- .NET MAUI (CommunityToolkit.Maui & Uranium UI)
+- MVVM Pattern
+- REST API communication
+- Cross-platform support
 
-### Database
-- DBMS: PostgreSQL (recommended v16)
-- Migrations & ORM: Entity Framework Core with Npgsql provider
-- Caching (optional): Redis for sessions and hot data
+## Backend
 
-### DevOps & Deployment
-- Containerization: Docker (+ Docker Compose for local stacks)
-- Hosting: self-hosted or cloud VM/container platforms
-- Reverse proxy: Nginx or Traefik
-- TLS: Let's Encrypt
-- VCS: Git (GitHub)
-- CI/CD: GitHub Actions
+- .NET 10 / ASP.NET Core Web API
+- Swagger / OpenAPI
+- Entity Framework Core
+- FluentValidation (planned)
 
+## Database
+
+- PostgreSQL 16
+- EF Core migrations with Npgsql provider
+
+## DevOps
+
+- Docker
+- Docker Compose
+- GitHub
+- GitHub Actions
+- Reverse proxy (Caddy or Nginx or Traefik)
+- TLS via Let's Encrypt
 
 ---
 
@@ -67,7 +74,7 @@ Services and responsibilities:
 - CRUD operations for tournaments
 - Tournament configuration (rounds, games, match-bonus, etc.)
 - QR-code generation for check-in
-- Tournament status management (PLANNED → IN_PROGRESS → COMPLETED)
+- Tournament status management
 
 3) Participant Service
 - Participant management and registration
@@ -107,8 +114,6 @@ API design:
 
 Business rules:
 - Organizer isolation (each organizer sees only their own tournaments, SYSADMIN exception)
-- 157 points per game (base rule)
-- Optional match bonus (+100)
 - Automatic score calculation where applicable
 
 Performance considerations:

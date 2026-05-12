@@ -40,10 +40,10 @@ Web application for Jass tournament organizers to manage Schieber tournaments.
 
 ### Hierarchy
 
-Turnament
+Tournament
   └── Rounds (default: 5 rounds, configurable)
         └── Pairings (4 players per pairing: 2 vs 2)
-                └── Games (default: 8 games per pairing/round, configurable)
+                └── Games (default: 8 games per pairing per round, configurable)
               
 
 ### Tournaments
@@ -56,7 +56,7 @@ Turnament
 - Match bonus configurable (on/off)
 
 ### Rounds
-- A round consists of multiple games (default: 8)
+- A pairing of a round consists of multiple games (default: 8)
 - New pairings can be defined per round
 
 ### Games
@@ -105,9 +105,11 @@ Turnament
 - Enables migration of historical data into the system
 
 ## Privacy & Isolation
-- Tournaments of different organizers are logically separated
-- Organizer sees only their own tournaments
-- Player sees only tournaments they participated in
+- SYSADMIN users can see and manage all tournaments.
+- Organizers can see tournaments they organize.
+- Players can see tournaments in which they are registered as participants.
+- A user can therefore see a tournament if they are either the organizer or a participant.
+- Tournaments of different organizers are logically separated, except for SYSADMIN access.
 
 ## Configurable Parameters (per tournament)
 - Number of rounds (default: 5)

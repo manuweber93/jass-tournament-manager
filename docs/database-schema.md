@@ -64,13 +64,13 @@ erDiagram
 | name | String | Tournament name | NOT NULL |
 | location | String | Venue/location | |
 | date | Date | Tournament date | NOT NULL |
-| status | Enum | Tournament status | NOT NULL, DEFAULT 'PLANNED' |
+| status | Enum | Tournament status | NOT NULL, DEFAULT 'ACTIVE' |
 | tournamentCode | String | Code which is used to join tournament | UNIQUE |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
 **Enums**:
-- `status`: `ACITVE`, `COMPLETED`, `CANCELLED`
+- `status`: `ACTIVE`, `COMPLETED`, `CANCELLED`
 
 ---
 
@@ -85,12 +85,12 @@ erDiagram
 | gamesPerRound | Integer | Games per round | NOT NULL, DEFAULT 8 |
 | matchBonusEnabled | Boolean | Match bonus enabled | NOT NULL, DEFAULT true |
 | fixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
-| scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'ALWAYS_VISIBLE' |
+| scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'ALWAYS_VISIBLE_FOR_EVERYONE' |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
 **Enums**:
-- `scoreVisibility`: `ALWAYS_VISIBLE`, `HIDDEN_DURING_TOURNAMENT`, `ORGANIZER_ONLY`
+- `scoreVisibility`: `ALWAYS_VISIBLE_FOR_EVERYONE`, `HIDDEN_DURING_ACTIVE_TOURNAMENT`, `ORGANIZER_ONLY`
 
 **Note**: Applied to newly created tournaments (but changes here have no effect on existing tournaments)
 
@@ -108,7 +108,7 @@ erDiagram
 | gamesPerRound | Integer | Games per round | NOT NULL, DEFAULT 8 |
 | matchBonusEnabled | Boolean | Match bonus enabled | NOT NULL, DEFAULT true |
 | fixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
-| scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'ALWAYS_VISIBLE' |
+| scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'ALWAYS_VISIBLE_FOR_EVERYONE' |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
@@ -253,18 +253,18 @@ erDiagram
 ## Business Rules
 
 ### Tournament Rules
-1. **Organizer Isolation**: Organizers can only see their own tournaments (and tournaments they participated as player)
+1. **Tournament Visibility**: Users can see tournaments if they are either the organizer of the tournament or registered as a participant in that tournament.
 2. **SYSADMIN Access**: System administrators can view and manage all tournaments of all organizers
-3. **Player Visibility**: Players can only see tournaments in which they participate
-4. **Tournament Code / QR Code**: Each tournament has a unique link/code which participants can use to join the tournament
-5. **Single-Day Tournaments**: All tournaments last one day
+3. **Tournament Code / QR Code**: Each tournament has a unique link/code which participants can use to join the tournament
+4. **Single-Day Tournaments**: All tournaments last one day
 
 ### Config Template Rules
 1. **Reusability**: Templates can be used for multiple tournaments
 2. **Copy on Creation**: Tournament configuration is copied from the template when creating a tournament
 3. **Independence**: Changes to a template only affect newly created tournaments
 4. **Template Reference**: `TournamentConfig` keeps a reference to the original template
-5. **One template per organizer**: Each organizer has one template
+5. **Default template per organizer (V1)**: In the first version, each organizer has exactly one default configuration template.
+Future versions may support multiple named templates per organizer.
 
 ### Round Rules
 1. **Number of Rounds**: Configurable, default is 5
@@ -286,9 +286,11 @@ erDiagram
 4. **Tracking**: `enteredBy` in `PairingParticipant` indicates who entered the pairing
 
 ### Visibility Rules
-1. Players can always see all scores
-2. Scores are hidden during the tournament and visible afterwards
-3. Only the organizer can see scores
+The configured score visibility mode determines who can see scores:
+
+1. `ALWAYS_VISIBLE_FOR_EVERYONE`: Players can always see scores.
+2. `HIDDEN_DURING_ACTIVE_TOURNAMENT`: Scores are hidden from players while the tournament is active and visible afterwards.
+3. `ORGANIZER_ONLY`: Only the organizer can see scores.
 
 ### Participant Rules
 1. **Registered Users Only**: All participants must have a user account

@@ -1,7 +1,4 @@
 ﻿using JassTournamentManager.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JassTournamentManager.Domain.Entities
 {
@@ -25,37 +22,23 @@ namespace JassTournamentManager.Domain.Entities
 
         public Guid? MergedBy {  get; private set; }
 
-        public DateTime? MergedAt { get; private set; }
+        public DateTimeOffset? MergedAt { get; private set; }
 
         private User() { }
 
         public User(string? email, string? passwordHash, string firstName, string lastName, UserSourceType sourceType, bool isSysAdmin = DefaultIsSysAdmin)
         {
-            if (string.IsNullOrWhiteSpace(firstName))
-            {
-                throw new ArgumentException("First name must not be empty.", nameof(firstName));
-            }
-
-            if (string.IsNullOrWhiteSpace(lastName))
-            {
-                throw new ArgumentException("Last name must not be empty.", nameof(lastName));
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
 
             if (sourceType == UserSourceType.SelfRegistered)
             {
-                if (email is null || string.IsNullOrWhiteSpace(email))
-                {
-                    throw new ArgumentException("Email must not be null or empty for self registered users.", nameof(sourceType));
-                }
-
-                if (passwordHash is null || string.IsNullOrWhiteSpace(passwordHash))
-                {
-                    throw new ArgumentException("Password hash must not be null or empty for self registered users.", nameof(passwordHash));
-                }
+                ArgumentException.ThrowIfNullOrWhiteSpace(email);
+                ArgumentException.ThrowIfNullOrWhiteSpace(passwordHash);
             }
 
             Email = email?.Trim().ToLowerInvariant();
-            PasswordHash = passwordHash;
+            PasswordHash = passwordHash?.Trim();
             FirstName = firstName.Trim();
             LastName = lastName.Trim();
             SourceType = sourceType;
@@ -81,7 +64,7 @@ namespace JassTournamentManager.Domain.Entities
 
             MergeTargetUserId = mergeTargetUserId;
             MergedBy = mergedByUserId;
-            MergedAt = DateTime.UtcNow;
+            MergedAt = DateTimeOffset.UtcNow;
         }
     }
 }

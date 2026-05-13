@@ -1,7 +1,4 @@
 ﻿using JassTournamentManager.Domain.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JassTournamentManager.Domain.Entities
 {
@@ -26,10 +23,7 @@ namespace JassTournamentManager.Domain.Entities
                 throw new ArgumentException("Organizer id must not be empty.", nameof(organizerId));
             }
 
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException("Name must not be empty.", nameof(name));
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
             OrganizerId = organizerId;
             Name = name.Trim();
@@ -39,10 +33,7 @@ namespace JassTournamentManager.Domain.Entities
 
         public void Rename(string newName)
         {
-            if (string.IsNullOrWhiteSpace(newName))
-            {
-                throw new ArgumentException("Name must not be empty.", nameof(newName));
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(newName);
 
             Name = newName.Trim();
             MarkAsUpdated();

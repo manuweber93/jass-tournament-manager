@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace JassTournamentManager.Domain.Enums
+﻿namespace JassTournamentManager.Domain.Enums
 {
     public enum RoundStatus
     {

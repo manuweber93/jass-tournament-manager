@@ -1,7 +1,4 @@
 ﻿using JassTournamentManager.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JassTournamentManager.Domain.Entities
 {
@@ -45,17 +42,15 @@ namespace JassTournamentManager.Domain.Entities
                 throw new ArgumentException("Organizer ID must not be empty.", nameof(organizerId));
             }
 
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException("Name must not be empty.", nameof(name));
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentException.ThrowIfNullOrWhiteSpace(tournamentCode);
 
             OrganizerId = organizerId;
             Name = name.Trim();
             Location = location?.Trim();
             Date = date;
             Status = status;
-            TournamentCode = tournamentCode;
+            TournamentCode = tournamentCode.Trim();
         }
 
         public void AddRound(Round round, int numberOfRounds)
@@ -92,10 +87,8 @@ namespace JassTournamentManager.Domain.Entities
 
         public void UpdateDetails(string name, string? location, DateOnly date)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException("Name must not be empty.", nameof(name));
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
             Name = name.Trim();
             Location = location?.Trim();
             Date = date;
@@ -109,7 +102,7 @@ namespace JassTournamentManager.Domain.Entities
                 throw new InvalidOperationException("Tournament config has already been set.");
             }
 
-            Config = config ?? throw new ArgumentNullException(nameof(Config));
+            Config = config ?? throw new ArgumentNullException(nameof(config));
 
             // TODO: Handle creation/deletion of rounds, games, etc.
 

@@ -1,7 +1,4 @@
 ﻿using System.Security.Cryptography;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JassTournamentManager.Domain.Services
 {
@@ -11,10 +8,7 @@ namespace JassTournamentManager.Domain.Services
 
         public static string GenerateTournamentCode(int length = 6)
         {
-            if (length <= 0)
-            {
-                throw new ArgumentException("Length must be a positive integer.", nameof(length));
-            }
+            ArgumentOutOfRangeException.ThrowIfLessThan(length, 1, nameof(length));
 
             var codeChars = new char[length];
 

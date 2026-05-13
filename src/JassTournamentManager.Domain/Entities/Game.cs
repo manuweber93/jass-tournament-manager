@@ -1,8 +1,5 @@
 ﻿using JassTournamentManager.Domain.Common;
 using JassTournamentManager.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JassTournamentManager.Domain.Entities
 {
@@ -27,7 +24,7 @@ namespace JassTournamentManager.Domain.Entities
 
         public Guid? EnteredBy { get; private set; }
 
-        public DateTime? EnteredAt { get; private set; }
+        public DateTimeOffset? EnteredAt { get; private set; }
 
 
         private Game() { }
@@ -71,7 +68,7 @@ namespace JassTournamentManager.Domain.Entities
             }
 
             EnteredBy = enteredBy;
-            EnteredAt = DateTime.UtcNow;
+            EnteredAt = DateTimeOffset.UtcNow;
             MarkAsUpdated();
         }
 

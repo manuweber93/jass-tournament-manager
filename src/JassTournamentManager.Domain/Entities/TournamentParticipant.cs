@@ -1,8 +1,5 @@
 ﻿using JassTournamentManager.Domain.Common;
 using JassTournamentManager.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JassTournamentManager.Domain.Entities
 {
@@ -21,7 +18,7 @@ namespace JassTournamentManager.Domain.Entities
 
         public bool IsPlaying { get; private set; }
 
-        public DateTime RegisteredAt { get; private set; }
+        public DateTimeOffset RegisteredAt { get; private set; }
 
         private TournamentParticipant() { }
 
@@ -47,7 +44,7 @@ namespace JassTournamentManager.Domain.Entities
             Role = role;
             IsPlaying = isPlaying;
             RegistrationMethod = registrationMethod;
-            RegisteredAt = DateTime.UtcNow;
+            RegisteredAt = DateTimeOffset.UtcNow;
         }
 
         public void UpdateDetails(ParticipantRole role, bool isPlaying)

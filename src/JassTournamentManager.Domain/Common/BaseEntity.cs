@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace JassTournamentManager.Domain.Common
+﻿namespace JassTournamentManager.Domain.Common
 {
     public abstract class BaseEntity
     {
         public Guid Id { get; protected set; }
 
-        public DateTime CreatedAt { get; protected set; }
+        public DateTimeOffset CreatedAt { get; protected set; }
 
-        public DateTime UpdatedAt { get; protected set; }
+        public DateTimeOffset UpdatedAt { get; protected set; }
 
         public BaseEntity()
         {
-            DateTime now = DateTime.UtcNow;
+            DateTimeOffset now = DateTimeOffset.UtcNow;
             
             Id = Guid.NewGuid();
             CreatedAt = now;
@@ -23,7 +19,7 @@ namespace JassTournamentManager.Domain.Common
 
         public void MarkAsUpdated()
         {
-            UpdatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTimeOffset.UtcNow;
         }
     }
 }

@@ -29,15 +29,8 @@ namespace JassTournamentManager.Domain.Entities
             ParticipantRole role = DefaultParticipantRole,
             bool isPlaying = DefaultIsPlaying)
         {
-            if (tournamentId == Guid.Empty)
-            {
-                throw new ArgumentException("Tournament ID must not be empty.", nameof(tournamentId));
-            }
-
-            if (userId == Guid.Empty)
-            {
-                throw new ArgumentException("User ID must not be empty.", nameof(userId));
-            }
+            Guard.AgainstEmptyGuid(tournamentId, nameof(tournamentId));
+            Guard.AgainstEmptyGuid(userId, nameof(userId));
 
             TournamentId = tournamentId;
             UserId = userId;

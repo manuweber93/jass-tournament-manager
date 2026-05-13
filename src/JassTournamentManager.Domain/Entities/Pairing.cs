@@ -21,15 +21,8 @@ namespace JassTournamentManager.Domain.Entities
 
         public Pairing(Guid roundId, Guid jassTableId, PairingStatus status = DefaultPairingStatus)
         {
-            if (roundId == Guid.Empty)
-            {
-                throw new ArgumentException("Round id must not be empty.", nameof(roundId));
-            }
-
-            if (jassTableId == Guid.Empty)
-            {
-                throw new ArgumentException("Jass table id must not be empty.", nameof(jassTableId));
-            }
+            Guard.AgainstEmptyGuid(roundId, nameof(roundId));
+            Guard.AgainstEmptyGuid(jassTableId, nameof(jassTableId));
 
             RoundId = roundId;
             JassTableId = jassTableId;
@@ -38,7 +31,10 @@ namespace JassTournamentManager.Domain.Entities
 
         public void AddGame(Game game, int gamesPerRound)
         {
-            // TODO: validate against tournament config
+            if (game.GameNumber > gamesPerRound)
+            {
+                throw new InvalidOperationException($"Game number {game.GameNumber} exceeds the configured number of games per round ({gamesPerRound}).");
+            }
             
             _games.Add(game);
         }

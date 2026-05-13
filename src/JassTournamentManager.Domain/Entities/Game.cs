@@ -31,11 +31,7 @@ namespace JassTournamentManager.Domain.Entities
 
         public Game(Guid pairingId, int gameNumber, GameStatus status = DefaultGameStatus)
         {
-            if (pairingId == Guid.Empty)
-            {
-                throw new ArgumentException("Pairing id must not be empty.", nameof(pairingId));
-            }
-
+            Guard.AgainstEmptyGuid(pairingId, nameof(pairingId));
             ArgumentOutOfRangeException.ThrowIfLessThan(gameNumber, 1);
 
             PairingId = pairingId;

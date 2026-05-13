@@ -1,4 +1,5 @@
-﻿using JassTournamentManager.Domain.Enums;
+﻿using JassTournamentManager.Domain.Common;
+using JassTournamentManager.Domain.Enums;
 
 namespace JassTournamentManager.Domain.Entities
 {
@@ -37,11 +38,7 @@ namespace JassTournamentManager.Domain.Entities
             string tournamentCode,
             TournamentStatus status = DefaultTournamentStatus)
         {
-            if (organizerId == Guid.Empty)
-            {
-                throw new ArgumentException("Organizer ID must not be empty.", nameof(organizerId));
-            }
-
+            Guard.AgainstEmptyGuid(organizerId, nameof(organizerId));
             ArgumentException.ThrowIfNullOrWhiteSpace(name);
             ArgumentException.ThrowIfNullOrWhiteSpace(tournamentCode);
 
@@ -53,17 +50,56 @@ namespace JassTournamentManager.Domain.Entities
             TournamentCode = tournamentCode.Trim();
         }
 
-        public void AddRound(Round round, int numberOfRounds)
+        public void SetConfig(TournamentConfig config)
         {
-            // TODO: validate against tournament config
+            if (Config is not null)
+            {
+                throw new InvalidOperationException("Tournament config has already been set.");
+            }
 
+            Config = config ?? throw new ArgumentNullException(nameof(config));
+            MarkAsUpdated();
+        }
+
+        public void AddRound(Round round)
+        {
             _rounds.Add(round);
+            UpdateNumberOfRoundsInConfig();
+            MarkAsUpdated();
+        }
+
+        public void RemoveRound(Guid roundId)
+        {
+            var roundToRemove = _rounds.FirstOrDefault(r => r.Id == roundId)
+                ?? throw new ArgumentException($"Round with id {roundId} not found in tournament.");
+            
+            _rounds.Remove(roundToRemove);
+            UpdateNumberOfRoundsInConfig();
             MarkAsUpdated();
         }
 
         public void AddParticipant(TournamentParticipant participant)
         {
             _participants.Add(participant);
+            MarkAsUpdated();
+        }
+
+        public void RemoveParticipant(Guid participantId)
+        {
+            var participantToRemove = _participants.FirstOrDefault(p => p.Id == participantId)
+                ?? throw new ArgumentException($"Participant with id {participantId} not found in tournament.");
+            
+            _participants.Remove(participantToRemove);
+            MarkAsUpdated();
+        }
+
+        public void UpdateDetails(string name, string? location, DateOnly date)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+            Name = name.Trim();
+            Location = location?.Trim();
+            Date = date;
             MarkAsUpdated();
         }
 
@@ -85,28 +121,14 @@ namespace JassTournamentManager.Domain.Entities
             MarkAsUpdated();
         }
 
-        public void UpdateDetails(string name, string? location, DateOnly date)
+        private void UpdateNumberOfRoundsInConfig()
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(name);
-
-            Name = name.Trim();
-            Location = location?.Trim();
-            Date = date;
-            MarkAsUpdated();
-        }
-
-        public void SetConfig(TournamentConfig config)
-        {
-            if (Config is not null)
+            var UpdatedTournamentConfig = Config.ConfigValues with
             {
-                throw new InvalidOperationException("Tournament config has already been set.");
-            }
+                NumberOfRounds = _rounds.Count
+            };
 
-            Config = config ?? throw new ArgumentNullException(nameof(config));
-
-            // TODO: Handle creation/deletion of rounds, games, etc.
-
-            MarkAsUpdated();
+            Config.UpdateConfig(UpdatedTournamentConfig);
         }
     }
 }

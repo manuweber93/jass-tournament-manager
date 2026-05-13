@@ -1,4 +1,5 @@
-﻿using JassTournamentManager.Domain.Enums;
+﻿using JassTournamentManager.Domain.Common;
+using JassTournamentManager.Domain.Enums;
 
 namespace JassTournamentManager.Domain.Entities
 {
@@ -51,16 +52,9 @@ namespace JassTournamentManager.Domain.Entities
             {
                 throw new InvalidOperationException("User has already been merged into different user.");
             }
-
-            if (mergeTargetUserId == Guid.Empty)
-            {
-                throw new ArgumentException("Target user id must not be empty.", nameof(mergeTargetUserId));
-            }
-
-            if (mergedByUserId == Guid.Empty)
-            {
-                throw new ArgumentException("Merged by user id must no be empty.", nameof(mergedByUserId));
-            }
+            
+            Guard.AgainstEmptyGuid(mergeTargetUserId, nameof(mergeTargetUserId));
+            Guard.AgainstEmptyGuid(mergedByUserId, nameof(mergedByUserId));
 
             MergeTargetUserId = mergeTargetUserId;
             MergedBy = mergedByUserId;

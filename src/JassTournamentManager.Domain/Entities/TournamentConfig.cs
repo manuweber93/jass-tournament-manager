@@ -14,10 +14,7 @@ namespace JassTournamentManager.Domain.Entities
 
         public TournamentConfig(Guid tournamentId, Guid? tournamentConfigTemplateId, TournamentConfigValues configValues)
         {
-            if (tournamentId == Guid.Empty)
-            {
-                throw new ArgumentException("Tournament ID must not be empty.", nameof(tournamentId));
-            }
+            Guard.AgainstEmptyGuid(tournamentId, nameof(tournamentId));
 
             TournamentId = tournamentId;
             TournamentConfigTemplateId = tournamentConfigTemplateId;
@@ -26,7 +23,8 @@ namespace JassTournamentManager.Domain.Entities
 
         public void UpdateConfig(TournamentConfigValues configValues)
         {
-            ConfigValues = configValues ?? throw new ArgumentNullException(nameof(configValues));
+            TournamentConfigValues.ValidateConfigValues(configValues);
+            ConfigValues = configValues;
             MarkAsUpdated();
         }
     }

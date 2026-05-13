@@ -17,15 +17,8 @@ namespace JassTournamentManager.Domain.Entities
 
         public PairingParticipant(Guid pairingId, Guid tournamentParticipantId, Team team, Guid? enteredBy)
         {
-            if (pairingId == Guid.Empty)
-            {
-                throw new ArgumentException("Pairing id must not be empty.", nameof(pairingId));
-            }
-
-            if (tournamentParticipantId == Guid.Empty)
-            {
-                throw new ArgumentException("Tournament participant id must not be empty.", nameof(tournamentParticipantId));
-            }
+            Guard.AgainstEmptyGuid(pairingId, nameof(pairingId));
+            Guard.AgainstEmptyGuid(tournamentParticipantId, nameof(tournamentParticipantId));
 
             PairingId = pairingId;
             TournamentParticipantId = tournamentParticipantId;
@@ -35,10 +28,7 @@ namespace JassTournamentManager.Domain.Entities
 
         public void UpdateTournamentParticipantId(Guid newTournamentParticipantId)
         {
-            if (newTournamentParticipantId == Guid.Empty)
-            {
-                throw new ArgumentException("New tournament participant id must not be empty.", nameof(newTournamentParticipantId));
-            }
+            Guard.AgainstEmptyGuid(newTournamentParticipantId, nameof(newTournamentParticipantId));
 
             TournamentParticipantId = newTournamentParticipantId;
             MarkAsUpdated();

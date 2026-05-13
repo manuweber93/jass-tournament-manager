@@ -2,7 +2,7 @@
 
 namespace JassTournamentManager.Domain.Common
 {
-    public sealed class TournamentConfigValues
+    public sealed record TournamentConfigValues
     {
         private const int DefaultNumberOfRounds = 5;
         private const int DefaultGamesPerRound = 8;
@@ -10,15 +10,15 @@ namespace JassTournamentManager.Domain.Common
         private const bool DefaultIsFixedTeams = false;
         private const ScoreVisibility DefaultScoreVisibility = ScoreVisibility.HiddenDuringActiveTournament;
 
-        public int NumberOfRounds { get; }
+        public int NumberOfRounds { get; init; }
 
-        public int GamesPerRound { get; }
+        public int GamesPerRound { get; init; }
 
-        public bool MatchBonusEnabled { get; }
+        public bool MatchBonusEnabled { get; init; }
 
-        public bool IsFixedTeams { get; }
+        public bool IsFixedTeams { get; init; }
 
-        public ScoreVisibility ScoreVisibility { get; }
+        public ScoreVisibility ScoreVisibility { get; init; }
 
         public TournamentConfigValues(
             int numberOfRounds = DefaultNumberOfRounds,
@@ -27,21 +27,21 @@ namespace JassTournamentManager.Domain.Common
             bool isFixedTeams = DefaultIsFixedTeams,
             ScoreVisibility scoreVisibility = DefaultScoreVisibility)
         {
-            if (numberOfRounds <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(numberOfRounds), "Number of rounds must be a positive integer.");
-            }
-
-            if (gamesPerRound <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(gamesPerRound), "Games per round must be a positive integer.");
-            }
+            ArgumentOutOfRangeException.ThrowIfLessThan(numberOfRounds, 1);
+            ArgumentOutOfRangeException.ThrowIfLessThan(gamesPerRound, 1);
 
             NumberOfRounds = numberOfRounds;
             GamesPerRound = gamesPerRound;
             MatchBonusEnabled = matchBonusEnabled;
             IsFixedTeams = isFixedTeams;
             ScoreVisibility = scoreVisibility;
+        }
+
+        public static void ValidateConfigValues(TournamentConfigValues configValues)
+        {
+            ArgumentNullException.ThrowIfNull(configValues);
+            ArgumentOutOfRangeException.ThrowIfLessThan(configValues.NumberOfRounds, 1);
+            ArgumentOutOfRangeException.ThrowIfLessThan(configValues.GamesPerRound, 1);
         }
     }
 }

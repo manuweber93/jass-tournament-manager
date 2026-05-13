@@ -18,11 +18,7 @@ namespace JassTournamentManager.Domain.Entities
 
         public JassTable(Guid organizerId, string name, int displayOrder, bool isActive = DefaultIsActive)
         {
-            if (organizerId == Guid.Empty)
-            {
-                throw new ArgumentException("Organizer id must not be empty.", nameof(organizerId));
-            }
-
+            Guard.AgainstEmptyGuid(organizerId, nameof(organizerId));
             ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
             OrganizerId = organizerId;

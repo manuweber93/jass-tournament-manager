@@ -21,11 +21,7 @@ namespace JassTournamentManager.Domain.Entities
 
         public Round(Guid tournamentId, int roundNumber, RoundStatus status = DefaultRoundStatus)
         {
-            if (tournamentId == Guid.Empty)
-            {
-                throw new ArgumentException("Tournament id must not be empty.", nameof(tournamentId));
-            }
-
+            Guard.AgainstEmptyGuid(tournamentId, nameof(tournamentId));
             ArgumentOutOfRangeException.ThrowIfLessThan(roundNumber, 1);
 
             TournamentId = tournamentId;

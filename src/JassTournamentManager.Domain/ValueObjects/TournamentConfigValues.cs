@@ -1,6 +1,6 @@
 ﻿using JassTournamentManager.Domain.Enums;
 
-namespace JassTournamentManager.Domain.Common
+namespace JassTournamentManager.Domain.ValueObjects
 {
     public sealed record TournamentConfigValues
     {
@@ -35,13 +35,6 @@ namespace JassTournamentManager.Domain.Common
             MatchBonusEnabled = matchBonusEnabled;
             IsFixedTeams = isFixedTeams;
             ScoreVisibility = scoreVisibility;
-        }
-
-        public static void ValidateConfigValues(TournamentConfigValues configValues)
-        {
-            ArgumentNullException.ThrowIfNull(configValues);
-            ArgumentOutOfRangeException.ThrowIfLessThan(configValues.NumberOfRounds, 1);
-            ArgumentOutOfRangeException.ThrowIfLessThan(configValues.GamesPerRound, 1);
         }
     }
 }

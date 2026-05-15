@@ -1,26 +1,37 @@
 ﻿using JassTournamentManager.Domain.Common;
+using JassTournamentManager.Domain.ValueObjects;
 
 namespace JassTournamentManager.Domain.Entities
 {
-    public class TournamentConfigTemplate : BaseEntity
+    public class TournamentTemplate : BaseEntity
     {
         public Guid OrganizerId { get; private set; }
 
         public TournamentConfigValues ConfigValues { get; private set; } = null!;
 
-        private TournamentConfigTemplate() { }
+        public string? Location { get; private set; }
 
-        public TournamentConfigTemplate(Guid organizerId, TournamentConfigValues configValues)
+        private TournamentTemplate() { }
+
+        public TournamentTemplate(Guid organizerId, TournamentConfigValues configValues, string? location)
         {
             Guard.AgainstEmptyGuid(organizerId, nameof(organizerId));
 
             OrganizerId = organizerId;
             ConfigValues = configValues ?? throw new ArgumentNullException(nameof(configValues));
+            Location = location;
+        }
+
+        public void UpdateLocation(string? location)
+        {
+            Location = location;
+            MarkAsUpdated();
         }
 
         public void UpdateConfig(TournamentConfigValues configValues)
         {
-            TournamentConfigValues.ValidateConfigValues(configValues);
+            ArgumentNullException.ThrowIfNull(configValues);
+
             ConfigValues = configValues;
             MarkAsUpdated();
         }

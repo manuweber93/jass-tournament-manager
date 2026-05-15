@@ -10,5 +10,13 @@
             }
         }
 
+        public static void AgainstDefaultDateOnly(DateOnly value, string parameterName)
+        {
+            if (value == default)
+            {
+                throw new ArgumentException($"{parameterName} must not be the default date.", parameterName);
+            }
+        }
+
     }
 }

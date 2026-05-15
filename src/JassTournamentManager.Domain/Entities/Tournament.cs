@@ -1,5 +1,6 @@
 ﻿using JassTournamentManager.Domain.Common;
 using JassTournamentManager.Domain.Enums;
+using JassTournamentManager.Domain.ValueObjects;
 
 namespace JassTournamentManager.Domain.Entities
 {
@@ -10,19 +11,13 @@ namespace JassTournamentManager.Domain.Entities
         private readonly List<Round> _rounds = [];
         private readonly List<TournamentParticipant> _participants = [];
 
-        public Guid OrganizerId { get; private set; }
+        public Guid OrganizerId {  get; private set; }
 
-        public string Name { get; private set; } = string.Empty;
+        public TournamentDetails Details { get; private set; } = null!;
 
-        public string? Location { get; private set; }
-
-        public DateOnly Date { get; private set; }
-
-        public string TournamentCode { get; private set; } = null!;
+        public TournamentConfigValues ConfigValues { get; private set; } = null!;
 
         public TournamentStatus Status { get; private set; }
-
-        public TournamentConfig Config { get; private set; } = null!;
 
         public IReadOnlyCollection<Round> Rounds => _rounds.AsReadOnly();
 
@@ -32,37 +27,27 @@ namespace JassTournamentManager.Domain.Entities
 
         public Tournament(
             Guid organizerId,
-            string name,
-            string? location,
-            DateOnly date,
-            string tournamentCode,
+            TournamentDetails details,
+            TournamentConfigValues configValues,
             TournamentStatus status = DefaultTournamentStatus)
         {
             Guard.AgainstEmptyGuid(organizerId, nameof(organizerId));
-            ArgumentException.ThrowIfNullOrWhiteSpace(name);
-            ArgumentException.ThrowIfNullOrWhiteSpace(tournamentCode);
+            ArgumentNullException.ThrowIfNull(details);
+            ArgumentNullException.ThrowIfNull(configValues);
 
             OrganizerId = organizerId;
-            Name = name.Trim();
-            Location = location?.Trim();
-            Date = date;
+            Details = details;
+            ConfigValues = configValues;
             Status = status;
-            TournamentCode = tournamentCode.Trim();
-        }
-
-        public void SetConfig(TournamentConfig config)
-        {
-            if (Config is not null)
-            {
-                throw new InvalidOperationException("Tournament config has already been set.");
-            }
-
-            Config = config ?? throw new ArgumentNullException(nameof(config));
-            MarkAsUpdated();
         }
 
         public void AddRound(Round round)
         {
+            if (_rounds.Contains(round))
+            {
+                throw new InvalidOperationException("Round is already part of the tournament.");
+            }
+
             _rounds.Add(round);
             UpdateNumberOfRoundsInConfig();
             MarkAsUpdated();
@@ -80,6 +65,11 @@ namespace JassTournamentManager.Domain.Entities
 
         public void AddParticipant(TournamentParticipant participant)
         {
+            if (_participants.Contains(participant))
+            {
+                throw new InvalidOperationException("Participant is already part of the tournament.");
+            }
+
             _participants.Add(participant);
             MarkAsUpdated();
         }
@@ -93,13 +83,19 @@ namespace JassTournamentManager.Domain.Entities
             MarkAsUpdated();
         }
 
-        public void UpdateDetails(string name, string? location, DateOnly date)
+        public void UpdateDetails(TournamentDetails newDetails)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentNullException.ThrowIfNull(newDetails);
+            
+            Details = newDetails;
+            MarkAsUpdated();
+        }
 
-            Name = name.Trim();
-            Location = location?.Trim();
-            Date = date;
+        public void UpdateConfigValues(TournamentConfigValues newConfigValues)
+        {
+            ArgumentNullException.ThrowIfNull(newConfigValues);
+
+            ConfigValues = newConfigValues;
             MarkAsUpdated();
         }
 
@@ -111,7 +107,7 @@ namespace JassTournamentManager.Domain.Entities
 
         public void Cancel()
         {
-            Status = TournamentStatus.Canceled;
+            Status = TournamentStatus.Cancelled;
             MarkAsUpdated();
         }
 
@@ -123,12 +119,12 @@ namespace JassTournamentManager.Domain.Entities
 
         private void UpdateNumberOfRoundsInConfig()
         {
-            var UpdatedTournamentConfig = Config.ConfigValues with
+            var updatedTournamentConfigValues = ConfigValues with
             {
                 NumberOfRounds = _rounds.Count
             };
 
-            Config.UpdateConfig(UpdatedTournamentConfig);
+            UpdateConfigValues(updatedTournamentConfigValues);
         }
     }
 }

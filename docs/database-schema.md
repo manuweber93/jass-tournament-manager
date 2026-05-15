@@ -6,15 +6,12 @@
 ```mermaid
 erDiagram
     User ||--o{ Tournament : "organizes"
-    User ||--|| TournamentConfigTemplate : "manages"
+    User ||--|| TournamentTemplate : "manages"
     User ||--o{ TournamentParticipant : "participates as"
     User ||--o{ JassTable : "owns"
-    User ||--o{ Game : "enters result of"
-    User ||--o{ PairingParticipant : "enters"
     User o|--o{ User : "is merged into"
 
-    Tournament ||--|| TournamentConfig : "has"
-    TournamentConfigTemplate ||--o{ TournamentConfig : "serves as template for"
+    TournamentTemplate ||--o{ Tournament : "serves as template for"
 
     Tournament ||--o{ TournamentParticipant : "has"
     Tournament ||--o{ Round : "consists of"
@@ -23,8 +20,11 @@ erDiagram
 
     JassTable ||--o{ Pairing : "hosts"
 
-    Pairing ||--o{ PairingParticipant : "has"
+    Pairing ||--o{ PairingParticipant : "includes"
+
     TournamentParticipant ||--o{ PairingParticipant : "appears as"
+    TournamentParticipant ||--o{ Game : "enters result of"
+    TournamentParticipant ||--o{ PairingParticipant : "enters"
 
     Pairing ||--o{ Game : "consists of"
 ```
@@ -60,32 +60,39 @@ erDiagram
 | Field | Type | Description | Constraints |
 |------|-----|--------------|-------------|
 | id | UUID | Primary key | PK, NOT NULL |
-| organizerId | UUID | Organizer | FK, NOT NULL |
+| organizerId | UUID | User id of organizer | FK, NOT NULL |
 | name | String | Tournament name | NOT NULL |
 | location | String | Venue/location | |
 | date | Date | Tournament date | NOT NULL |
 | status | Enum | Tournament status | NOT NULL, DEFAULT 'ACTIVE' |
 | tournamentCode | String | Code which is used to join tournament | UNIQUE |
-| createdAt | DateTime | Creation timestamp | NOT NULL |
-| updatedAt | DateTime | Update timestamp | NOT NULL |
-
-**Enums**:
-- `status`: `ACTIVE`, `COMPLETED`, `CANCELLED`
-
----
-
-### 3. TournamentConfigTemplate
-**Description**: Reusable configuration templates for tournaments
-
-| Field | Type | Description | Constraints |
-|------|-----|--------------|-------------|
-| id | UUID | Primary key | PK, NOT NULL |
-| organizerId | UUID | Organizer | FK, NOT NULL |
 | numberOfRounds | Integer | Number of rounds | NOT NULL, DEFAULT 5 |
 | gamesPerRound | Integer | Games per round | NOT NULL, DEFAULT 8 |
 | matchBonusEnabled | Boolean | Match bonus enabled | NOT NULL, DEFAULT true |
 | isFixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
 | scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'ALWAYS_VISIBLE_FOR_EVERYONE' |
+| createdAt | DateTime | Creation timestamp | NOT NULL |
+| updatedAt | DateTime | Update timestamp | NOT NULL |
+
+**Enums**:
+- `status`: `ACTIVE`, `COMPLETED`, `CANCELLED`
+- `scoreVisibility`: `ALWAYS_VISIBLE_FOR_EVERYONE`, `HIDDEN_DURING_ACTIVE_TOURNAMENT`, `ORGANIZER_ONLY`
+
+---
+
+### 3. TournamentTemplate
+**Description**: Reusable configuration templates for tournaments
+
+| Field | Type | Description | Constraints |
+|------|-----|--------------|-------------|
+| id | UUID | Primary key | PK, NOT NULL |
+| organizerId | UUID | User id of organizer | FK, NOT NULL |
+| numberOfRounds | Integer | Number of rounds | NOT NULL, DEFAULT 5 |
+| gamesPerRound | Integer | Games per round | NOT NULL, DEFAULT 8 |
+| matchBonusEnabled | Boolean | Match bonus enabled | NOT NULL, DEFAULT true |
+| isFixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
+| scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'ALWAYS_VISIBLE_FOR_EVERYONE' |
+| location | String | Venue/location | |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
@@ -96,28 +103,7 @@ erDiagram
 
 ---
 
-### 4. TournamentConfig
-**Description**: Concrete configuration for a specific tournament (copy of a template)
-
-| Field | Type | Description | Constraints |
-|------|-----|--------------|-------------|
-| id | UUID | Primary key | PK, NOT NULL |
-| tournamentId | UUID | Tournament | FK, UNIQUE, NOT NULL |
-| templateId | UUID | Original template | FK (optional) |
-| numberOfRounds | Integer | Number of rounds | NOT NULL, DEFAULT 5 |
-| gamesPerRound | Integer | Games per round | NOT NULL, DEFAULT 8 |
-| matchBonusEnabled | Boolean | Match bonus enabled | NOT NULL, DEFAULT true |
-| isFixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
-| scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'ALWAYS_VISIBLE_FOR_EVERYONE' |
-| createdAt | DateTime | Creation timestamp | NOT NULL |
-| updatedAt | DateTime | Update timestamp | NOT NULL |
-
-**Enums**:
-- `scoreVisibility`: `ALWAYS_VISIBLE_FOR_EVERYONE`, `HIDDEN_DURING_ACTIVE_TOURNAMENT`, `ORGANIZER_ONLY`
-
----
-
-### 5. TournamentParticipant
+### 4. TournamentParticipant
 **Description**: Players participating in a tournament
 
 | Field | Type | Description | Constraints |
@@ -142,7 +128,7 @@ erDiagram
 
 ---
 
-### 6. Round
+### 5. Round
 **Description**: A round within a tournament
 
 | Field | Type | Description | Constraints |
@@ -161,7 +147,7 @@ erDiagram
 
 ---
 
-### 7. JassTable
+### 6. JassTable
 **Description**: Predefined jass tables for an organizer (reusable)
 
 | Field | Type | Description | Constraints |
@@ -178,7 +164,7 @@ erDiagram
 
 ---
 
-### 8. Pairing
+### 7. Pairing
 **Description**: A single pairing consisting of four players within a round which plays a certain amount of games at a table.
 
 | Field | Type | Description | Constraints |
@@ -199,7 +185,7 @@ erDiagram
 
 ---
 
-### 9. PairingParticipant
+### 8. PairingParticipant
 **Description**: Participants for a pairing (4 players: 2 vs 2)
 
 | Field | Type | Description | Constraints |
@@ -208,7 +194,7 @@ erDiagram
 | pairingId | UUID | Game | FK, NOT NULL |
 | tournamentParticipantId | UUID | TournamentParticipant | FK, NOT NULL |
 | team | Enum | Team (A or B) | NOT NULL |
-| enteredBy | UUID | Entered by | FK (optional) |
+| enteredBy | UUID | Entered by (TournamentParticipant) | FK (optional) |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
@@ -220,7 +206,7 @@ erDiagram
 
 ---
 
-### 10. Game
+### 9. Game
 
 **Description**: A single game (2 vs 2) within a round
 
@@ -234,7 +220,7 @@ erDiagram
 | teamBPoints | Integer | Team B points | |
 | teamAMatchBonusReceived | Boolean | Team A has match bonus | DEFAULT false |
 | teamBMatchBonusReceived | Boolean | Team B has match bonus | DEFAULT false |
-| enteredBy | UUID | Entered by (User) | FK |
+| enteredBy | UUID | Entered by (TournamentParticipant) | FK |
 | enteredAt | DateTime | Entry timestamp | |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |

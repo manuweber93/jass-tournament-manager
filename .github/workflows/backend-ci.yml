@@ -2,15 +2,17 @@ name: Backend CI
 
 on:
   push:
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -23,5 +25,26 @@ jobs:
       - name: Build
         run: dotnet build JassTournamentManager.Backend.slnx --configuration Release --no-restore
 
-      - name: Test
-        run: dotnet test JassTournamentManager.Backend.slnx --configuration Release --no-build --verbosity normal
+      - name: Test with coverage
+        run: >
+          dotnet test JassTournamentManager.Backend.slnx
+          --configuration Release
+          --no-build
+          --collect:"XPlat Code Coverage"
+          --results-directory ./TestResults
+
+      - name: Install ReportGenerator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Generate coverage report
+        run: >
+          reportgenerator
+          -reports:"./TestResults/**/coverage.cobertura.xml"
+          -targetdir:"./coverage-report"
+          -reporttypes:"Html;Cobertura"
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ./coverage-report

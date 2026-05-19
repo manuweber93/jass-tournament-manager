@@ -162,7 +162,7 @@ namespace JassTournamentManager.Domain.Entities
 
             foreach (var round in _rounds)
             {
-                round.UpdateMatchBonusEnabledForGames(ConfigValues.MatchBonusEnabled);
+                round.UpdateMatchBonusEnabledForGames(newConfigValues.MatchBonusEnabled);
             }
         }
     }

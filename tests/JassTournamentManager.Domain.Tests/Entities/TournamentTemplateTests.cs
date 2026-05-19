@@ -46,6 +46,19 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
+        public void Constructor_WithPaddedLocation_NormalizesLocation()
+        {
+            var location = TournamentTestData.CreateLocation();
+
+            var template = new TournamentTemplate(
+                UserTestData.CreateUserId(),
+                TournamentTestData.CreateTournamentConfigValues(),
+                " " + location + " ");
+
+            template.Location.Should().Be(location);
+        }
+
+        [Fact]
         public void UpdateLocation_WithNullLocation_ClearsLocation()
         {
             var template = TournamentTemplateTestData.CreateTournamentTemplate();
@@ -62,6 +75,17 @@ namespace JassTournamentManager.Domain.Tests.Entities
             var newLocation = "New Location";
 
             template.UpdateLocation(newLocation);
+
+            template.Location.Should().Be(newLocation);
+        }
+
+        [Fact]
+        public void UpdateLocation_WithPaddedLocation_NormalizesLocation()
+        {
+            var template = TournamentTemplateTestData.CreateTournamentTemplate();
+            var newLocation = "New Location";
+
+            template.UpdateLocation(" " + newLocation + " ");
 
             template.Location.Should().Be(newLocation);
         }

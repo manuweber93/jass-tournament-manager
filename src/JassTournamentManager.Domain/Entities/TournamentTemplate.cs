@@ -19,12 +19,12 @@ namespace JassTournamentManager.Domain.Entities
 
             OrganizerId = organizerId;
             ConfigValues = configValues ?? throw new ArgumentNullException(nameof(configValues));
-            Location = location;
+            Location = location?.Trim();
         }
 
         public void UpdateLocation(string? location)
         {
-            Location = location;
+            Location = location?.Trim();
             MarkAsUpdated();
         }
 

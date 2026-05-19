@@ -15,5 +15,11 @@ namespace JassTournamentManager.Domain.Tests.TestHelpers
             TournamentParticipantTestData.CreateTournamentParticipantId(),
             CreateTeam(),
             UserTestData.CreateUserId());
+
+        public static PairingParticipant CreatePairingParticipant(Guid pairingId, Guid tournamentParticipantId, Team team) => new(
+            pairingId,
+            tournamentParticipantId,
+            team,
+            UserTestData.CreateUserId());
     }
 }

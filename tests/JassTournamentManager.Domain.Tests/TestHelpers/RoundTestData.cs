@@ -13,5 +13,9 @@ namespace JassTournamentManager.Domain.Tests.TestHelpers
                 TournamentTestData.CreateTournamentId(),
                 CreateRoundNumber());
 
+        public static Round CreateRound(Guid tournamentId, int roundNumber = 1) =>
+            new(
+                tournamentId,
+                roundNumber);
     }
 }

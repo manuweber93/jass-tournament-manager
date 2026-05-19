@@ -2,6 +2,7 @@
 using JassTournamentManager.Domain.Entities;
 using JassTournamentManager.Domain.Enums;
 using JassTournamentManager.Domain.Tests.TestHelpers;
+using JassTournamentManager.Domain.ValueObjects;
 
 namespace JassTournamentManager.Domain.Tests.Entities
 {
@@ -65,15 +66,54 @@ namespace JassTournamentManager.Domain.Tests.Entities
         {
             var game = GameTestData.CreateGame();
             var score = GameTestData.CreateGameScore();
+            
             game.SetScore(score);
 
             game.Score.Should().Be(score);
         }
 
         [Fact]
+        public void SetScore_WithValidScore_CompletesGame()
+        {
+            var game = GameTestData.CreateGame();
+            var score = GameTestData.CreateGameScore();
+
+            game.SetScore(score);
+
+            game.Status.Should().Be(GameStatus.Completed);
+        }
+
+        [Fact]
+        public void SetScore_WithMatchBonusAndMatchBonusDisabled_ThrowsInvalidOperationException()
+        {
+            var game = GameTestData.CreateGame();
+            var score = new GameScore(
+                GameScore.TotalPointsPerGame,
+                0,
+                true,
+                false,
+                UserTestData.CreateUserId());
+
+            Action act = () => game.SetScore(score, matchBonusEnabled: false);
+
+            act.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void Complete_WithoutScore_ThrowsInvalidOperationException()
+        {
+            var game = GameTestData.CreateGame();
+
+            Action act = () => game.Complete();
+
+            act.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
         public void Complete_SetsStatusToCompleted()
         {
             var game = GameTestData.CreateGame();
+            game.SetScore(GameTestData.CreateGameScore());
             game.Complete();
 
             game.Status.Should().Be(GameStatus.Completed);
@@ -83,10 +123,22 @@ namespace JassTournamentManager.Domain.Tests.Entities
         public void SetBackToPending_SetsStatusToPending()
         {
             var game = GameTestData.CreateGame();
-            game.Complete();
+            game.SetScore(GameTestData.CreateGameScore());
             game.SetBackToPending();
 
             game.Status.Should().Be(GameStatus.Pending);
+        }
+
+        [Fact]
+        public void SetBackToPending_KeepsScore()
+        {
+            var game = GameTestData.CreateGame();
+            var score = GameTestData.CreateGameScore();
+            game.SetScore(score);
+
+            game.SetBackToPending();
+
+            game.Score.Should().Be(score);
         }
     }
 }

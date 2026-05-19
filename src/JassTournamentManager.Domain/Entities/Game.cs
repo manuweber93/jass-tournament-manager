@@ -28,15 +28,28 @@ namespace JassTournamentManager.Domain.Entities
             Status = status;
         }
 
-        public void SetScore(GameScore score)
+        public void SetScore(GameScore score, bool matchBonusEnabled)
         {
             ArgumentNullException.ThrowIfNull(score);
+
+            if (!matchBonusEnabled &&
+                (score.TeamAMatchBonusAchieved || score.TeamBMatchBonusAchieved))
+            {
+                throw new InvalidOperationException("Match bonus is disabled for this game.");
+            }
+
             Score = score;
+            Status = GameStatus.Completed;
             MarkAsUpdated();
         }
 
         public void Complete()
         {
+            if (Score is null)
+            {
+                throw new InvalidOperationException("Game can only be completed when a score is set.");
+            }
+
             Status = GameStatus.Completed;
             MarkAsUpdated();
         }

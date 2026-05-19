@@ -153,6 +153,16 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
+        public void MergeIntoDifferentUser_WithOwnUserId_ThrowsInvalidOperationException()
+        {
+            var user = UserTestData.CreateUser();
+
+            Action act = () => user.MergeIntoDifferentUser(user.Id, Guid.NewGuid());
+
+            act.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
         public void MergeIntoDifferentUser_WhenUserAlreadyMerged_ThrowsInvalidOperationException()
         {
             var user = UserTestData.CreateUser();

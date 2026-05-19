@@ -31,6 +31,18 @@ namespace JassTournamentManager.Domain.Entities
 
         public void AddPairing(Pairing pairing)
         {
+            ArgumentNullException.ThrowIfNull(pairing);
+
+            if (pairing.RoundId != Id)
+            {
+                throw new InvalidOperationException("Pairing belongs to a different round.");
+            }
+
+            if (_pairings.Any(p => p.JassTableId == pairing.JassTableId))
+            {
+                throw new InvalidOperationException("Jass table is already assigned in this round.");
+            }
+
             _pairings.Add(pairing);
             MarkAsUpdated();
         }

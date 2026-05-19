@@ -57,12 +57,37 @@ namespace JassTournamentManager.Domain.Tests.Entities
         public void AddPairing_WithValidPairing_AddsPairing()
         {
             var round = RoundTestData.CreateRound();
-            var pairing = PairingTestData.CreatePairing();
+            var pairing = PairingTestData.CreatePairing(round.Id);
 
             round.AddPairing(pairing);
 
             round.Pairings.Should().ContainSingle()
                 .Which.Should().Be(pairing);
+        }
+
+        [Fact]
+        public void AddPairing_WithDifferentRoundId_ThrowsInvalidOperationException()
+        {
+            var round = RoundTestData.CreateRound();
+            var pairing = PairingTestData.CreatePairing();
+
+            Action act = () => round.AddPairing(pairing);
+
+            act.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void AddPairing_WithDuplicateJassTableId_ThrowsInvalidOperationException()
+        {
+            var round = RoundTestData.CreateRound();
+            var jassTableId = JassTableTestData.CreateJassTableId();
+            var pairing = new Pairing(round.Id, jassTableId, PairingTestData.CreateGamesPerRound());
+            round.AddPairing(pairing);
+            var pairingWithDuplicateJassTableId = new Pairing(round.Id, jassTableId, PairingTestData.CreateGamesPerRound());
+
+            Action act = () => round.AddPairing(pairingWithDuplicateJassTableId);
+
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]

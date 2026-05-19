@@ -56,6 +56,11 @@ namespace JassTournamentManager.Domain.Entities
             Guard.AgainstEmptyGuid(mergeTargetUserId, nameof(mergeTargetUserId));
             Guard.AgainstEmptyGuid(mergedByUserId, nameof(mergedByUserId));
 
+            if (mergeTargetUserId == Id)
+            {
+                throw new InvalidOperationException("User cannot be merged into itself.");
+            }
+
             MergeTargetUserId = mergeTargetUserId;
             MergedBy = mergedByUserId;
             MergedAt = DateTimeOffset.UtcNow;

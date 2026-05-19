@@ -43,9 +43,21 @@ namespace JassTournamentManager.Domain.Entities
 
         public void AddRound(Round round)
         {
+            ArgumentNullException.ThrowIfNull(round);
+
+            if (round.TournamentId != Id)
+            {
+                throw new InvalidOperationException("Round belongs to a different tournament.");
+            }
+
             if (_rounds.Contains(round))
             {
                 throw new InvalidOperationException("Round is already part of the tournament.");
+            }
+
+            if (_rounds.Any(r => r.RoundNumber == round.RoundNumber))
+            {
+                throw new InvalidOperationException($"Round number {round.RoundNumber} already exists in the tournament.");
             }
 
             _rounds.Add(round);
@@ -65,9 +77,21 @@ namespace JassTournamentManager.Domain.Entities
 
         public void AddParticipant(TournamentParticipant participant)
         {
+            ArgumentNullException.ThrowIfNull(participant);
+
+            if (participant.TournamentId != Id)
+            {
+                throw new InvalidOperationException("Participant belongs to a different tournament.");
+            }
+
             if (_participants.Contains(participant))
             {
                 throw new InvalidOperationException("Participant is already part of the tournament.");
+            }
+
+            if (_participants.Any(p => p.UserId == participant.UserId))
+            {
+                throw new InvalidOperationException("User is already registered for the tournament.");
             }
 
             _participants.Add(participant);

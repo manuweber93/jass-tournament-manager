@@ -72,7 +72,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         public void AddRound_WhenSameRoundAddedTwice_ThrowsInvalidOperationException()
         {
             var tournament = TournamentTestData.CreateTournament();
-            var round = RoundTestData.CreateRound();
+            var round = RoundTestData.CreateRound(tournament.Id);
             tournament.AddRound(round);
 
             Action act = () => tournament.AddRound(round);
@@ -84,7 +84,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         public void AddRound_AddsRoundToTournament()
         {
             var tournament = TournamentTestData.CreateTournament();
-            var round = RoundTestData.CreateRound();
+            var round = RoundTestData.CreateRound(tournament.Id);
             tournament.AddRound(round);
 
             tournament.Rounds.Should().ContainSingle()
@@ -95,10 +95,34 @@ namespace JassTournamentManager.Domain.Tests.Entities
         public void AddRound_UpdatesNumberOfRoundsInConfig()
         {
             var tournament = TournamentTestData.CreateTournament();
-            var round = RoundTestData.CreateRound();
+            var round = RoundTestData.CreateRound(tournament.Id);
             tournament.AddRound(round);
 
             tournament.ConfigValues.NumberOfRounds.Should().Be(1);
+        }
+
+        [Fact]
+        public void AddRound_WithDifferentTournamentId_ThrowsInvalidOperationException()
+        {
+            var tournament = TournamentTestData.CreateTournament();
+            var round = RoundTestData.CreateRound();
+
+            Action act = () => tournament.AddRound(round);
+
+            act.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void AddRound_WithDuplicateRoundNumber_ThrowsInvalidOperationException()
+        {
+            var tournament = TournamentTestData.CreateTournament();
+            var round = RoundTestData.CreateRound(tournament.Id, 1);
+            tournament.AddRound(round);
+            var duplicateRoundNumber = RoundTestData.CreateRound(tournament.Id, 1);
+
+            Action act = () => tournament.AddRound(duplicateRoundNumber);
+
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]
@@ -116,7 +140,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         public void RemoveRound_RemovesRoundFromTournament()
         {
             var tournament = TournamentTestData.CreateTournament();
-            var round = RoundTestData.CreateRound();
+            var round = RoundTestData.CreateRound(tournament.Id);
             tournament.AddRound(round);
             tournament.RemoveRound(round.Id);
 
@@ -127,7 +151,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         public void RemoveRound_UpdatesNumberOfRoundsInConfig()
         {
             var tournament = TournamentTestData.CreateTournament();
-            var round = RoundTestData.CreateRound();
+            var round = RoundTestData.CreateRound(tournament.Id);
             tournament.AddRound(round);
             tournament.RemoveRound(round.Id);
 
@@ -138,7 +162,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         public void AddParticipant_WhenSameParticipantAddedTwice_ThrowsInvalidOperationException()
         {
             var tournament = TournamentTestData.CreateTournament();
-            var participant = TournamentParticipantTestData.CreateTournamentParticipant();
+            var participant = TournamentParticipantTestData.CreateTournamentParticipant(tournament.Id);
             tournament.AddParticipant(participant);
 
             Action act = () => tournament.AddParticipant(participant);
@@ -150,11 +174,42 @@ namespace JassTournamentManager.Domain.Tests.Entities
         public void AddParticipant_AddsParticipantToTournament()
         {
             var tournament = TournamentTestData.CreateTournament();
-            var participant = TournamentParticipantTestData.CreateTournamentParticipant();
+            var participant = TournamentParticipantTestData.CreateTournamentParticipant(tournament.Id);
             tournament.AddParticipant(participant);
 
             tournament.Participants.Should().ContainSingle()
                 .Which.Should().Be(participant);
+        }
+
+        [Fact]
+        public void AddParticipant_WithDifferentTournamentId_ThrowsInvalidOperationException()
+        {
+            var tournament = TournamentTestData.CreateTournament();
+            var participant = TournamentParticipantTestData.CreateTournamentParticipant();
+
+            Action act = () => tournament.AddParticipant(participant);
+
+            act.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void AddParticipant_WithDuplicateUserId_ThrowsInvalidOperationException()
+        {
+            var tournament = TournamentTestData.CreateTournament();
+            var userId = UserTestData.CreateUserId();
+            var participant = new TournamentParticipant(
+                tournament.Id,
+                userId,
+                TournamentParticipantTestData.CreateRegistrationMethod());
+            tournament.AddParticipant(participant);
+            var duplicateUserParticipant = new TournamentParticipant(
+                tournament.Id,
+                userId,
+                TournamentParticipantTestData.CreateRegistrationMethod());
+
+            Action act = () => tournament.AddParticipant(duplicateUserParticipant);
+
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]
@@ -172,7 +227,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         public void RemoveParticipant_RemovesParticipantFromTournament()
         {
             var tournament = TournamentTestData.CreateTournament();
-            var participant = TournamentParticipantTestData.CreateTournamentParticipant();
+            var participant = TournamentParticipantTestData.CreateTournamentParticipant(tournament.Id);
             tournament.AddParticipant(participant);
             tournament.RemoveParticipant(participant.Id);
 

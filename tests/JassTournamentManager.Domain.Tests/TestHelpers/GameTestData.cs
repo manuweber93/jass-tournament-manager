@@ -12,6 +12,11 @@ namespace JassTournamentManager.Domain.Tests.TestHelpers
                 PairingTestData.CreatePairingId(),
                 CreateGameNumber());
 
+        public static Game CreateGame(Guid pairingId, int gameNumber = 1) =>
+            new(
+                pairingId,
+                gameNumber);
+
         public static int CreateGameScorePoints() => 100;
 
         public static GameScore CreateGameScore() => new(

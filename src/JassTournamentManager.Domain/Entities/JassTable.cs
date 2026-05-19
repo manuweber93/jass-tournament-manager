@@ -20,6 +20,7 @@ namespace JassTournamentManager.Domain.Entities
         {
             Guard.AgainstEmptyGuid(organizerId, nameof(organizerId));
             ArgumentException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentOutOfRangeException.ThrowIfNegative(displayOrder);
 
             OrganizerId = organizerId;
             Name = name.Trim();

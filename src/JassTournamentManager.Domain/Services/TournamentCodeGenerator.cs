@@ -4,11 +4,11 @@ namespace JassTournamentManager.Domain.Services
 {
     public static class TournamentCodeGenerator
     {
-        private const string AllowedChars = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789";
+        public const string AllowedChars = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789";
 
         public static string GenerateTournamentCode(int length = 6)
         {
-            ArgumentOutOfRangeException.ThrowIfLessThan(length, 1, nameof(length));
+            ArgumentOutOfRangeException.ThrowIfLessThan(length, 1);
 
             var codeChars = new char[length];
 

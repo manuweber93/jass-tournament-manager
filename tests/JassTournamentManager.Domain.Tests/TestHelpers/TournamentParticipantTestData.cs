@@ -8,10 +8,14 @@ namespace JassTournamentManager.Domain.Tests.TestHelpers
 {
     internal static class TournamentParticipantTestData
     {
+        public static Guid CreateTournamentParticipantId() => Guid.NewGuid();
+
+        public static RegistrationMethod CreateRegistrationMethod() => RegistrationMethod.ViaTournamentCode;
+
         public static TournamentParticipant CreateTournamentParticipant() =>
             new(
-                TournamentTestData.CreateOrganizerId(),
-                UserTestData.CreateUserId,
-                RegistrationMethod.ViaTournamentCode);
+                TournamentTestData.CreateTournamentId(),
+                UserTestData.CreateUserId(),
+                CreateRegistrationMethod());
     }
 }

@@ -1,5 +1,4 @@
 ﻿using JassTournamentManager.Domain.Entities;
-using JassTournamentManager.Domain.Enums;
 using JassTournamentManager.Domain.ValueObjects;
 
 namespace JassTournamentManager.Domain.Tests.TestHelpers
@@ -14,5 +13,12 @@ namespace JassTournamentManager.Domain.Tests.TestHelpers
                 CreateGameNumber());
 
         public static int CreateGameScorePoints() => 100;
+
+        public static GameScore CreateGameScore() => new(
+            100,
+            57,
+            false,
+            false,
+            Guid.NewGuid());
     }
 }

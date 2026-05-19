@@ -9,7 +9,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
     {
 
         [Fact]
-        public void Constructor_WithEmptyOrganizerId_ShouldThrowArgumentException()
+        public void Constructor_WithEmptyOrganizerId_ThrowsArgumentException()
         {
             var emptyGuid = Guid.Empty;
 
@@ -21,7 +21,47 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void Constructor_DefaultStatus_ShouldBeActive()
+        public void Constructor_WithoutTournamentDetails_ThrowsArgumentNullException()
+        {
+            Action act = () => new Tournament(Guid.NewGuid(),
+                null!,
+                TournamentTestData.CreateTournamentConfigValues());
+
+            act.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void Constructor_WithoutTournamentConfigValues_ThrowsArgumentNullException()
+        {
+            Action act = () => new Tournament(Guid.NewGuid(),
+                TournamentTestData.CreateTournamentDetails(),
+                null!);
+
+            act.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void Constructor_WithValidValues_CreatesTournament()
+        {
+            var organizerId = UserTestData.CreateUserId();
+            var details = TournamentTestData.CreateTournamentDetails();
+            var configValues = TournamentTestData.CreateTournamentConfigValues();
+            var status = TournamentStatus.Completed;
+
+            var tournament = new Tournament(
+                organizerId,
+                details,
+                configValues,
+                status);
+
+            tournament.OrganizerId.Should().Be(organizerId);
+            tournament.Details.Should().Be(details);
+            tournament.ConfigValues.Should().Be(configValues);
+            tournament.Status.Should().Be(status);
+        }
+
+        [Fact]
+        public void Constructor_DefaultStatus_IsActive()
         {
             var tournament = TournamentTestData.CreateTournament();
 
@@ -29,7 +69,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void AddRound_WhenSameRoundAddedTwice_ShouldThrowInvalidOperationException()
+        public void AddRound_WhenSameRoundAddedTwice_ThrowsInvalidOperationException()
         {
             var tournament = TournamentTestData.CreateTournament();
             var round = RoundTestData.CreateRound();
@@ -41,7 +81,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void AddRound_ShouldAddRoundToTournament()
+        public void AddRound_AddsRoundToTournament()
         {
             var tournament = TournamentTestData.CreateTournament();
             var round = RoundTestData.CreateRound();
@@ -52,7 +92,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void AddRound_ShouldUpdateNumberOfRoundsInConfig()
+        public void AddRound_UpdatesNumberOfRoundsInConfig()
         {
             var tournament = TournamentTestData.CreateTournament();
             var round = RoundTestData.CreateRound();
@@ -62,7 +102,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void RemoveRound_WithNonExistingRoundId_ShouldThrowArgumentException()
+        public void RemoveRound_WithNonExistingRoundId_ThrowsArgumentException()
         {
             var tournament = TournamentTestData.CreateTournament();
             var nonExistingRoundId = Guid.NewGuid();
@@ -73,7 +113,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void RemoveRound_ShouldRemoveRoundFromTournament()
+        public void RemoveRound_RemovesRoundFromTournament()
         {
             var tournament = TournamentTestData.CreateTournament();
             var round = RoundTestData.CreateRound();
@@ -84,7 +124,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void RemoveRound_ShouldUpdateNumberOfRoundsInConfig()
+        public void RemoveRound_UpdatesNumberOfRoundsInConfig()
         {
             var tournament = TournamentTestData.CreateTournament();
             var round = RoundTestData.CreateRound();
@@ -95,7 +135,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void AddParticipant_WhenSameParticipantAddedTwice_ShouldThrowInvalidOperationException()
+        public void AddParticipant_WhenSameParticipantAddedTwice_ThrowsInvalidOperationException()
         {
             var tournament = TournamentTestData.CreateTournament();
             var participant = TournamentParticipantTestData.CreateTournamentParticipant();
@@ -107,7 +147,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void AddParticipant_ShouldAddParticipantToTournament()
+        public void AddParticipant_AddsParticipantToTournament()
         {
             var tournament = TournamentTestData.CreateTournament();
             var participant = TournamentParticipantTestData.CreateTournamentParticipant();
@@ -118,7 +158,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void RemoveParticipant_WithNonExistingParticipantId_ShouldThrowArgumentException()
+        public void RemoveParticipant_WithNonExistingParticipantId_ThrowsArgumentException()
         {
             var tournament = TournamentTestData.CreateTournament();
             var nonExistingParticipantId = Guid.NewGuid();
@@ -129,7 +169,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void RemoveParticipant_ShouldRemoveParticipantFromTournament()
+        public void RemoveParticipant_RemovesParticipantFromTournament()
         {
             var tournament = TournamentTestData.CreateTournament();
             var participant = TournamentParticipantTestData.CreateTournamentParticipant();
@@ -140,7 +180,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void UpdateDetails_WithNullTournamentDetails_ShouldThrowArgumentException()
+        public void UpdateDetails_WithNullTournamentDetails_ThrowsArgumentException()
         {
             var tournament = TournamentTestData.CreateTournament();
 
@@ -150,7 +190,17 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void UpdateConfigValues_WithNullConfigValues_ShouldThrowArgumentException()
+        public void UpdateDetails_WithValidTournamentDetails_UpdatesTournamentDetails()
+        {
+            var tournament = TournamentTestData.CreateTournament();
+            var newTournamentDetails = TournamentTestData.CreateTournamentDetails();
+            tournament.UpdateDetails(newTournamentDetails);
+
+            tournament.Details.Should().Be(newTournamentDetails);
+        }
+
+        [Fact]
+        public void UpdateConfigValues_WithNullConfigValues_ThrowsArgumentException()
         {
             var tournament = TournamentTestData.CreateTournament();
 
@@ -160,7 +210,17 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void Complete_ShouldSetStatusToCompleted()
+        public void UpdateConfigValues_WithValidConfigValues_UpdatesConfigValues()
+        {
+            var tournament = TournamentTestData.CreateTournament();
+            var newConfigValues = TournamentTestData.CreateTournamentConfigValues();
+            tournament.UpdateConfigValues(newConfigValues);
+
+            tournament.ConfigValues.Should().Be(newConfigValues);
+        }
+
+        [Fact]
+        public void Complete_SetsStatusToCompleted()
         {
             var tournament = TournamentTestData.CreateTournament();
             tournament.Complete();
@@ -169,7 +229,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void Cancel_ShouldSetStatusToCancelled()
+        public void Cancel_SetsStatusToCancelled()
         {
             var tournament = TournamentTestData.CreateTournament();
             tournament.Cancel();
@@ -178,7 +238,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void Reactivate_ShouldSetStatusToActive()
+        public void Reactivate_SetsStatusToActive()
         {
             var tournament = TournamentTestData.CreateTournament();
             tournament.Cancel();
@@ -186,6 +246,5 @@ namespace JassTournamentManager.Domain.Tests.Entities
 
             tournament.Status.Should().Be(TournamentStatus.Active);
         }
-
     }
 }

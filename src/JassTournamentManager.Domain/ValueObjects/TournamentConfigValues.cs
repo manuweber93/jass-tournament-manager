@@ -4,11 +4,11 @@ namespace JassTournamentManager.Domain.ValueObjects
 {
     public sealed record TournamentConfigValues
     {
-        private const int DefaultNumberOfRounds = 5;
-        private const int DefaultGamesPerRound = 8;
-        private const bool DefaultMatchBonusEnabled = true;
-        private const bool DefaultIsFixedTeams = false;
-        private const ScoreVisibility DefaultScoreVisibility = ScoreVisibility.HiddenDuringActiveTournament;
+        public const int DefaultNumberOfRounds = 5;
+        public const int DefaultGamesPerRound = 8;
+        public const bool DefaultMatchBonusEnabled = true;
+        public const bool DefaultIsFixedTeams = false;
+        public const ScoreVisibility DefaultScoreVisibility = ScoreVisibility.HiddenDuringActiveTournament;
 
         public int NumberOfRounds { get; init; }
 

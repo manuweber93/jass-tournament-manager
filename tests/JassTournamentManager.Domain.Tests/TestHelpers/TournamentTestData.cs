@@ -6,9 +6,11 @@ namespace JassTournamentManager.Domain.Tests.TestHelpers
 {
     internal static class TournamentTestData
     {
-        public static Guid CreateOrganizerId() => Guid.NewGuid();
+        public static Guid CreateTournamentId() => Guid.NewGuid();
 
         public static string CreateTournamentName() => "Test Tournament";
+
+        public static string CreateLocation() => "Zeigerhüsli Adliswil";
 
         public static DateOnly CreateTournamentDate() => new(2026, 5, 13);
 
@@ -19,13 +21,13 @@ namespace JassTournamentManager.Domain.Tests.TestHelpers
         public static TournamentDetails CreateTournamentDetails() =>
             new(
                 CreateTournamentName(),
-                null,
+                CreateLocation(),
                 CreateTournamentDate(),
                 CreateTournamentCode());
 
         public static Tournament CreateTournament() => 
             new(
-                CreateOrganizerId(),
+                UserTestData.CreateUserId(),
                 CreateTournamentDetails(),
                 CreateTournamentConfigValues());
     }

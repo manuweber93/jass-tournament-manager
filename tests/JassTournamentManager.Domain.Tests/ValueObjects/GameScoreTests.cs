@@ -72,10 +72,46 @@ namespace JassTournamentManager.Domain.Tests.ValueObjects
         }
 
         [Fact]
-        public void Constructor_WithTeamAMatchBonusAchieved_AddMatchBonusPoints()
+        public void Constructor_WithEmptyEnteredByParticipantId_ThrowsArgumentException()
+        {
+            Action act = () => new GameScore(
+                100,
+                57,
+                false,
+                false,
+                Guid.Empty);
+
+            act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void Constructor_WithValidScore_CreatesGameScore()
+        {
+            var pointsTeamA = 100;
+            var pointsTeamB = 57;
+            var matchBonusAchieved = false;
+            var enteredByParticipantId = UserTestData.CreateUserId();
+
+            var gameScore = new GameScore(
+                pointsTeamA,
+                pointsTeamB,
+                matchBonusAchieved,
+                matchBonusAchieved,
+                enteredByParticipantId);
+
+            gameScore.TeamAPoints.Should().Be(pointsTeamA);
+            gameScore.TeamBPoints.Should().Be(pointsTeamB);
+            gameScore.TeamAMatchBonusAchieved.Should().Be(matchBonusAchieved);
+            gameScore.TeamBMatchBonusAchieved.Should().Be(matchBonusAchieved);
+            gameScore.EnteredBy.Should().Be(enteredByParticipantId);
+            gameScore.EnteredAt.Should().NotBe(default);
+        }
+
+        [Fact]
+        public void Constructor_WithTeamAMatchBonusAchieved_AddsMatchBonusPoints()
         {
             var gameScore = new GameScore(
-                157,
+                GameScore.TotalPointsPerGame,
                 0,
                 true,
                 false,
@@ -85,11 +121,11 @@ namespace JassTournamentManager.Domain.Tests.ValueObjects
         }
 
         [Fact]
-        public void Constructor_WithTeamBMatchBonusAchieved_AddMatchBonusPoints()
+        public void Constructor_WithTeamBMatchBonusAchieved_AddsMatchBonusPoints()
         {
             var gameScore = new GameScore(
                 0,
-                157,
+                GameScore.TotalPointsPerGame,
                 false,
                 true,
                 Guid.NewGuid());

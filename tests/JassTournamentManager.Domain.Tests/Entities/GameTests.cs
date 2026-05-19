@@ -8,7 +8,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
     public class GameTests
     {
         [Fact]
-        public void Constructor_WithEmptyPairingId_ShouldThrowArgumentException()
+        public void Constructor_WithEmptyPairingId_ThrowsArgumentException()
         {
             var emptyGuid = Guid.Empty;
 
@@ -18,7 +18,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void Constructor_WithInvalidGameNumber_ShouldThrowArgumentOutOfRangeException()
+        public void Constructor_WithInvalidGameNumber_ThrowsArgumentOutOfRangeException()
         {
             var pairingId = PairingTestData.CreatePairingId();
             var invalidGameNumber = 0;
@@ -29,7 +29,21 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void Constructor_DefaultStatus_ShouldBePending()
+        public void Constructor_WithValidValues_CreatesGame()
+        {
+            var pairingId = PairingTestData.CreatePairingId();
+            var gameNumber = GameTestData.CreateGameNumber();
+            var status = GameStatus.Completed;
+
+            var game = new Game(pairingId, gameNumber, status);
+
+            game.PairingId.Should().Be(pairingId);
+            game.GameNumber.Should().Be(gameNumber);
+            game.Status.Should().Be(status);
+        }
+
+        [Fact]
+        public void Constructor_DefaultStatus_IsPending()
         {
             var game = GameTestData.CreateGame();
 
@@ -47,7 +61,17 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void Complete_ShouldSetStatusToCompleted()
+        public void SetScore_WithValidScore_SetsScore()
+        {
+            var game = GameTestData.CreateGame();
+            var score = GameTestData.CreateGameScore();
+            game.SetScore(score);
+
+            game.Score.Should().Be(score);
+        }
+
+        [Fact]
+        public void Complete_SetsStatusToCompleted()
         {
             var game = GameTestData.CreateGame();
             game.Complete();
@@ -56,7 +80,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void SetBackToPending_ShouldSetStatusToPending()
+        public void SetBackToPending_SetsStatusToPending()
         {
             var game = GameTestData.CreateGame();
             game.Complete();

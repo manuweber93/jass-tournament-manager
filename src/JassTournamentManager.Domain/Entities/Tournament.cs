@@ -119,6 +119,8 @@ namespace JassTournamentManager.Domain.Entities
         {
             ArgumentNullException.ThrowIfNull(newConfigValues);
 
+            UpdateMatchBonusEnabledForGames(ConfigValues, newConfigValues);
+
             ConfigValues = newConfigValues;
             MarkAsUpdated();
         }
@@ -149,6 +151,19 @@ namespace JassTournamentManager.Domain.Entities
             };
 
             UpdateConfigValues(updatedTournamentConfigValues);
+        }
+
+        private void UpdateMatchBonusEnabledForGames(TournamentConfigValues currentConfigValues, TournamentConfigValues newConfigValues)
+        {
+            if (currentConfigValues.MatchBonusEnabled == newConfigValues.MatchBonusEnabled)
+            {
+                return;
+            }
+
+            foreach (var round in _rounds)
+            {
+                round.UpdateMatchBonusEnabledForGames(ConfigValues.MatchBonusEnabled);
+            }
         }
     }
 }

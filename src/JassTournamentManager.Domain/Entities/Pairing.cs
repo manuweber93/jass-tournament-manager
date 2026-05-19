@@ -106,6 +106,11 @@ namespace JassTournamentManager.Domain.Entities
                 throw new InvalidOperationException($"Pairing must have exactly {RequiredParticipantsPerTeam} participants per team.");
             }
 
+            if (_games.Count != GamesPerRound)
+            {
+                throw new InvalidOperationException($"Pairing must have exactly {GamesPerRound} games.");
+            }
+
             if (_games.Any(g => g.Status != GameStatus.Completed))
             {
                 throw new InvalidOperationException("Pairing can only be completed when all games are completed.");
@@ -118,6 +123,16 @@ namespace JassTournamentManager.Domain.Entities
         public void SetBackToPending()
         {
             Status = PairingStatus.Pending;
+            MarkAsUpdated();
+        }
+
+        public void UpdateMatchBonusEnabledForGames(bool matchBonusEnabled)
+        {
+            foreach (var game in _games)
+            {
+                game.UpdateMatchBonusEnabled(matchBonusEnabled);
+            }
+
             MarkAsUpdated();
         }
     }

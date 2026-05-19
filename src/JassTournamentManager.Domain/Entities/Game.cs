@@ -12,27 +12,34 @@ namespace JassTournamentManager.Domain.Entities
 
         public int GameNumber { get; private set; }
 
+        public bool MatchBonusEnabled { get; private set; }
+
         public GameStatus Status { get; private set; }
 
         public GameScore? Score { get; private set; }
 
         private Game() { }
 
-        public Game(Guid pairingId, int gameNumber, GameStatus status = DefaultGameStatus)
+        public Game(
+            Guid pairingId,
+            int gameNumber,
+            bool matchBonusEnabled,
+            GameStatus status = DefaultGameStatus)
         {
             Guard.AgainstEmptyGuid(pairingId, nameof(pairingId));
             ArgumentOutOfRangeException.ThrowIfLessThan(gameNumber, 1);
 
             PairingId = pairingId;
             GameNumber = gameNumber;
+            MatchBonusEnabled = matchBonusEnabled;
             Status = status;
         }
 
-        public void SetScore(GameScore score, bool matchBonusEnabled)
+        public void SetScore(GameScore score)
         {
             ArgumentNullException.ThrowIfNull(score);
 
-            if (!matchBonusEnabled &&
+            if (!MatchBonusEnabled &&
                 (score.TeamAMatchBonusAchieved || score.TeamBMatchBonusAchieved))
             {
                 throw new InvalidOperationException("Match bonus is disabled for this game.");
@@ -57,6 +64,12 @@ namespace JassTournamentManager.Domain.Entities
         public void SetBackToPending()
         {
             Status = GameStatus.Pending;
+            MarkAsUpdated();
+        }
+
+        public void UpdateMatchBonusEnabled(bool matchBonusEnabled)
+        {
+            MatchBonusEnabled = matchBonusEnabled;
             MarkAsUpdated();
         }
     }

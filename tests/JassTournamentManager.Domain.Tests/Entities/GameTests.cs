@@ -13,7 +13,10 @@ namespace JassTournamentManager.Domain.Tests.Entities
         {
             var emptyGuid = Guid.Empty;
 
-            Action act = () => new Game(emptyGuid, 1);
+            Action act = () => new Game(
+                emptyGuid,
+                GameTestData.CreateGameNumber(),
+                GameTestData.CreateMatchBonusEnabled());
 
             act.Should().Throw<ArgumentException>();
         }
@@ -21,10 +24,12 @@ namespace JassTournamentManager.Domain.Tests.Entities
         [Fact]
         public void Constructor_WithInvalidGameNumber_ThrowsArgumentOutOfRangeException()
         {
-            var pairingId = PairingTestData.CreatePairingId();
             var invalidGameNumber = 0;
 
-            Action act = () => new Game(pairingId, invalidGameNumber);
+            Action act = () => new Game(
+                PairingTestData.CreatePairingId(),
+                invalidGameNumber,
+                GameTestData.CreateMatchBonusEnabled());
 
             act.Should().Throw<ArgumentOutOfRangeException>();
         }
@@ -34,12 +39,14 @@ namespace JassTournamentManager.Domain.Tests.Entities
         {
             var pairingId = PairingTestData.CreatePairingId();
             var gameNumber = GameTestData.CreateGameNumber();
+            var matchBonusEnabled = GameTestData.CreateMatchBonusEnabled();
             var status = GameStatus.Completed;
 
-            var game = new Game(pairingId, gameNumber, status);
+            var game = new Game(pairingId, gameNumber, matchBonusEnabled, status);
 
             game.PairingId.Should().Be(pairingId);
             game.GameNumber.Should().Be(gameNumber);
+            game.MatchBonusEnabled.Should().Be(matchBonusEnabled);
             game.Status.Should().Be(status);
         }
 
@@ -86,7 +93,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         [Fact]
         public void SetScore_WithMatchBonusAndMatchBonusDisabled_ThrowsInvalidOperationException()
         {
-            var game = GameTestData.CreateGame();
+            var game = GameTestData.CreateGame(matchBonusEnabled: false);
             var score = new GameScore(
                 GameScore.TotalPointsPerGame,
                 0,
@@ -94,7 +101,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
                 false,
                 UserTestData.CreateUserId());
 
-            Action act = () => game.SetScore(score, matchBonusEnabled: false);
+            Action act = () => game.SetScore(score);
 
             act.Should().Throw<InvalidOperationException>();
         }
@@ -139,6 +146,16 @@ namespace JassTournamentManager.Domain.Tests.Entities
             game.SetBackToPending();
 
             game.Score.Should().Be(score);
+        }
+
+        [Fact]
+        public void UpdateMatchBonusEnabled_WithNewValue_UpdatesMatchBonusEnabled()
+        {
+            var game = GameTestData.CreateGame();
+
+            game.UpdateMatchBonusEnabled(false);
+
+            game.MatchBonusEnabled.Should().BeFalse();
         }
     }
 }

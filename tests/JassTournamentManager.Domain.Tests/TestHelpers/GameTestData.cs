@@ -1,4 +1,5 @@
 ﻿using JassTournamentManager.Domain.Entities;
+using JassTournamentManager.Domain.Enums;
 using JassTournamentManager.Domain.ValueObjects;
 
 namespace JassTournamentManager.Domain.Tests.TestHelpers
@@ -7,15 +8,30 @@ namespace JassTournamentManager.Domain.Tests.TestHelpers
     {
         public static int CreateGameNumber() => 1;
 
+        public static bool CreateMatchBonusEnabled() => true;
+
         public static Game CreateGame() =>
             new(
                 PairingTestData.CreatePairingId(),
-                CreateGameNumber());
+                CreateGameNumber(),
+                CreateMatchBonusEnabled());
 
-        public static Game CreateGame(Guid pairingId, int gameNumber = 1) =>
+        public static Game CreateGame(bool matchBonusEnabled) =>
+            new(
+                PairingTestData.CreatePairingId(),
+                CreateGameNumber(),
+                matchBonusEnabled);
+
+        public static Game CreateGame(
+            Guid pairingId,
+            int gameNumber = 1,
+            bool matchBonusEnabled = true,
+            GameStatus status = GameStatus.Pending) =>
             new(
                 pairingId,
-                gameNumber);
+                gameNumber,
+                matchBonusEnabled,
+                status);
 
         public static int CreateGameScorePoints() => 100;
 

@@ -26,5 +26,15 @@ namespace JassTournamentManager.Domain.Tests.TestHelpers
             pairing.AddParticipant(PairingParticipantTestData.CreatePairingParticipant(pairing.Id, TournamentParticipantTestData.CreateTournamentParticipantId(), Team.TeamB));
             pairing.AddParticipant(PairingParticipantTestData.CreatePairingParticipant(pairing.Id, TournamentParticipantTestData.CreateTournamentParticipantId(), Team.TeamB));
         }
+
+        public static void FillPairingWithCompletedGames(Pairing pairing)
+        {
+            for (var gameNumber = 1; gameNumber <= pairing.GamesPerRound; gameNumber++)
+            {
+                var game = GameTestData.CreateGame(pairing.Id, gameNumber);
+                game.SetScore(GameTestData.CreateGameScore());
+                pairing.AddGame(game);
+            }
+        }
     }
 }

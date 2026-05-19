@@ -192,6 +192,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
         {
             var pairing = PairingTestData.CreatePairing();
             PairingTestData.FillPairingWithParticipants(pairing);
+            PairingTestData.FillPairingWithCompletedGames(pairing);
 
             pairing.Complete();
 
@@ -209,12 +210,36 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
+        public void Complete_WithLessThanGamesPerRoundGames_ThrowsInvalidOperationException()
+        {
+            var pairing = PairingTestData.CreatePairing();
+            PairingTestData.FillPairingWithParticipants(pairing);
+
+            Action act = () => pairing.Complete();
+
+            act.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
         public void Complete_WithPendingGame_ThrowsInvalidOperationException()
         {
             var pairing = PairingTestData.CreatePairing();
             PairingTestData.FillPairingWithParticipants(pairing);
-            var game = GameTestData.CreateGame(pairing.Id);
-            pairing.AddGame(game);
+
+            for (var gameNumber = 1; gameNumber <= pairing.GamesPerRound; gameNumber++)
+            {
+                var game = GameTestData.CreateGame(pairing.Id, gameNumber);
+
+                if (gameNumber == pairing.GamesPerRound)
+                {
+                    pairing.AddGame(game);
+                }
+                else
+                {
+                    game.SetScore(GameTestData.CreateGameScore());
+                    pairing.AddGame(game);
+                }
+            }
 
             Action act = () => pairing.Complete();
 

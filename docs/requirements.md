@@ -62,13 +62,17 @@ Tournament
 ### Games
 - A game = one match between two pairs (2 vs 2)
 - Total 157 points per game
-- Match bonus: +100 points when a team takes all points (configurable)
+- Match bonus: +100 points when a team takes all points, if match bonus is enabled for the tournament
+- Existing games follow the current tournament match-bonus setting when the tournament configuration is changed
 - Only one team needs to enter points; the other is calculated as (157 - entered points)
 
 ### Pairings
 - Normal mode: players play individually and pairings change per round
 - Alternative: fixed teams for the whole tournament
 - Input: manual assignment or automatic draw
+- A pairing must have exactly 4 participants (2 per team)
+- A pairing must have exactly the configured number of games before it can be completed
+- A pairing can only be completed when all its games are completed
 
 ### Participants
 - Organizers can register participants manually OR
@@ -114,7 +118,7 @@ Tournament
 ## Configurable Parameters (per tournament)
 - Number of rounds (default: 5)
 - Number of games per round (default: 8)
-- Match bonus enabled/disabled (default: enabled, +100 points)
+- Match bonus enabled/disabled (default: enabled, +100 points; changes apply to existing games)
 - Pairing mode (rotating pairings vs fixed teams, default: rotating)
 - Score visibility to players during the tournament
 - Score visibility to players after the tournament

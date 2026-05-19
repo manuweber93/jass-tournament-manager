@@ -64,5 +64,15 @@ namespace JassTournamentManager.Domain.Entities
             Status = RoundStatus.Pending;
             MarkAsUpdated();
         }
+
+        public void UpdateMatchBonusEnabledForGames(bool matchBonusEnabled)
+        {
+            foreach (var pairing in _pairings)
+            {
+                pairing.UpdateMatchBonusEnabledForGames(matchBonusEnabled);
+            }
+
+            MarkAsUpdated();
+        }
     }
 }

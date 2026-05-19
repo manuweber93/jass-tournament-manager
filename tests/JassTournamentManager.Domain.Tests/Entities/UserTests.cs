@@ -102,6 +102,27 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
+        public void Constructor_WithPaddedValues_NormalizesUser()
+        {
+            var email = UserTestData.CreateEmail();
+            var passwordHash = UserTestData.CreatePasswordHash();
+            var firstName = UserTestData.CreateFirstName();
+            var lastName = UserTestData.CreateLastName();
+
+            var user = new User(
+                " " + email.ToUpperInvariant() + " ",
+                " " + passwordHash + " ",
+                " " + firstName + " ",
+                " " + lastName + " ",
+                UserTestData.CreateSourceType());
+
+            user.Email.Should().Be(email);
+            user.PasswordHash.Should().Be(passwordHash);
+            user.FirstName.Should().Be(firstName);
+            user.LastName.Should().Be(lastName);
+        }
+
+        [Fact]
         public void Constructor_WithManualUserSourceTypeAndMissingCredentials_CreatesUser()
         {
             var user = new User(

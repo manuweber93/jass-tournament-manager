@@ -73,6 +73,7 @@ Services and responsibilities:
 2) Tournament Service
 - CRUD operations for tournaments
 - Tournament configuration (rounds, games, match-bonus, etc.)
+- Propagate tournament configuration changes that affect existing domain objects (for example match-bonus changes on existing games)
 - QR-code generation for check-in
 - Tournament status management
 
@@ -91,7 +92,7 @@ Services and responsibilities:
 5) Score Service
 - Score entry and validation
 - Automatic calculations (157-point system)
-- Match-bonus logic (+100 when applicable)
+- Match-bonus logic (+100 when enabled for the tournament and applicable)
 
 6) Leaderboard Service
 - Compute standings and leaderboards

@@ -70,7 +70,7 @@ erDiagram
 | gamesPerRound | Integer | Games per round | NOT NULL, DEFAULT 8 |
 | matchBonusEnabled | Boolean | Match bonus enabled | NOT NULL, DEFAULT true |
 | isFixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
-| scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'ALWAYS_VISIBLE_FOR_EVERYONE' |
+| scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'HIDDEN_DURING_ACTIVE_TOURNAMENT' |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
@@ -91,7 +91,7 @@ erDiagram
 | gamesPerRound | Integer | Games per round | NOT NULL, DEFAULT 8 |
 | matchBonusEnabled | Boolean | Match bonus enabled | NOT NULL, DEFAULT true |
 | isFixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
-| scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'ALWAYS_VISIBLE_FOR_EVERYONE' |
+| scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'HIDDEN_DURING_ACTIVE_TOURNAMENT' |
 | location | String | Venue/location | |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
@@ -172,6 +172,7 @@ erDiagram
 | id | UUID | Primary key | PK, NOT NULL |
 | roundId | UUID | Round | FK, NOT NULL |
 | jassTableId | UUID | JassTable | FK, NOT NULL|
+| gamesPerRound | Integer | Number of games for this pairing | NOT NULL |
 | status | Enum | Pairing status | NOT NULL, DEFAULT 'PENDING' |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
@@ -181,7 +182,10 @@ erDiagram
 
 **Constraints**: UNIQUE(roundId, jassTableId)
 
-**Business rule**: Exactly 4 participants per pairing (2 per team)
+**Business rules**:
+- Exactly 4 participants per pairing (2 per team)
+- Exactly `gamesPerRound` games per pairing
+- Pairing can only be completed when all games are completed
 
 ---
 
@@ -216,6 +220,7 @@ erDiagram
 | pairingId | UUID | Pairing | FK, NOT NULL |
 | gameNumber | Integer (1-based) | Game number within the round | NOT NULL |
 | status | Enum | Game status | NOT NULL, DEFAULT 'PENDING' |
+| matchBonusEnabled | Boolean | Whether match bonus is currently enabled for this game | NOT NULL |
 | teamAPoints | Integer | Team A points | |
 | teamBPoints | Integer | Team B points | |
 | teamAMatchBonusReceived | Boolean | Team A has match bonus | DEFAULT false |
@@ -232,8 +237,9 @@ erDiagram
 
 **Business rules**:
 - `teamAPoints + teamBPoints = 157` (without match bonus)
-- Match bonus: +100 points when a team takes all tricks
+- Match bonus: +100 points when a team takes all tricks and `matchBonusEnabled = true`
 - Only one team can have the match bonus
+- Changing the tournament match-bonus configuration updates existing games
 
 ---
 
@@ -261,7 +267,7 @@ Future versions may support multiple named templates per organizer.
 ### Game Rules
 1. **Participants**: Exactly 4 players per game (2 teams of 2 players)
 2. **Total Points**: 157 points per game
-3. **Match Bonus**: +100 points if one team scores all 157 points (configurable)
+3. **Match Bonus**: +100 points if one team scores all 157 points and match bonus is enabled for the tournament
 4. **Automatic Calculation**: When Team A enters points, Team B points are calculated automatically (`157 - Team A`)
 
 ### Pairing Rules
@@ -271,6 +277,7 @@ Future versions may support multiple named templates per organizer.
    - Organizer: Manual entry (or automatic random draw)
    - Players: Can enter their assigned partner themselves
 4. **Tracking**: `enteredBy` in `PairingParticipant` indicates who entered the pairing
+5. **Completion**: A pairing can only be completed when it has exactly 4 participants, exactly 2 participants per team, exactly the configured number of games, and all games are completed.
 
 ### Visibility Rules
 The configured score visibility mode determines who can see scores:

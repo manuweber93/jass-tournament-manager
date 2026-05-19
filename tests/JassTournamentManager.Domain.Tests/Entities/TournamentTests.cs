@@ -275,6 +275,26 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
+        public void UpdateConfigValues_WithChangedMatchBonusEnabled_UpdatesExistingGames()
+        {
+            var tournament = TournamentTestData.CreateTournament();
+            var round = RoundTestData.CreateRound(tournament.Id);
+            var pairing = PairingTestData.CreatePairing(round.Id);
+            var game = GameTestData.CreateGame(pairing.Id);
+            pairing.AddGame(game);
+            round.AddPairing(pairing);
+            tournament.AddRound(round);
+            var newConfigValues = tournament.ConfigValues with
+            {
+                MatchBonusEnabled = false
+            };
+
+            tournament.UpdateConfigValues(newConfigValues);
+
+            game.MatchBonusEnabled.Should().BeFalse();
+        }
+
+        [Fact]
         public void Complete_SetsStatusToCompleted()
         {
             var tournament = TournamentTestData.CreateTournament();

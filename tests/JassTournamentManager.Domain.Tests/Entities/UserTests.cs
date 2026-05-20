@@ -38,6 +38,55 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
+        public void Constructor_WithTooLongEmail_ThrowsArgumentOutOfRangeException()
+        {
+            var tooLongEmail = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" +
+                                "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" +
+                                "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" +
+                                "@example.com";
+
+            Action act = () => new User(
+                tooLongEmail,
+                UserTestData.CreatePasswordHash(),
+                UserTestData.CreateFirstName(),
+                UserTestData.CreateLastName(),
+                UserTestData.CreateSourceType());
+
+            act.Should().Throw<ArgumentOutOfRangeException>();
+        }
+
+        [Fact]
+        public void Constructor_WithTooLongFirstName_ThrowsArgumentOutOfRangeException()
+        {
+            var tooLongFirstName = "MaximilianAlexanderSebastianChristopherJonathanTheodore";
+
+            Action act = () => new User(
+                UserTestData.CreateEmail(),
+                UserTestData.CreatePasswordHash(),
+                tooLongFirstName,
+                UserTestData.CreateLastName(),
+                UserTestData.CreateSourceType());
+
+            act.Should().Throw<ArgumentOutOfRangeException>();
+        }
+
+        [Fact]
+        public void Constructor_WithTooLongLastName_ThrowsArgumentOutOfRangeException()
+        {
+            var tooLongLastName = "VonUndZuHinteroberunterwasserschlossensbergerMeierHuber";
+
+            Action act = () => new User(
+                UserTestData.CreateEmail(),
+                UserTestData.CreatePasswordHash(),
+                UserTestData.CreateFirstName(),
+                tooLongLastName,
+                UserTestData.CreateSourceType());
+
+            act.Should().Throw<ArgumentOutOfRangeException>();
+        }
+
+        [Fact]
         public void Constructor_WithSelfRegisteredUserAndBlankEmail_ThrowsArgumentException()
         {
             var blankEmail = " ";

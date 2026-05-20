@@ -8,7 +8,7 @@
 
         public DateTimeOffset UpdatedAt { get; protected set; }
 
-        public BaseEntity()
+        protected BaseEntity()
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             

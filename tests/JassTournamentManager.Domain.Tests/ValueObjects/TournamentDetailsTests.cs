@@ -21,6 +21,39 @@ namespace JassTournamentManager.Domain.Tests.ValueObjects
         }
 
         [Fact]
+        public void Constructor_WithTooLongName_ThrowsArgumentException()
+        {
+            var tooLongName = "Internationales Frühlings-, Sommer-, Herbst- und Winter-" +
+                                "Gedächtnis-Schieberjassturnier des Verbandes der traditionellen " +
+                                "Jassvereine der gesamten deutschsprachigen Alpenregion mit " +
+                                "Rahmenprogramm, Festwirtschaft, Livemusik und regionaler Delegation";
+
+            Action act = () => new TournamentDetails(
+                tooLongName,
+                null,
+                TournamentTestData.CreateTournamentDate(),
+                TournamentTestData.CreateTournamentCode());
+
+            act.Should().Throw<ArgumentOutOfRangeException>();
+        }
+
+        [Fact]
+        public void Constructor_WithTooLongLocation_ThrowsArgumentException()
+        {
+            var tooLongLocation = "Mehrzweckhalle und Kulturzentrum Hinteroberunterwasserschlossensberg, " +
+                                    "Panoramastrasse 145, Gebäude Süd-West, Veranstaltungs- und Kongressbereich " +
+                                    "mit zusätzlicher Besuchertribüne, unterirdischer Parkgarage und historischem Festsaal";
+
+            Action act = () => new TournamentDetails(
+                TournamentTestData.CreateTournamentName(),
+                tooLongLocation,
+                TournamentTestData.CreateTournamentDate(),
+                TournamentTestData.CreateTournamentCode());
+
+            act.Should().Throw<ArgumentOutOfRangeException>();
+        }
+
+        [Fact]
         public void Constructor_WithBlankTournamentCode_ThrowsArgumentException()
         {
             var blankTournamentCode = "";
@@ -32,6 +65,20 @@ namespace JassTournamentManager.Domain.Tests.ValueObjects
                 blankTournamentCode);
 
             act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void Constructor_WithTooLongTournamentCode_ThrowsArgumentException()
+        {
+            var tooLongTournamentCode = "ABCDEF1234567890GHIJK";
+
+            Action act = () => new TournamentDetails(
+                TournamentTestData.CreateTournamentName(),
+                TournamentTestData.CreateLocation(),
+                TournamentTestData.CreateTournamentDate(),
+                tooLongTournamentCode);
+
+            act.Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [Fact]

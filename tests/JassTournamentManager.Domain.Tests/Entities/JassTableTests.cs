@@ -33,6 +33,19 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
+        public void Constructor_WithTooLongName_ThrowsArgumentOutOfRangeException()
+        {
+            var tooLongJassTableName = "Jasstisch im grossen Saal, direkt neben dem Fenster mit Blick auf die Bühne und reserviert für Finalrunden";
+
+            Action act = () => new JassTable(
+                UserTestData.CreateUserId(),
+                tooLongJassTableName,
+                JassTableTestData.CreateDisplayOrder());
+
+            act.Should().Throw<ArgumentOutOfRangeException>();
+        }
+
+        [Fact]
         public void Constructor_WithNegativeDisplayOrder_ThrowsArgumentOutOfRangeException()
         {
             var negativeDisplayOrder = -1;

@@ -18,5 +18,21 @@
             }
         }
 
+        public static void AgainstMaxLength(string value, int maxLength, string parameterName)
+        {
+            if (value.Length > maxLength)
+            {
+                throw new ArgumentOutOfRangeException($"{parameterName} must not exceed ${maxLength} characters.");
+            }
+        }
+
+        public static void AgainstOptionalMaxLength(string? value, int maxLength, string parameterName)
+        {
+            if (value is not null)
+            {
+                AgainstMaxLength(value, maxLength, parameterName);
+            }
+        }
+
     }
 }

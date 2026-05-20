@@ -29,14 +29,7 @@ namespace JassTournamentManager.Domain.Entities
 
         public User(string? email, string? passwordHash, string firstName, string lastName, UserSourceType sourceType, bool isSysAdmin = DefaultIsSysAdmin)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
-            ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
-
-            if (sourceType == UserSourceType.SelfRegistered)
-            {
-                ArgumentException.ThrowIfNullOrWhiteSpace(email);
-                ArgumentException.ThrowIfNullOrWhiteSpace(passwordHash);
-            }
+            VerifyArguments(email, passwordHash, firstName, lastName, sourceType);
 
             Email = email?.Trim().ToLowerInvariant();
             PasswordHash = passwordHash?.Trim();
@@ -64,6 +57,23 @@ namespace JassTournamentManager.Domain.Entities
             MergeTargetUserId = mergeTargetUserId;
             MergedBy = mergedByUserId;
             MergedAt = DateTimeOffset.UtcNow;
+        }
+
+        private static void VerifyArguments(string? email, string? passwordHash, string firstName, string lastName, UserSourceType sourceType)
+        {
+            Guard.AgainstOptionalMaxLength(email, 320, nameof(email));
+
+            ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
+            Guard.AgainstMaxLength(firstName, 50, nameof(firstName));
+
+            ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
+            Guard.AgainstMaxLength(lastName, 50, nameof(lastName));
+
+            if (sourceType == UserSourceType.SelfRegistered)
+            {
+                ArgumentException.ThrowIfNullOrWhiteSpace(email);
+                ArgumentException.ThrowIfNullOrWhiteSpace(passwordHash);
+            }
         }
     }
 }

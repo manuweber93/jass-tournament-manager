@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: jass-postgres
+    environment:
+      POSTGRES_DB: jass_tournament_manager
+      POSTGRES_USER: jass_app
+      POSTGRES_PASSWORD: jass_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - jass_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  jass_postgres_data:

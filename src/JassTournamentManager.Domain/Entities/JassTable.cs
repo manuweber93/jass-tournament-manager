@@ -18,9 +18,7 @@ namespace JassTournamentManager.Domain.Entities
 
         public JassTable(Guid organizerId, string name, int displayOrder, bool isActive = DefaultIsActive)
         {
-            Guard.AgainstEmptyGuid(organizerId, nameof(organizerId));
-            ArgumentException.ThrowIfNullOrWhiteSpace(name);
-            ArgumentOutOfRangeException.ThrowIfNegative(displayOrder);
+            VerifyArguments(organizerId, name, displayOrder);
 
             OrganizerId = organizerId;
             Name = name.Trim();
@@ -47,6 +45,16 @@ namespace JassTournamentManager.Domain.Entities
         {
             IsActive = isActive;
             MarkAsUpdated();
+        }
+
+        private static void VerifyArguments(Guid organizerId, string name, int displayOrder)
+        {
+            Guard.AgainstEmptyGuid(organizerId, nameof(organizerId));
+
+            ArgumentException.ThrowIfNullOrWhiteSpace(name);
+            Guard.AgainstMaxLength(name, 100, nameof(name));
+
+            ArgumentOutOfRangeException.ThrowIfNegative(displayOrder);
         }
     }
 }

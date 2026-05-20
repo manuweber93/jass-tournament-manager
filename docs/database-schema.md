@@ -37,10 +37,10 @@ erDiagram
 | Field | Type | Description | Constraints |
 |------|-----|--------------|-------------|
 | id | UUID | Primary key | PK, NOT NULL |
-| email | String | Email address | UNIQUE |
-| passwordHash | String | Hashed password | |
-| firstName | String | First name | NOT NULL |
-| lastName | String | Last name | NOT NULL |
+| email | varchar(320) | Email address | UNIQUE, |
+| passwordHash | text | Hashed password | |
+| firstName | varchar(50) | First name | NOT NULL |
+| lastName | varchar(50) | Last name | NOT NULL |
 | isSysAdmin | Boolean | Whether user is sysAdmin | NOT NULL, DEFAULT false |
 | sourceType | Enum | How was the user created? | NOT NULL|
 | mergeTargetUserId | UUID | merge target user id | |
@@ -61,11 +61,11 @@ erDiagram
 |------|-----|--------------|-------------|
 | id | UUID | Primary key | PK, NOT NULL |
 | organizerId | UUID | User id of organizer | FK, NOT NULL |
-| name | String | Tournament name | NOT NULL |
-| location | String | Venue/location | |
+| name | varchar(200) | Tournament name | NOT NULL |
+| location | varchar(200) | Venue/location | |
 | date | Date | Tournament date | NOT NULL |
 | status | Enum | Tournament status | NOT NULL, DEFAULT 'ACTIVE' |
-| tournamentCode | String | Code which is used to join tournament | UNIQUE |
+| tournamentCode | varchar(20) | Code which is used to join tournament | UNIQUE |
 | numberOfRounds | Integer | Number of rounds | NOT NULL, DEFAULT 5 |
 | gamesPerRound | Integer | Games per round | NOT NULL, DEFAULT 8 |
 | matchBonusEnabled | Boolean | Match bonus enabled | NOT NULL, DEFAULT true |
@@ -92,7 +92,7 @@ erDiagram
 | matchBonusEnabled | Boolean | Match bonus enabled | NOT NULL, DEFAULT true |
 | isFixedTeams | Boolean | Fixed teams | NOT NULL, DEFAULT false |
 | scoreVisibility | Enum | Score visibility | NOT NULL, DEFAULT 'HIDDEN_DURING_ACTIVE_TOURNAMENT' |
-| location | String | Venue/location | |
+| location | varchar(200) | Venue/location | |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
@@ -154,13 +154,11 @@ erDiagram
 |------|-----|--------------|-------------|
 | id | UUID | Primary key | PK, NOT NULL |
 | organizerId | UUID | Organizer | FK, NOT NULL |
-| name | String | Jass table name/label | NOT NULL |
+| name | varchar(100) | Jass table name/label | NOT NULL |
 | displayOrder | Integer | Sort order | NOT NULL |
 | isActive | Boolean | Table active | NOT NULL, DEFAULT true |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
-
-**Constraints**: UNIQUE(organizerId, name)
 
 ---
 
@@ -206,7 +204,7 @@ erDiagram
 - `team`: `TEAM_A`, `TEAM_B`
 
 **Constraints**: 
-- UNIQUE(pairingId, participantId)
+- UNIQUE(pairingId, tournamentParticipantId)
 
 ---
 
@@ -305,13 +303,14 @@ The configured score visibility mode determines who can see scores:
 3. Merged users must not be usable for authentication or new tournament registrations.
 4. Existing tournament participations remain assigned to the merged user account.
 
-## Indices (Performance optimization)
+## Indices
+
+### Performance optimization
 
 ```sql
 -- Tournament
 CREATE INDEX idx_tournament_organizer ON Tournament(organizerId);
 CREATE INDEX idx_tournament_status ON Tournament(status);
-CREATE INDEX idx_tournament_date ON Tournament(date);
 
 -- TournamentConfigTemplate
 CREATE INDEX idx_config_template_organizer ON TournamentConfigTemplate(organizerId);
@@ -322,7 +321,6 @@ CREATE INDEX idx_participant_user ON TournamentParticipant(userId);
 
 -- Round
 CREATE INDEX idx_round_tournament ON Round(tournamentId);
-CREATE INDEX idx_round_tournament_status ON Round(tournamentId, status);
 
 -- JassTable
 CREATE INDEX idx_table_organizer ON JassTable(organizerId);
@@ -330,17 +328,48 @@ CREATE INDEX idx_table_active ON JassTable(organizerId, isActive);
 
 -- Pairing
 CREATE INDEX idx_pairing_round ON Pairing(roundId);
-CREATE INDEX idx_pairing_round_status ON Pairing(roundId, status);
 
 -- PairingParticipant
 CREATE INDEX idx_pairing_participant_pairing ON PairingParticipant(pairingId);
 CREATE INDEX idx_pairing_participant_participant ON PairingParticipant(participantId);
-CREATE INDEX idx_pairing_participant_team ON PairingParticipant(pairingId, team);
 
 -- Game
 CREATE INDEX idx_game_pairing ON Game(pairingId);
 CREATE INDEX idx_game_pairing_status ON Game(pairingId, status);
 
+```
+
+### Unique indices
+
+```sql
+-- User
+CREATE UNIQUE INDEX ux_users_email
+    ON users(email)
+    WHERE email IS NOT NULL;
+
+-- Tournament
+CREATE UNIQUE INDEX ux_tournaments_tournament_code
+    ON tournaments(tournament_code);
+
+-- TournamentParticipant
+CREATE UNIQUE INDEX ux_tournament_participants_user_tournament
+    ON tournament_participants(user_id, tournament_id);
+
+-- Round
+CREATE UNIQUE INDEX ux_rounds_tournament_round_number
+    ON rounds(tournament_id, round_number);
+
+-- Pairing
+CREATE UNIQUE INDEX ux_pairings_round_jass_table
+    ON pairings(round_id, jass_table_id);
+
+-- PairingParticipant
+CREATE UNIQUE INDEX ux_pairing_participants_pairing_tournament_participant
+    ON pairing_participants(pairing_id, tournament_participant_id);
+
+-- Game
+CREATE UNIQUE INDEX ux_games_pairing_game_number
+    ON games(pairing_id, game_number);
 ```
 
 ## Data Migration & Import

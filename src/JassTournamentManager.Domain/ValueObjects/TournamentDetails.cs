@@ -18,14 +18,25 @@ namespace JassTournamentManager.Domain.ValueObjects
             DateOnly date,
             string tournamentCode)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(name);
-            Guard.AgainstDefaultDateOnly(date, nameof(date));
-            ArgumentException.ThrowIfNullOrWhiteSpace(tournamentCode);
+            VerifyArguments(name, location, date, tournamentCode);
 
             Name = name.Trim();
             Location = location?.Trim();
             Date = date;
             TournamentCode = tournamentCode.Trim();
+        }
+
+        private static void VerifyArguments(string name, string? location, DateOnly date, string tournamentCode)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(name);
+            Guard.AgainstMaxLength(name, 200, nameof(name));
+
+            Guard.AgainstOptionalMaxLength(location, 200, nameof(location));
+
+            Guard.AgainstDefaultDateOnly(date, nameof(date));
+
+            ArgumentException.ThrowIfNullOrWhiteSpace(tournamentCode);
+            Guard.AgainstMaxLength(tournamentCode, 20, nameof(tournamentCode));
         }
     }
 }

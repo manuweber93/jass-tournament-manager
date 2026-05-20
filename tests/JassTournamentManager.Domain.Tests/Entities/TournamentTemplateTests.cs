@@ -21,6 +21,21 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
+        public void Constructor_WithTooLongLocation_ThrowsArgumentOutOfRangeException()
+        {
+            var tooLongLocation = "Mehrzweckhalle und Kulturzentrum Hinteroberunterwasserschlossensberg, " +
+                                    "Panoramastrasse 145, Gebäude Süd-West, Veranstaltungs- und Kongressbereich " +
+                                    "mit zusätzlicher Besuchertribüne, unterirdischer Parkgarage und historischem Festsaal";
+
+            Action act = () => new TournamentTemplate(
+                UserTestData.CreateUserId(),
+                TournamentTestData.CreateTournamentConfigValues(),
+                tooLongLocation);
+
+            act.Should().Throw<ArgumentOutOfRangeException>();
+        }
+
+        [Fact]
         public void Constructor_WithNullConfigValues_ThrowsArgumentNullException()
         {
             Action act = () => new TournamentTemplate(

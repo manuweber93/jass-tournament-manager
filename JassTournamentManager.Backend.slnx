@@ -8,5 +8,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/JassTournamentManager.Domain.Tests/JassTournamentManager.Domain.Tests.csproj" />
+    <Project Path="tests/JassTournamentManager.Infrastructure.Tests/JassTournamentManager.Infrastructure.Tests.csproj" />
   </Folder>
 </Solution>

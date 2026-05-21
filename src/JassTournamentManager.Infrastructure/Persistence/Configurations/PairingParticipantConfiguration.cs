@@ -1,4 +1,4 @@
-﻿using JassTournamentManager.Domain.Entities;
+using JassTournamentManager.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -38,7 +38,7 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
             builder.HasOne<TournamentParticipant>()
                 .WithMany()
                 .HasForeignKey(pairingParticipant => pairingParticipant.EnteredBy)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(pairingParticipant => pairingParticipant.PairingId)
                 .HasDatabaseName("idx_pairing_participant_pairing");

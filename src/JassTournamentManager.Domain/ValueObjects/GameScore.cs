@@ -1,4 +1,4 @@
-﻿using JassTournamentManager.Domain.Common;
+using JassTournamentManager.Domain.Common;
 using JassTournamentManager.Domain.Entities;
 using JassTournamentManager.Domain.Enums;
 
@@ -24,14 +24,14 @@ namespace JassTournamentManager.Domain.ValueObjects
             int teamBPoints,
             bool teamAMatchBonusAchieved,
             bool teamBMatchBonusAchieved,
-            Guid enteredByParticipantId)
+            Guid enteredBy)
         {
             Validate(
                 teamAPoints,
                 teamBPoints,
                 teamAMatchBonusAchieved,
                 teamBMatchBonusAchieved,
-                enteredByParticipantId);
+                enteredBy);
 
             TeamAPoints = ApplyMatchBonus(teamAPoints, teamAMatchBonusAchieved);
             TeamBPoints = ApplyMatchBonus(teamBPoints, teamBMatchBonusAchieved);
@@ -39,7 +39,7 @@ namespace JassTournamentManager.Domain.ValueObjects
             TeamAMatchBonusAchieved = teamAMatchBonusAchieved;
             TeamBMatchBonusAchieved = teamBMatchBonusAchieved;
 
-            EnteredBy = enteredByParticipantId;
+            EnteredBy = enteredBy;
             EnteredAt = DateTimeOffset.UtcNow;
         }
 
@@ -48,7 +48,7 @@ namespace JassTournamentManager.Domain.ValueObjects
             int teamBPoints,
             bool teamAMatchBonusAchieved,
             bool teamBMatchBonusAchieved,
-            Guid enteredByParticipantId)
+            Guid enteredBy)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(teamAPoints);
             ArgumentOutOfRangeException.ThrowIfNegative(teamBPoints);
@@ -77,7 +77,7 @@ namespace JassTournamentManager.Domain.ValueObjects
                     "Only one team can receive the match bonus.");
             }
 
-            Guard.AgainstEmptyGuid(enteredByParticipantId, nameof(enteredByParticipantId));
+            Guard.AgainstEmptyGuid(enteredBy, nameof(enteredBy));
         }
 
         private static int ApplyMatchBonus(int points, bool matchBonusAchieved)

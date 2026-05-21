@@ -113,6 +113,11 @@ API design:
 
 ### Data Layer
 
+Architecture decision:
+- Domain constructors, value objects, and domain methods are the authoritative place for business defaults and invariants.
+- The database schema focuses on relational integrity and physical storage boundaries: primary keys, foreign keys, nullability, max lengths, indexes, unique constraints, and explicit delete behavior.
+- Database defaults and check constraints are intentionally not duplicated for rules that are already enforced by the domain model. Direct database writes are treated as exceptional maintenance work and must respect domain invariants manually.
+
 Business rules:
 - Organizer isolation (each organizer sees only their own tournaments, SYSADMIN exception)
 - Automatic score calculation where applicable

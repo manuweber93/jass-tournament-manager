@@ -31,6 +31,8 @@ erDiagram
 
 ## Entities
 
+Note: Defaults listed in this document describe domain-level defaults unless explicitly stated otherwise. Entity creation is expected to go through the domain model; the database schema enforces relational integrity and uniqueness, but intentionally does not duplicate domain invariants with database defaults or check constraints.
+
 ### 1. User
 **Description**: Authenticated users of the system (organizers and players)
 
@@ -41,9 +43,10 @@ erDiagram
 | passwordHash | text | Hashed password | |
 | firstName | varchar(50) | First name | NOT NULL |
 | lastName | varchar(50) | Last name | NOT NULL |
+| isActive | boolean | Is user active? | NOT NULL, DEFAULT true |
 | isSysAdmin | Boolean | Whether user is sysAdmin | NOT NULL, DEFAULT false |
 | sourceType | Enum | How was the user created? | NOT NULL|
-| mergeTargetUserId | UUID | merge target user id | |
+| mergeTargetUserId | UUID | merge target user id | FK |
 | mergedAt | DateTime | merge time | |
 | mergedBy | UUID | user id of merging user | FK |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
@@ -114,7 +117,6 @@ erDiagram
 | role | Enum | Role | NOT NULL |
 | isPlaying | Boolean | Indicates whether the participant plays in the tournament | NOT NULL, DEFAULT true|
 | registrationMethod | Enum | Registration method | NOT NULL |
-| registeredAt | DateTime | Registration timestamp | NOT NULL |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
@@ -253,8 +255,7 @@ erDiagram
 1. **Reusability**: Templates can be used for multiple tournaments
 2. **Copy on Creation**: Tournament configuration is copied from the template when creating a tournament
 3. **Independence**: Changes to a template only affect newly created tournaments
-4. **Template Reference**: `TournamentConfig` keeps a reference to the original template
-5. **Default template per organizer (V1)**: In the first version, each organizer has exactly one default configuration template.
+4. **Default template per organizer (V1)**: In the first version, each organizer has exactly one default configuration template.
 Future versions may support multiple named templates per organizer.
 
 ### Round Rules
@@ -308,12 +309,15 @@ The configured score visibility mode determines who can see scores:
 ### Performance optimization
 
 ```sql
+-- User
+CREATE INDEX idx_user_merge_target_user_id ON User(mergeTargetUserId);
+
 -- Tournament
 CREATE INDEX idx_tournament_organizer ON Tournament(organizerId);
 CREATE INDEX idx_tournament_status ON Tournament(status);
 
--- TournamentConfigTemplate
-CREATE INDEX idx_config_template_organizer ON TournamentConfigTemplate(organizerId);
+-- TournamentTemplate
+CREATE INDEX idx_tournament_template_organizer ON TournamentTemplate(organizerId);
 
 -- TournamentParticipant
 CREATE INDEX idx_participant_tournament ON TournamentParticipant(tournamentId);
@@ -335,7 +339,6 @@ CREATE INDEX idx_pairing_participant_participant ON PairingParticipant(participa
 
 -- Game
 CREATE INDEX idx_game_pairing ON Game(pairingId);
-CREATE INDEX idx_game_pairing_status ON Game(pairingId, status);
 
 ```
 

@@ -10,22 +10,16 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
         {
             builder.ToTable("tournaments");
 
-            builder.HasKey(tournament => tournament.Id);
-
-            builder.Property(tournament => tournament.Id)
-                .HasColumnName("id");
-
-            builder.Property(tournament => tournament.CreatedAt)
-                .HasColumnName("created_at")
-                .IsRequired();
-
-            builder.Property(tournament => tournament.UpdatedAt)
-                .HasColumnName("updated_at")
-                .IsRequired();
+            builder.ConfigureBaseEntity();
 
             builder.Property(tournament => tournament.OrganizerId)
                 .HasColumnName("organizer_id")
                 .IsRequired();
+
+            builder.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(tournament => tournament.OrganizerId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(tournament => tournament.Status)
                 .HasColumnName("status")
@@ -91,7 +85,8 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
 
             builder.HasMany(tournament => tournament.Rounds)
                 .WithOne()
-                .HasForeignKey(round => round.TournamentId);
+                .HasForeignKey(round => round.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Metadata
                 .FindNavigation(nameof(Tournament.Rounds))!
@@ -99,7 +94,8 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
 
             builder.HasMany(tournament => tournament.Participants)
                 .WithOne()
-                .HasForeignKey(participant => participant.TournamentId);
+                .HasForeignKey(participant => participant.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Metadata
                 .FindNavigation(nameof(Tournament.Participants))!

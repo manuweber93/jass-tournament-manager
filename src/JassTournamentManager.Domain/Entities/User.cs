@@ -3,9 +3,10 @@ using JassTournamentManager.Domain.Enums;
 
 namespace JassTournamentManager.Domain.Entities
 {
-    public class User : Common.BaseEntity
+    public class User : BaseEntity
     {
         private const bool DefaultIsSysAdmin = false;
+        private const bool DefaultIsActive = true;
 
         public string? Email { get; private set; }
 
@@ -14,6 +15,8 @@ namespace JassTournamentManager.Domain.Entities
         public string FirstName { get; private set; } = string.Empty;
 
         public string LastName { get; private set; } = string.Empty;
+
+        public bool IsActive { get; private set; }
 
         public bool IsSysAdmin { get; private set; }
 
@@ -27,7 +30,7 @@ namespace JassTournamentManager.Domain.Entities
 
         private User() { }
 
-        public User(string? email, string? passwordHash, string firstName, string lastName, UserSourceType sourceType, bool isSysAdmin = DefaultIsSysAdmin)
+        public User(string? email, string? passwordHash, string firstName, string lastName, UserSourceType sourceType, bool isActive = DefaultIsActive, bool isSysAdmin = DefaultIsSysAdmin)
         {
             VerifyArguments(email, passwordHash, firstName, lastName, sourceType);
 
@@ -36,6 +39,22 @@ namespace JassTournamentManager.Domain.Entities
             FirstName = firstName.Trim();
             LastName = lastName.Trim();
             SourceType = sourceType;
+            IsActive = isActive;
+            IsSysAdmin = isSysAdmin;
+        }
+
+        public void Update(string email, string passwordHash, string firstName, string lastName, bool isActive, bool isSysAdmin)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(email);
+            ArgumentException.ThrowIfNullOrWhiteSpace(passwordHash);
+            ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
+
+            Email = email.Trim().ToLowerInvariant();
+            PasswordHash = passwordHash.Trim();
+            FirstName = firstName.Trim();
+            LastName = lastName.Trim();
+            IsActive = isActive;
             IsSysAdmin = isSysAdmin;
         }
 

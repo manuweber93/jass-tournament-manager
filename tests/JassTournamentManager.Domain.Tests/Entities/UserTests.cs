@@ -117,6 +117,14 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
+        public void Constructor_DefaultIsActive_IsTrue()
+        {
+            var user = UserTestData.CreateUser();
+
+            user.IsActive.Should().BeTrue();
+        }
+
+        [Fact]
         public void Constructor_DefaultIsSysAdmin_IsFalse()
         {
             var user = UserTestData.CreateUser();
@@ -132,6 +140,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
             var firstName = UserTestData.CreateFirstName();
             var lastName = UserTestData.CreateLastName();
             var sourceType = UserTestData.CreateSourceType();
+            var isActive = false;
             var isSysAdmin = true;
 
             var user = new User(
@@ -140,6 +149,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
                 firstName,
                 lastName,
                 sourceType,
+                isActive,
                 isSysAdmin);
 
             user.Email.Should().Be(email);
@@ -147,6 +157,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
             user.FirstName.Should().Be(firstName);
             user.LastName.Should().Be(lastName);
             user.SourceType.Should().Be(sourceType);
+            user.IsActive.Should().Be(isActive);
             user.IsSysAdmin.Should().Be(isSysAdmin);
         }
 
@@ -184,6 +195,74 @@ namespace JassTournamentManager.Domain.Tests.Entities
             user.Email.Should().BeNull();
             user.PasswordHash.Should().BeNull();
             user.SourceType.Should().Be(UserSourceType.Manual);
+        }
+
+        [Fact]
+        public void Update_WithEmptyEmail_ThrowsArgumentException()
+        {
+            var user = UserTestData.CreateUser();
+            var emptyEmail = " ";
+
+            Action act = () => user.Update(
+                emptyEmail,
+                UserTestData.CreatePasswordHash(),
+                UserTestData.CreateFirstName(),
+                UserTestData.CreateLastName(),
+                true,
+                false);
+
+            act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void Update_WithEmptyPasswordHash_ThrowsArgumentException()
+        {
+            var user = UserTestData.CreateUser();
+            var emptyPasswordHash = " ";
+
+            Action act = () => user.Update(
+                UserTestData.CreateEmail(),
+                emptyPasswordHash,
+                UserTestData.CreateFirstName(),
+                UserTestData.CreateLastName(),
+                true,
+                false);
+
+            act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void Update_WithEmptyFirstName_ThrowsArgumentException()
+        {
+            var user = UserTestData.CreateUser();
+            var emptyFirstName = " ";
+
+            Action act = () => user.Update(
+                UserTestData.CreateEmail(),
+                UserTestData.CreatePasswordHash(),
+                emptyFirstName,
+                UserTestData.CreateLastName(),
+                true,
+                false);
+
+            act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void Update_WithEmptyLastName_ThrowsArgumentException()
+        {
+            var user = UserTestData.CreateUser();
+            var emptyLastName = " ";
+
+            Action act = () => user.Update(
+                UserTestData.CreateEmail(),
+                UserTestData.CreatePasswordHash(),
+                UserTestData.CreateFirstName(),
+                emptyLastName,
+                true,
+                false);
+
+            act.Should().Throw<ArgumentException>();
         }
 
         [Fact]

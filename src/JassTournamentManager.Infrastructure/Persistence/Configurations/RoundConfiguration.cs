@@ -10,18 +10,7 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
         {
             builder.ToTable("rounds");
 
-            builder.HasKey(round => round.Id);
-
-            builder.Property(round => round.Id)
-                .HasColumnName("id");
-
-            builder.Property(round => round.CreatedAt)
-                .HasColumnName("created_at")
-                .IsRequired();
-
-            builder.Property(round => round.UpdatedAt)
-                .HasColumnName("updated_at")
-                .IsRequired();
+            builder.ConfigureBaseEntity();
 
             builder.Property(round => round.TournamentId)
                 .HasColumnName("tournament_id")
@@ -39,7 +28,8 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
 
             builder.HasMany(round => round.Pairings)
                 .WithOne()
-                .HasForeignKey(pairing => pairing.RoundId);
+                .HasForeignKey(pairing => pairing.RoundId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Metadata
                 .FindNavigation(nameof(Round.Pairings))!
@@ -52,9 +42,8 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
             {
                 round.TournamentId,
                 round.RoundNumber
-            })
-                .IsUnique()
-                .HasDatabaseName("ux_rounds_tournament_round_number");
+            }).IsUnique()
+            .HasDatabaseName("ux_rounds_tournament_round_number");
         }
     }
 }

@@ -54,7 +54,6 @@ namespace JassTournamentManager.Domain.Tests.Entities
             participant.RegistrationMethod.Should().Be(registrationMethod);
             participant.Role.Should().Be(role);
             participant.IsPlaying.Should().Be(isPlaying);
-            participant.RegisteredAt.Should().NotBe(default);
         }
 
         [Fact]

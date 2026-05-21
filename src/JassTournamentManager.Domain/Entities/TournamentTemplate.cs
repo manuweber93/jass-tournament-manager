@@ -16,10 +16,11 @@ namespace JassTournamentManager.Domain.Entities
         public TournamentTemplate(Guid organizerId, TournamentConfigValues configValues, string? location)
         {
             Guard.AgainstEmptyGuid(organizerId, nameof(organizerId));
+            ArgumentNullException.ThrowIfNull(configValues);
             Guard.AgainstOptionalMaxLength(location, 200, nameof(location));
 
             OrganizerId = organizerId;
-            ConfigValues = configValues ?? throw new ArgumentNullException(nameof(configValues));
+            ConfigValues = configValues;
             Location = location?.Trim();
         }
 

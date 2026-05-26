@@ -11,20 +11,20 @@ namespace JassTournamentManager.Domain.Entities
 
         public Team Team { get; private set; }
 
-        public Guid EnteredBy { get; private set; }
+        public Guid EnteredByUserId { get; private set; }
 
         private PairingParticipant() { }
 
-        public PairingParticipant(Guid pairingId, Guid tournamentParticipantId, Team team, Guid enteredBy)
+        public PairingParticipant(Guid pairingId, Guid tournamentParticipantId, Team team, Guid enteredByUserId)
         {
             Guard.AgainstEmptyGuid(pairingId, nameof(pairingId));
             Guard.AgainstEmptyGuid(tournamentParticipantId, nameof(tournamentParticipantId));
-            Guard.AgainstEmptyGuid(enteredBy, nameof(enteredBy));
+            Guard.AgainstEmptyGuid(enteredByUserId, nameof(enteredByUserId));
 
             PairingId = pairingId;
             TournamentParticipantId = tournamentParticipantId;
             Team = team;
-            EnteredBy = enteredBy;
+            EnteredByUserId = enteredByUserId;
         }
 
         public void UpdateTournamentParticipant(Guid newTournamentParticipantId)

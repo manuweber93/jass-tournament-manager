@@ -111,7 +111,7 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
             return new Game(pairingId, gameNumber, matchBonusEnabled: true);
         }
 
-        public static Game CreateCompletedGame(Guid pairingId, Guid enteredBy, int gameNumber = 1)
+        public static Game CreateCompletedGame(Guid pairingId, Guid enteredByUserId, int gameNumber = 1)
         {
             var game = CreateGame(pairingId, gameNumber);
             game.SetScore(new GameScore(
@@ -119,7 +119,7 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
                 teamBPoints: 57,
                 teamAMatchBonusAchieved: false,
                 teamBMatchBonusAchieved: false,
-                enteredBy));
+                enteredByUserId));
 
             return game;
         }

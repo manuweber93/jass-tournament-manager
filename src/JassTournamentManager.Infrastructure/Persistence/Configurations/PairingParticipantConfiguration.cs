@@ -31,13 +31,13 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
                 .HasMaxLength(30)
                 .IsRequired();
 
-            builder.Property(pairingParticipant => pairingParticipant.EnteredBy)
-                .HasColumnName("entered_by")
+            builder.Property(pairingParticipant => pairingParticipant.EnteredByUserId)
+                .HasColumnName("entered_by_user_id")
                 .IsRequired();
 
-            builder.HasOne<TournamentParticipant>()
+            builder.HasOne<User>()
                 .WithMany()
-                .HasForeignKey(pairingParticipant => pairingParticipant.EnteredBy)
+                .HasForeignKey(pairingParticipant => pairingParticipant.EnteredByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(pairingParticipant => pairingParticipant.PairingId)

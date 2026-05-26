@@ -171,7 +171,7 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
             persistedGame.Score.TeamBPoints.Should().Be(graph.Game.Score.TeamBPoints);
             persistedGame.Score.TeamAMatchBonusAchieved.Should().Be(graph.Game.Score.TeamAMatchBonusAchieved);
             persistedGame.Score.TeamBMatchBonusAchieved.Should().Be(graph.Game.Score.TeamBMatchBonusAchieved);
-            persistedGame.Score.EnteredBy.Should().Be(graph.Game.Score.EnteredBy);
+            persistedGame.Score.EnteredByUserId.Should().Be(graph.Game.Score.EnteredByUserId);
             persistedGame.Score.EnteredAt.Should().BeCloseTo(graph.Game.Score.EnteredAt, TimeSpan.FromSeconds(1));
         }
 
@@ -184,11 +184,11 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
             var table = PersistenceTestData.CreateJassTable(seed.Organizer.Id);
             var pairing = PersistenceTestData.CreatePairing(round.Id, table.Id);
             var game = withGameScore
-                ? PersistenceTestData.CreateCompletedGame(pairing.Id, participants[0].Id)
+                ? PersistenceTestData.CreateCompletedGame(pairing.Id, players[0].Id)
                 : PersistenceTestData.CreateGame(pairing.Id);
 
             JassTournamentGraphBuilder.AddParticipantsToTournament(seed.Tournament, participants);
-            var pairingParticipants = JassTournamentGraphBuilder.AddPairingParticipants(pairing, participants);
+            var pairingParticipants = JassTournamentGraphBuilder.AddPairingParticipants(pairing, participants, players[0].Id);
             JassTournamentGraphBuilder.AddGame(pairing, game);
             JassTournamentGraphBuilder.AddRoundWithPairing(seed.Tournament, round, pairing);
 

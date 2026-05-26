@@ -185,7 +185,7 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
         }
 
         [DockerAvailableFact]
-        public async Task Saving_GameScore_With_MissingEnteredByParticipant_ThrowsDbUpdateException()
+        public async Task Saving_GameScore_With_UnknownEnteredByUserId_ThrowsDbUpdateException()
         {
             await _fixture.ResetDatabaseAsync();
             var graph = CreatePairingGraph("MISS-SCORE-BY");
@@ -201,7 +201,7 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
         }
 
         [DockerAvailableFact]
-        public async Task Saving_PairingParticipant_With_MissingEnteredByParticipant_ThrowsDbUpdateException()
+        public async Task Saving_PairingParticipant_With_UnknownEnteredByUserId_ThrowsDbUpdateException()
         {
             await _fixture.ResetDatabaseAsync();
             var graph = CreatePairingGraph("MISS-PAIR-BY");

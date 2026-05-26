@@ -15,7 +15,7 @@ namespace JassTournamentManager.Domain.ValueObjects
         public bool TeamAMatchBonusAchieved { get; }
         public bool TeamBMatchBonusAchieved { get; }
 
-        public Guid EnteredBy { get; }
+        public Guid EnteredByUserId { get; }
 
         public DateTimeOffset EnteredAt { get; }
 
@@ -24,14 +24,14 @@ namespace JassTournamentManager.Domain.ValueObjects
             int teamBPoints,
             bool teamAMatchBonusAchieved,
             bool teamBMatchBonusAchieved,
-            Guid enteredBy)
+            Guid enteredByUserId)
         {
             Validate(
                 teamAPoints,
                 teamBPoints,
                 teamAMatchBonusAchieved,
                 teamBMatchBonusAchieved,
-                enteredBy);
+                enteredByUserId);
 
             TeamAPoints = ApplyMatchBonus(teamAPoints, teamAMatchBonusAchieved);
             TeamBPoints = ApplyMatchBonus(teamBPoints, teamBMatchBonusAchieved);
@@ -39,7 +39,7 @@ namespace JassTournamentManager.Domain.ValueObjects
             TeamAMatchBonusAchieved = teamAMatchBonusAchieved;
             TeamBMatchBonusAchieved = teamBMatchBonusAchieved;
 
-            EnteredBy = enteredBy;
+            EnteredByUserId = enteredByUserId;
             EnteredAt = DateTimeOffset.UtcNow;
         }
 
@@ -48,7 +48,7 @@ namespace JassTournamentManager.Domain.ValueObjects
             int teamBPoints,
             bool teamAMatchBonusAchieved,
             bool teamBMatchBonusAchieved,
-            Guid enteredBy)
+            Guid enteredByUserId)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(teamAPoints);
             ArgumentOutOfRangeException.ThrowIfNegative(teamBPoints);
@@ -77,7 +77,7 @@ namespace JassTournamentManager.Domain.ValueObjects
                     "Only one team can receive the match bonus.");
             }
 
-            Guard.AgainstEmptyGuid(enteredBy, nameof(enteredBy));
+            Guard.AgainstEmptyGuid(enteredByUserId, nameof(enteredByUserId));
         }
 
         private static int ApplyMatchBonus(int points, bool matchBonusAchieved)

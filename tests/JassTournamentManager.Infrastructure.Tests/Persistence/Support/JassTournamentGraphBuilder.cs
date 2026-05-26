@@ -37,14 +37,15 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
 
         public static PairingParticipant[] AddPairingParticipants(
             Pairing pairing,
-            IReadOnlyList<TournamentParticipant> participants)
+            IReadOnlyList<TournamentParticipant> participants,
+            Guid enteredByUserId)
         {
             var pairingParticipants = new[]
             {
-                PersistenceTestData.CreatePairingParticipant(pairing.Id, participants[0].Id, Team.TeamA, participants[0].Id),
-                PersistenceTestData.CreatePairingParticipant(pairing.Id, participants[1].Id, Team.TeamA, participants[0].Id),
-                PersistenceTestData.CreatePairingParticipant(pairing.Id, participants[2].Id, Team.TeamB, participants[0].Id),
-                PersistenceTestData.CreatePairingParticipant(pairing.Id, participants[3].Id, Team.TeamB, participants[0].Id),
+                PersistenceTestData.CreatePairingParticipant(pairing.Id, participants[0].Id, Team.TeamA, enteredByUserId),
+                PersistenceTestData.CreatePairingParticipant(pairing.Id, participants[1].Id, Team.TeamA, enteredByUserId),
+                PersistenceTestData.CreatePairingParticipant(pairing.Id, participants[2].Id, Team.TeamB, enteredByUserId),
+                PersistenceTestData.CreatePairingParticipant(pairing.Id, participants[3].Id, Team.TeamB, enteredByUserId),
             };
 
             foreach (var pairingParticipant in pairingParticipants)

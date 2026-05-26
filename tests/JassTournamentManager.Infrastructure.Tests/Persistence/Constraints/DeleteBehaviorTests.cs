@@ -118,7 +118,7 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
 
             JassTournamentGraphBuilder.AddParticipantsToTournament(tournament, participants);
             var pairingParticipants = withPairingParticipants
-                ? JassTournamentGraphBuilder.AddPairingParticipants(pairing, participants)
+                ? JassTournamentGraphBuilder.AddPairingParticipants(pairing, participants, players[0].Id)
                 : [];
             var game = withGame
                 ? JassTournamentGraphBuilder.AddPendingGame(pairing)

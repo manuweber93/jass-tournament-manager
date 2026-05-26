@@ -36,15 +36,15 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void Constructor_WithEmptyEnteredBy_ThrowsArgumentException()
+        public void Constructor_WithEmptyEnteredByUserId_ThrowsArgumentException()
         {
-            var emptyEnteredBy = Guid.Empty;
+            var emptyEnteredByUserId = Guid.Empty;
 
             Action act = () => new PairingParticipant(
                 PairingTestData.CreatePairingId(),
                 PairingParticipantTestData.CreateTournamentParticipantId(),
                 PairingParticipantTestData.CreateTeam(),
-                emptyEnteredBy);
+                emptyEnteredByUserId);
 
             act.Should().Throw<ArgumentException>();
         }
@@ -55,18 +55,18 @@ namespace JassTournamentManager.Domain.Tests.Entities
             var pairingId = PairingTestData.CreatePairingId();
             var tournamentParticipantId = PairingParticipantTestData.CreateTournamentParticipantId();
             var team = PairingParticipantTestData.CreateTeam();
-            var enteredBy = UserTestData.CreateUserId();
+            var enteredByUserId = UserTestData.CreateUserId();
 
             var pairingParticipant = new PairingParticipant(
                 pairingId,
                 tournamentParticipantId,
                 team,
-                enteredBy);
+                enteredByUserId);
 
             pairingParticipant.PairingId.Should().Be(pairingId);
             pairingParticipant.TournamentParticipantId.Should().Be(tournamentParticipantId);
             pairingParticipant.Team.Should().Be(team);
-            pairingParticipant.EnteredBy.Should().Be(enteredBy);
+            pairingParticipant.EnteredByUserId.Should().Be(enteredByUserId);
         }
 
         [Fact]

@@ -72,7 +72,7 @@ namespace JassTournamentManager.Domain.Tests.ValueObjects
         }
 
         [Fact]
-        public void Constructor_WithEmptyEnteredByParticipantId_ThrowsArgumentException()
+        public void Constructor_WithEmptyEnteredByUserId_ThrowsArgumentException()
         {
             Action act = () => new GameScore(
                 100,
@@ -90,20 +90,20 @@ namespace JassTournamentManager.Domain.Tests.ValueObjects
             var pointsTeamA = 100;
             var pointsTeamB = 57;
             var matchBonusAchieved = false;
-            var enteredByParticipantId = UserTestData.CreateUserId();
+            var enteredByUserId = UserTestData.CreateUserId();
 
             var gameScore = new GameScore(
                 pointsTeamA,
                 pointsTeamB,
                 matchBonusAchieved,
                 matchBonusAchieved,
-                enteredByParticipantId);
+                enteredByUserId);
 
             gameScore.TeamAPoints.Should().Be(pointsTeamA);
             gameScore.TeamBPoints.Should().Be(pointsTeamB);
             gameScore.TeamAMatchBonusAchieved.Should().Be(matchBonusAchieved);
             gameScore.TeamBMatchBonusAchieved.Should().Be(matchBonusAchieved);
-            gameScore.EnteredBy.Should().Be(enteredByParticipantId);
+            gameScore.EnteredByUserId.Should().Be(enteredByUserId);
             gameScore.EnteredAt.Should().NotBe(default);
         }
 

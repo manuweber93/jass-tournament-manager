@@ -44,12 +44,12 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
                 scoreBuilder.Property(gameScore => gameScore.TeamBMatchBonusAchieved)
                     .HasColumnName("team_b_match_bonus_achieved");
 
-                scoreBuilder.Property(gameScore => gameScore.EnteredBy)
-                    .HasColumnName("entered_by");
+                scoreBuilder.Property(gameScore => gameScore.EnteredByUserId)
+                    .HasColumnName("entered_by_user_id");
 
-                scoreBuilder.HasOne<TournamentParticipant>()
+                scoreBuilder.HasOne<User>()
                     .WithMany()
-                    .HasForeignKey(gameScore => gameScore.EnteredBy)
+                    .HasForeignKey(gameScore => gameScore.EnteredByUserId)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 scoreBuilder.Property(gameScore => gameScore.EnteredAt)

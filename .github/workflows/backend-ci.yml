@@ -40,6 +40,7 @@ jobs:
           --configuration Release
           --no-build
           --collect:"XPlat Code Coverage"
+          --settings .\coverlet-coverage.runsettings
           --results-directory ./TestResults
 
       - name: Restore local tools

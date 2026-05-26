@@ -49,7 +49,7 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
             builder.HasOne<User>()
                 .WithMany()
                 .HasForeignKey(user => user.MergeTargetUserId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Property(user => user.MergedBy)
                 .HasColumnName("merged_by");

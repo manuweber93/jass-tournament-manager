@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\JassTournamentManager.Domain\JassTournamentManager.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -38,6 +38,63 @@ The Jass Tournament Manager application follows a classic 3-tier architecture wi
 
 ## Component Description
 
+## Project Dependencies
+
+The solution uses a layered architecture with the Domain project as the innermost layer. Dependencies must point inward or toward explicitly shared contracts.
+
+Allowed production project references:
+
+```mermaid
+flowchart TD
+    Api[JassTournamentManager.Api] --> Application[JassTournamentManager.Application]
+    Api --> Infrastructure[JassTournamentManager.Infrastructure]
+    Api --> Contracts[JassTournamentManager.Contracts]
+
+    App[JassTournamentManager.App] --> Contracts
+
+    Infrastructure --> Application
+    Infrastructure --> Domain[JassTournamentManager.Domain]
+
+    Application --> Contracts
+    Application --> Domain
+
+    Contracts --> Domain
+```
+
+```text
+JassTournamentManager.Domain
+  -> no project references
+
+JassTournamentManager.Contracts
+  -> JassTournamentManager.Domain
+
+JassTournamentManager.Application
+  -> JassTournamentManager.Domain
+  -> JassTournamentManager.Contracts
+
+JassTournamentManager.Infrastructure
+  -> JassTournamentManager.Domain
+  -> JassTournamentManager.Application
+
+JassTournamentManager.Api
+  -> JassTournamentManager.Application
+  -> JassTournamentManager.Infrastructure
+  -> JassTournamentManager.Contracts
+
+JassTournamentManager.App
+  -> JassTournamentManager.Contracts
+```
+
+Dependency rules:
+- `Domain` contains entities, value objects, enums, domain services, and invariants. It must not reference API, Application, Infrastructure, Contracts, EF Core, ASP.NET Core, or UI frameworks.
+- `Contracts` contains transport DTOs shared across API and clients. It may reference `Domain` for stable domain enums, but must not expose domain entities as DTOs.
+- `Application` contains use cases, application services, repository interfaces, unit-of-work abstractions, and application-level result/error types. It must not reference EF Core, PostgreSQL, ASP.NET Core, MAUI, or other infrastructure concerns.
+- `Infrastructure` implements technical details such as EF Core persistence, repository implementations, migrations, and external service adapters. It may implement interfaces defined by `Application`.
+- `Api` is the HTTP composition root for the backend. It wires dependency injection, ASP.NET Core middleware, controllers, configuration, and infrastructure implementations.
+- `App` is the MAUI client. It communicates with the backend through HTTP and shared contracts; it must not reference `Application`, `Infrastructure`, or backend persistence types.
+
+Test projects may reference the production projects they verify. Infrastructure tests may use Docker/PostgreSQL and EF Core to verify persistence mappings and database constraints.
+
 ### Frontend (Presentation Layer)
 
 Main responsibilities:

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JassTournamentManager.Infrastructure.Persistence
 {
-    public sealed class JassTournamentDbContext : DbContext
+    public sealed class JtmDbContext : DbContext
     {
-        public JassTournamentDbContext(DbContextOptions<JassTournamentDbContext> options) : base(options)
+        public JtmDbContext(DbContextOptions<JtmDbContext> options) : base(options)
         {
         }
 
@@ -31,7 +31,7 @@ namespace JassTournamentManager.Infrastructure.Persistence
         {
             modelBuilder.HasDefaultSchema("jtm");
 
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(JassTournamentDbContext).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(JtmDbContext).Assembly);
         }
     }
 }

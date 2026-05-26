@@ -38,7 +38,7 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
             builder.HasOne<TournamentParticipant>()
                 .WithMany()
                 .HasForeignKey(pairingParticipant => pairingParticipant.EnteredBy)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(pairingParticipant => pairingParticipant.PairingId)
                 .HasDatabaseName("idx_pairing_participant_pairing");

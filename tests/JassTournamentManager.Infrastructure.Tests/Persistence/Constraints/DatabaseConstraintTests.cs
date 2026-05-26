@@ -261,7 +261,7 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
                 pairing);
         }
 
-        private static void AddPairingGraph(JassTournamentDbContext dbContext, PairingGraph graph)
+        private static void AddPairingGraph(JtmDbContext dbContext, PairingGraph graph)
         {
             dbContext.Users.Add(graph.Organizer);
             dbContext.Users.AddRange(graph.Players);

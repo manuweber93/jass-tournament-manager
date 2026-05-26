@@ -45,13 +45,13 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
             }
         }
 
-        public JassTournamentDbContext CreateDbContext()
+        public JtmDbContext CreateDbContext()
         {
-            var options = new DbContextOptionsBuilder<JassTournamentDbContext>()
+            var options = new DbContextOptionsBuilder<JtmDbContext>()
                 .UseNpgsql(ConnectionString)
                 .Options;
 
-            return new JassTournamentDbContext(options);
+            return new JtmDbContext(options);
         }
 
         public async Task ResetDatabaseAsync()

@@ -74,7 +74,7 @@ Tournament
 - A pairing must have exactly the configured number of games before it can be completed
 - A pairing can only be completed when all its games are completed
 
-### Participants
+### Tournament Participants
 - Organizers can register participants manually OR
 - Players can add themselves via code
 - Same players can participate in different tournaments
@@ -119,9 +119,9 @@ Tournament
 - Number of rounds (default: 5)
 - Number of games per round (default: 8)
 - Match bonus enabled/disabled (default: enabled, +100 points; changes apply to existing games)
-- Pairing mode (rotating pairings vs fixed teams, default: rotating)
 - Score visibility to players during the tournament
 - Score visibility to players after the tournament
+- Maybe in a future version: Pairing mode (rotating pairings vs fixed teams, default: rotating)
 
 ## Technical Requirements
 - Code generation for tournament participation
@@ -129,4 +129,4 @@ Tournament
 - Manual pairing entry
 - Automatic score calculation (157 - entered points)
 - Match bonus calculation (+100 when applicable)
-- (Automatic pairing draw for games)
+- Maybe in a future version: Automatic pairing draw for games

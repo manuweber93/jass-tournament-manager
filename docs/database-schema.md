@@ -10,6 +10,8 @@ erDiagram
     User ||--o{ TournamentParticipant : "participates as"
     User ||--o{ JassTable : "owns"
     User o|--o{ User : "is merged into"
+    User ||--o{ PairingParticipant : "enters"
+    User ||--o{ Game : "enters result of"
 
     TournamentTemplate ||--o{ Tournament : "serves as template for"
 
@@ -23,8 +25,6 @@ erDiagram
     Pairing ||--o{ PairingParticipant : "includes"
 
     TournamentParticipant ||--o{ PairingParticipant : "appears as"
-    TournamentParticipant ||--o{ Game : "enters result of"
-    TournamentParticipant ||--o{ PairingParticipant : "enters"
 
     Pairing ||--o{ Game : "consists of"
 ```
@@ -198,7 +198,7 @@ Note: Defaults listed in this document describe domain-level defaults unless exp
 | pairingId | UUID | Game | FK, NOT NULL |
 | tournamentParticipantId | UUID | TournamentParticipant | FK, NOT NULL |
 | team | Enum | Team (A or B) | NOT NULL |
-| enteredBy | UUID | Entered by (TournamentParticipant) | FK (optional) |
+| enteredBy | UUID | Entered by (User) | FK (optional) |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 
@@ -225,7 +225,7 @@ Note: Defaults listed in this document describe domain-level defaults unless exp
 | teamBPoints | Integer | Team B points | |
 | teamAMatchBonusReceived | Boolean | Team A has match bonus | DEFAULT false |
 | teamBMatchBonusReceived | Boolean | Team B has match bonus | DEFAULT false |
-| enteredBy | UUID | Entered by (TournamentParticipant) | FK |
+| enteredBy | UUID | Entered by (User) | FK |
 | enteredAt | DateTime | Entry timestamp | |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |

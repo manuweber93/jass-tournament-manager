@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\JassTournamentManager.Application\JassTournamentManager.Application.csproj" />
     <ProjectReference Include="..\JassTournamentManager.Domain\JassTournamentManager.Domain.csproj" />
   </ItemGroup>
 

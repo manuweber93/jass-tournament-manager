@@ -1,5 +1,5 @@
-using JassTournamentManager.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using JassTournamentManager.Application;
+using JassTournamentManager.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,10 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<JtmDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "jtm")));
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -9,16 +9,16 @@ using JassTournamentManager.Domain.ValueObjects;
 
 namespace JassTournamentManager.Application.TournamentTemplates
 {
-    public class TournamentTemplateService
+    public class TournamentTemplateService : ITournamentTemplateService
     {
         private readonly IUserRepository _userRepository;
         private readonly ITournamentTemplateRepository _tournamentTemplateRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public TournamentTemplateService(IUserRepository userRepository, ITournamentTemplateRepository tournamentTemplateRepository, IUnitOfWork unitOfWork)
+        public TournamentTemplateService(ITournamentTemplateRepository tournamentTemplateRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _tournamentTemplateRepository = tournamentTemplateRepository ?? throw new ArgumentNullException(nameof(tournamentTemplateRepository));
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 

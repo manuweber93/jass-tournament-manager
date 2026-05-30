@@ -1,6 +1,6 @@
 ﻿using JassTournamentManager.Application.Common;
 
-namespace JassTournamentManager.Application.Tests.Fakes
+namespace JassTournamentManager.Application.Tests.Common
 {
     internal sealed class FakeUnitOfWork : IUnitOfWork
     {

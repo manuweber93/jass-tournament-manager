@@ -26,7 +26,7 @@ namespace JassTournamentManager.Application.TournamentTemplates
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            Result<ValidationSuccess> organizerValidationResult = await ValidateOrganizerCanCreateTemplateAsync(request.OrganizerId, cancellationToken);
+            Result<ValidationResult> organizerValidationResult = await ValidateOrganizerCanCreateTemplateAsync(request.OrganizerId, cancellationToken);
             if (organizerValidationResult.IsFailure)
             {
                 return Result<TournamentTemplateResponse>.Failure(organizerValidationResult.Error);
@@ -53,16 +53,14 @@ namespace JassTournamentManager.Application.TournamentTemplates
             return Result<TournamentTemplateResponse>.Success(response);
         }
 
-        public async Task<Result<TournamentTemplateResponse>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<Result<TournamentTemplateResponse>> GetByIdAsync(Guid tournamentTemplateId, CancellationToken cancellationToken)
         {
-            if (id == Guid.Empty)
+            if (tournamentTemplateId == Guid.Empty)
             {
                 return Result<TournamentTemplateResponse>.Failure(TournamentTemplateErrors.InvalidInput);
             }
 
-            Guard.AgainstEmptyGuid(id, nameof(id));
-
-            TournamentTemplate? tournamentTemplate = await _tournamentTemplateRepository.GetByIdAsync(id, cancellationToken);
+            TournamentTemplate? tournamentTemplate = await _tournamentTemplateRepository.GetByIdAsync(tournamentTemplateId, cancellationToken);
             if (tournamentTemplate is null)
             {
                 return Result<TournamentTemplateResponse>.Failure(TournamentTemplateErrors.NotFound);
@@ -72,24 +70,24 @@ namespace JassTournamentManager.Application.TournamentTemplates
             return Result<TournamentTemplateResponse>.Success(response);
         }
 
-        private async Task<Result<ValidationSuccess>> ValidateOrganizerCanCreateTemplateAsync(Guid organizerId, CancellationToken cancellationToken)
+        private async Task<Result<ValidationResult>> ValidateOrganizerCanCreateTemplateAsync(Guid organizerId, CancellationToken cancellationToken)
         {
             if (organizerId == Guid.Empty)
             {
-                return Result<ValidationSuccess>.Failure(TournamentTemplateErrors.InvalidInput);
+                return Result<ValidationResult>.Failure(TournamentTemplateErrors.InvalidInput);
             }
 
             if (!await _userRepository.ExistsAsync(organizerId, cancellationToken))
             {
-                return Result<ValidationSuccess>.Failure(TournamentTemplateErrors.OrganizerNotFound);
+                return Result<ValidationResult>.Failure(TournamentTemplateErrors.OrganizerNotFound);
             }
 
             if (await _tournamentTemplateRepository.ExistsForOrganizerAsync(organizerId, cancellationToken))
             {
-                return Result<ValidationSuccess>.Failure(TournamentTemplateErrors.AlreadyExists);
+                return Result<ValidationResult>.Failure(TournamentTemplateErrors.AlreadyExists);
             }
 
-            return Result<ValidationSuccess>.Success(new());
+            return Result<ValidationResult>.Success(new());
         }
 
         private static Result<TournamentConfigValues> CreateConfigValues(TournamentConfigDto? config)

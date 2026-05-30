@@ -1,4 +1,4 @@
 ﻿namespace JassTournamentManager.Application.Common
 {
-    public readonly record struct ValidationSuccess;
+    public readonly record struct ValidationResult;
 }

@@ -4,7 +4,14 @@
     <DataCollectors>
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
-          <ExcludeByFile>**/Persistence/Migrations/*.cs</ExcludeByFile>
+          <Exclude>
+            [JassTournamentManager.Api]Microsoft.AspNetCore.OpenApi.Generated.*,
+            [JassTournamentManager.Api]System.Runtime.CompilerServices.*
+          </Exclude>
+          <ExcludeByFile>
+            **/Persistence/Migrations/*.cs,
+            **/DependencyInjection.cs
+          </ExcludeByFile>
         </Configuration>
       </DataCollector>
     </DataCollectors>

@@ -50,16 +50,63 @@ JassTournamentManager
 └─ JassTournamentManager.sln
 ```
 
-## Run Backend
+## Backend Commands
+
+All `dotnet` commands target the backend solution file:
 
 ```bash
+# Restore dependencies
+dotnet restore JassTournamentManager.Backend.slnx
+
+# Build
+dotnet build JassTournamentManager.Backend.slnx --configuration Release
+
+# Run all tests
+dotnet test JassTournamentManager.Backend.slnx
+
+# Run tests for a single project
+dotnet test tests/JassTournamentManager.Domain.Tests
+
+# Run a single test by name filter
+dotnet test tests/JassTournamentManager.Domain.Tests --filter "FullyQualifiedName~Tournament.Constructor"
+
+# Start the API locally (requires a running PostgreSQL on port 5433)
 dotnet run --project src/JassTournamentManager.Api
 ```
 
-Swagger UI:
+Swagger UI (local): `http://localhost:5272/swagger`
 
-```text
-http://localhost:5272/swagger
+## Docker
+
+`docker-compose.yml` starts PostgreSQL (host port 5433) and the API (host port 8080). `POSTGRES_PASSWORD` must be provided via a `.env` file:
+
+```bash
+# One-time setup
+echo "POSTGRES_PASSWORD=your_password" > .env
+
+# Start all services
+docker compose up -d
+
+# Stop all services
+docker compose down
+
+# Stop and remove volumes (resets the database)
+docker compose down -v
+```
+
+To run only the database in Docker and the API locally:
+
+```bash
+docker compose up postgres -d
+dotnet run --project src/JassTournamentManager.Api
+```
+
+The connection string is managed via [dotnet user-secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets) and is not committed to the repository. Set it once per developer:
+
+```bash
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" \
+  "Host=localhost;Port=5433;Database=jass_tournament_manager;Username=jass_app;Password=your_password" \
+  --project src/JassTournamentManager.Api
 ```
 
 ## Run Frontend

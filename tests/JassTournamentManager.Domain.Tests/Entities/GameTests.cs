@@ -107,26 +107,6 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
-        public void Complete_WithoutScore_ThrowsInvalidOperationException()
-        {
-            var game = GameTestData.CreateGame();
-
-            Action act = () => game.Complete();
-
-            act.Should().Throw<InvalidOperationException>();
-        }
-
-        [Fact]
-        public void Complete_SetsStatusToCompleted()
-        {
-            var game = GameTestData.CreateGame();
-            game.SetScore(GameTestData.CreateGameScore());
-            game.Complete();
-
-            game.Status.Should().Be(GameStatus.Completed);
-        }
-
-        [Fact]
         public void SetBackToPending_SetsStatusToPending()
         {
             var game = GameTestData.CreateGame();

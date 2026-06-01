@@ -26,6 +26,8 @@ namespace JassTournamentManager.Domain.Entities
 
         public void UpdateLocation(string? location)
         {
+            Guard.AgainstOptionalMaxLength(location, 200, nameof(location));
+
             Location = location?.Trim();
             MarkAsUpdated();
         }

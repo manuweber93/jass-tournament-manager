@@ -145,12 +145,10 @@ namespace JassTournamentManager.Domain.Entities
 
         private void UpdateNumberOfRoundsInConfig()
         {
-            var updatedTournamentConfigValues = ConfigValues with
+            ConfigValues = ConfigValues with
             {
                 NumberOfRounds = _rounds.Count
             };
-
-            UpdateConfigValues(updatedTournamentConfigValues);
         }
 
         private void UpdateMatchBonusEnabledForGames(TournamentConfigValues currentConfigValues, TournamentConfigValues newConfigValues)

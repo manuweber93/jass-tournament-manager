@@ -56,4 +56,37 @@
         }
 
     }
+
+    public sealed record Result
+    {
+        private readonly Error? _error;
+
+        public bool IsSuccess { get; }
+
+        public bool IsFailure => !IsSuccess;
+
+        public Error Error
+        {
+            get
+            {
+                if (IsSuccess || _error is null)
+                    throw new InvalidOperationException("The error of a successful result cannot be accessed.");
+                return _error;
+            }
+        }
+
+        private Result(bool isSuccess, Error? error)
+        {
+            IsSuccess = isSuccess;
+            _error = error;
+        }
+
+        public static Result Success() => new(true, null);
+
+        public static Result Failure(Error error)
+        {
+            ArgumentNullException.ThrowIfNull(error);
+            return new(false, error);
+        }
+    }
 }

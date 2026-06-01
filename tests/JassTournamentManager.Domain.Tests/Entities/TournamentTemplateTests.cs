@@ -106,6 +106,17 @@ namespace JassTournamentManager.Domain.Tests.Entities
         }
 
         [Fact]
+        public void UpdateLocation_WithTooLongLocation_ThrowsArgumentOutOfRangeException()
+        {
+            var template = TournamentTemplateTestData.CreateTournamentTemplate();
+            string tooLongLocation = new('a', 201);
+
+            Action act = () => template.UpdateLocation(tooLongLocation);
+
+            act.Should().Throw<ArgumentOutOfRangeException>();
+        }
+
+        [Fact]
         public void UpdateConfig_WithNullConfigValues_ThrowsArgumentNullException()
         {
             var template = TournamentTemplateTestData.CreateTournamentTemplate();

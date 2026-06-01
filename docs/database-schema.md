@@ -198,7 +198,7 @@ Note: Defaults listed in this document describe domain-level defaults unless exp
 | pairingId | UUID | Game | FK, NOT NULL |
 | tournamentParticipantId | UUID | TournamentParticipant | FK, NOT NULL |
 | team | Enum | Team (A or B) | NOT NULL |
-| enteredBy | UUID | Entered by (User) | FK (optional) |
+| enteredBy | UUID | Entered by (User) | FK |
 | createdAt | DateTime | Creation timestamp | NOT NULL |
 | updatedAt | DateTime | Update timestamp | NOT NULL |
 

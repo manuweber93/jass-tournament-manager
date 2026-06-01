@@ -62,6 +62,11 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
             builder.Property(user => user.MergedAt)
                 .HasColumnName("merged_at");
 
+            builder.HasOne<TournamentTemplate>()
+                .WithOne()
+                .HasForeignKey<TournamentTemplate>(tournamentTemplate => tournamentTemplate.OrganizerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasIndex(user => user.MergeTargetUserId)
                 .HasDatabaseName("idx_users_merge_target_user_id");
 

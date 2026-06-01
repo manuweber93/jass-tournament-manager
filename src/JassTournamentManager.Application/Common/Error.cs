@@ -6,13 +6,16 @@
 
         public string Message { get; }
 
-        public Error(string code, string message)
+        public ErrorType Type { get; }
+
+        public Error(string code, string message, ErrorType type = ErrorType.Invalid)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(code);
             ArgumentException.ThrowIfNullOrWhiteSpace(message);
 
             Code = code;
             Message = message;
+            Type = type;
         }
     }
 }

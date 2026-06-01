@@ -26,7 +26,7 @@ namespace JassTournamentManager.Application.TournamentTemplates
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            Result<ValidationResult> organizerValidationResult = await ValidateOrganizerCanCreateTemplateAsync(request.OrganizerId, cancellationToken);
+            Result organizerValidationResult = await ValidateOrganizerCanCreateTemplateAsync(request.OrganizerId, cancellationToken);
             if (organizerValidationResult.IsFailure)
             {
                 return Result<TournamentTemplateResponse>.Failure(organizerValidationResult.Error);
@@ -70,24 +70,24 @@ namespace JassTournamentManager.Application.TournamentTemplates
             return Result<TournamentTemplateResponse>.Success(response);
         }
 
-        private async Task<Result<ValidationResult>> ValidateOrganizerCanCreateTemplateAsync(Guid organizerId, CancellationToken cancellationToken)
+        private async Task<Result> ValidateOrganizerCanCreateTemplateAsync(Guid organizerId, CancellationToken cancellationToken)
         {
             if (organizerId == Guid.Empty)
             {
-                return Result<ValidationResult>.Failure(TournamentTemplateErrors.InvalidInput);
+                return Result.Failure(TournamentTemplateErrors.InvalidInput);
             }
 
             if (!await _userRepository.ExistsAsync(organizerId, cancellationToken))
             {
-                return Result<ValidationResult>.Failure(TournamentTemplateErrors.OrganizerNotFound);
+                return Result.Failure(TournamentTemplateErrors.OrganizerNotFound);
             }
 
             if (await _tournamentTemplateRepository.ExistsForOrganizerAsync(organizerId, cancellationToken))
             {
-                return Result<ValidationResult>.Failure(TournamentTemplateErrors.AlreadyExists);
+                return Result.Failure(TournamentTemplateErrors.AlreadyExists);
             }
 
-            return Result<ValidationResult>.Success(new());
+            return Result.Success();
         }
 
         private static Result<TournamentConfigValues> CreateConfigValues(TournamentConfigDto? config)

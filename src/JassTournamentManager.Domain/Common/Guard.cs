@@ -22,7 +22,7 @@
         {
             if (value.Length > maxLength)
             {
-                throw new ArgumentOutOfRangeException($"{parameterName} must not exceed ${maxLength} characters.");
+                throw new ArgumentOutOfRangeException(parameterName, $"{parameterName} must not exceed {maxLength} characters.");
             }
         }
 

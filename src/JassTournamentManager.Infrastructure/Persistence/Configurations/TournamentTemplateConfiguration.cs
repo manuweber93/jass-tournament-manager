@@ -16,11 +16,6 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
                 .HasColumnName("organizer_id")
                 .IsRequired();
 
-            builder.HasOne<User>()
-                .WithOne()
-                .HasForeignKey<TournamentTemplate>(tournamentTemplate => tournamentTemplate.OrganizerId)
-                .OnDelete(DeleteBehavior.Cascade);
-
             builder.OwnsOne(tournamentTemplate => tournamentTemplate.ConfigValues, configBuilder =>
             {
                 configBuilder.Property(config => config.NumberOfRounds)

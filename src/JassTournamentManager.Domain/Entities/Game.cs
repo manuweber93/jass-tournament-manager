@@ -50,17 +50,6 @@ namespace JassTournamentManager.Domain.Entities
             MarkAsUpdated();
         }
 
-        public void Complete()
-        {
-            if (Score is null)
-            {
-                throw new InvalidOperationException("Game can only be completed when a score is set.");
-            }
-
-            Status = GameStatus.Completed;
-            MarkAsUpdated();
-        }
-
         public void SetBackToPending()
         {
             Status = GameStatus.Pending;

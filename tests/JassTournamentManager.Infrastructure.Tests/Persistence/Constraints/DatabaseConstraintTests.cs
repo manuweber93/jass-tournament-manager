@@ -17,6 +17,28 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
         }
 
         [DockerAvailableFact]
+        public async Task Saving_DuplicateTournamentTemplateForSameOrganizer_ThrowsDbUpdateException()
+        {
+            await _fixture.ResetDatabaseAsync();
+            var organizer = PersistenceTestData.CreateUser(firstName: "Max", lastName: "Muster");
+            var firstTournamentTemplate = PersistenceTestData.CreateTournamentTemplate(organizer.Id);
+            var secondTournamentTemplate = PersistenceTestData.CreateTournamentTemplate(organizer.Id);
+
+            await using (var dbContext = _fixture.CreateDbContext())
+            {
+                dbContext.Users.Add(organizer);
+                dbContext.TournamentTemplates.Add(firstTournamentTemplate);
+                await dbContext.SaveChangesAsync();
+            }
+
+            await using var assertionContext = _fixture.CreateDbContext();
+            assertionContext.TournamentTemplates.Add(secondTournamentTemplate);
+            var act = () => assertionContext.SaveChangesAsync();
+
+            await act.Should().ThrowAsync<DbUpdateException>();
+        }
+
+        [DockerAvailableFact]
         public async Task Saving_DuplicateUserEmail_ThrowsDbUpdateException()
         {
             await _fixture.ResetDatabaseAsync();

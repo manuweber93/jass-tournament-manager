@@ -5,11 +5,25 @@ services:
     environment:
       POSTGRES_DB: jass_tournament_manager
       POSTGRES_USER: jass_app
-      POSTGRES_PASSWORD: jass_dev_password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     ports:
       - "5433:5432"
     volumes:
       - jass_postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: src/JassTournamentManager.Api/Dockerfile
+    container_name: jass-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=jass_tournament_manager;Username=jass_app;Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
 
 volumes:
   jass_postgres_data:

@@ -208,8 +208,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
                 UserTestData.CreatePasswordHash(),
                 UserTestData.CreateFirstName(),
                 UserTestData.CreateLastName(),
-                true,
-                false);
+                true);
 
             act.Should().Throw<ArgumentException>();
         }
@@ -225,8 +224,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
                 emptyPasswordHash,
                 UserTestData.CreateFirstName(),
                 UserTestData.CreateLastName(),
-                true,
-                false);
+                true);
 
             act.Should().Throw<ArgumentException>();
         }
@@ -242,8 +240,7 @@ namespace JassTournamentManager.Domain.Tests.Entities
                 UserTestData.CreatePasswordHash(),
                 emptyFirstName,
                 UserTestData.CreateLastName(),
-                true,
-                false);
+                true);
 
             act.Should().Throw<ArgumentException>();
         }
@@ -259,10 +256,179 @@ namespace JassTournamentManager.Domain.Tests.Entities
                 UserTestData.CreatePasswordHash(),
                 UserTestData.CreateFirstName(),
                 emptyLastName,
-                true,
-                false);
+                true);
 
             act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void SetIsSysAdmin_UpdatesIsSysAdmin()
+        {
+            var user = UserTestData.CreateUser();
+            var isSysAdmin = true;
+
+            user.SetIsSysAdmin(isSysAdmin);
+
+            user.IsSysAdmin.Should().Be(isSysAdmin);
+        }
+
+        [Fact]
+        public void SetPasswordHash_WithEmptyPasswordHash_ThrowsArgumentException()
+        {
+            var user = UserTestData.CreateUser();
+            var emptyPasswordHash = " ";
+
+            var act = () => user.SetPasswordHash(emptyPasswordHash);
+
+            act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void SetPasswordHash_WithValidPasswordHash_UpdatesPasswordHash()
+        {
+            var user = UserTestData.CreateUser();
+            var newPasswordHash = UserTestData.CreatePasswordHash() + "_updated";
+
+            user.SetPasswordHash(newPasswordHash);
+
+            user.PasswordHash.Should().Be(newPasswordHash);
+        }
+
+        [Fact]
+        public void CanLogin_WithInactiveUser_ReturnsFalse()
+        {
+            var user = UserTestData.CreateUser();
+            user.Update(
+                user.Email!,
+                user.PasswordHash!,
+                user.FirstName,
+                user.LastName,
+                isActive: false);
+
+            bool canLogin = user.CanLogin();
+
+            canLogin.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CanLogin_WithoutEmail_ReturnsFalse()
+        {
+            var user = UserTestData.CreateUserWithoutEmail();
+
+            bool canLogin = user.CanLogin();
+
+            canLogin.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CanLogin_WithoutPasswordHash_ReturnsFalse()
+        {
+            var user = UserTestData.CreateUserWithoutPasswordHash();
+
+            bool canLogin = user.CanLogin();
+
+            canLogin.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CanLogin_WithMergedUser_ReturnsFalse()
+        {
+            var user = UserTestData.CreateUser();
+            user.MergeIntoDifferentUser(UserTestData.CreateUserId(), UserTestData.CreateUserId());
+
+            bool canLogin = user.CanLogin();
+
+            canLogin.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CanLogin_WithActiveUserAndCredentials_ReturnsTrue()
+        {
+            var user = UserTestData.CreateUser();
+
+            bool canLogin = user.CanLogin();
+
+            canLogin.Should().BeTrue();
+        }
+
+        [Fact]
+        public void CanBeClaimed_WithInactiveUser_ReturnsFalse()
+        {
+            var user = UserTestData.CreateImportedUser(isActive: false);
+
+            bool canBeClaimed = user.CanBeClaimed();
+
+            canBeClaimed.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CanBeClaimed_WithEmailAddress_ReturnsFalse()
+        {
+            var user = UserTestData.CreateUserWithoutPasswordHash();
+
+            bool canBeClaimed = user.CanBeClaimed();
+
+            canBeClaimed.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CanBeClaimed_WithPasswordHash_ReturnsFalse()
+        {
+            var user = UserTestData.CreateUserWithoutEmail();
+
+            bool canBeClaimed = user.CanBeClaimed();
+
+            canBeClaimed.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CanBeClaimed_WithMergedUser_ReturnsFalse()
+        {
+            var user = UserTestData.CreateImportedUser();
+            user.MergeIntoDifferentUser(UserTestData.CreateUserId(), UserTestData.CreateUserId());
+
+            bool canBeClaimed = user.CanBeClaimed();
+
+            canBeClaimed.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CanBeClaimed_WithActiveUserAndWithoutCredentials_ReturnsTrue()
+        {
+            var user = UserTestData.CreateImportedUser();
+
+            bool canBeClaimed = user.CanBeClaimed();
+
+            canBeClaimed.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Claim_WithEmailAndPasswordHash_ThrowsInvalidOperationException()
+        {
+            var user = UserTestData.CreateUser();
+
+            Action act = () => user.Claim(
+                UserTestData.CreateEmail(),
+                UserTestData.CreatePasswordHash(),
+                UserTestData.CreateFirstName(),
+                UserTestData.CreateLastName());
+
+            act.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void Claim_WithClaimableUser_SetsEmailAndPasswordHash()
+        {
+            var user = UserTestData.CreateImportedUser();
+
+            user.Claim(
+                UserTestData.CreateEmail(),
+                UserTestData.CreatePasswordHash(),
+                UserTestData.CreateFirstName(),
+                UserTestData.CreateLastName());
+
+            user.HasEmail.Should().BeTrue();
+            user.HasPassword.Should().BeTrue();
         }
 
         [Fact]

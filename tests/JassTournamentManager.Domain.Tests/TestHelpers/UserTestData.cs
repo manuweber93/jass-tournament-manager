@@ -23,5 +23,27 @@ namespace JassTournamentManager.Domain.Tests.TestHelpers
             CreateFirstName(),
             CreateLastName(),
             CreateSourceType());
+
+        public static User CreateImportedUser(bool isActive = true) => new(
+            null,
+            null,
+            CreateFirstName(),
+            CreateLastName(),
+            UserSourceType.Imported,
+            isActive);
+
+        public static User CreateUserWithoutEmail() => new(
+           null,
+           CreatePasswordHash(),
+           CreateFirstName(),
+           CreateLastName(),
+           UserSourceType.Imported);
+
+        public static User CreateUserWithoutPasswordHash() => new(
+            CreateEmail(),
+            null,
+            CreateFirstName(),
+            CreateLastName(),
+            UserSourceType.Imported);
     }
 }

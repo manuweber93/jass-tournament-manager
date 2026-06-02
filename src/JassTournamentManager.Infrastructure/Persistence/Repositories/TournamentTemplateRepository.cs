@@ -12,6 +12,10 @@ namespace JassTournamentManager.Infrastructure.Persistence.Repositories
         {
             _dbContext = dbContext;
         }
+        public Task<TournamentTemplate?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        {
+            return _dbContext.TournamentTemplates.SingleOrDefaultAsync(tournamentTemplate => tournamentTemplate.Id == id, cancellationToken);
+        }
 
         public async Task AddAsync(TournamentTemplate tournamentTemplate, CancellationToken cancellationToken)
         {
@@ -23,9 +27,5 @@ namespace JassTournamentManager.Infrastructure.Persistence.Repositories
             return _dbContext.TournamentTemplates.AnyAsync(tournamentTemplate => tournamentTemplate.OrganizerId == organizerId, cancellationToken);
         }
 
-        public Task<TournamentTemplate?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
-        {
-            return _dbContext.TournamentTemplates.SingleOrDefaultAsync(tournamentTemplate => tournamentTemplate.Id == id, cancellationToken);
-        }
     }
 }

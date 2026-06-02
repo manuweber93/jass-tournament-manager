@@ -10,7 +10,11 @@ namespace JassTournamentManager.Domain.Entities
 
         public string? Email { get; private set; }
 
+        public bool HasEmail => !string.IsNullOrWhiteSpace(Email);
+
         public string? PasswordHash { get; private set; }
+
+        public bool HasPassword => !string.IsNullOrWhiteSpace(PasswordHash);
 
         public string FirstName { get; private set; } = string.Empty;
 
@@ -43,7 +47,7 @@ namespace JassTournamentManager.Domain.Entities
             IsSysAdmin = isSysAdmin;
         }
 
-        public void Update(string email, string passwordHash, string firstName, string lastName, bool isActive, bool isSysAdmin)
+        public void Update(string email, string passwordHash, string firstName, string lastName, bool isActive)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(email);
             ArgumentException.ThrowIfNullOrWhiteSpace(passwordHash);
@@ -55,7 +59,42 @@ namespace JassTournamentManager.Domain.Entities
             FirstName = firstName.Trim();
             LastName = lastName.Trim();
             IsActive = isActive;
+
+            MarkAsUpdated();
+        }
+
+        public void SetIsSysAdmin(bool isSysAdmin)
+        {
             IsSysAdmin = isSysAdmin;
+            MarkAsUpdated();
+        }
+
+        public void SetPasswordHash(string passwordHash)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(passwordHash);
+
+            PasswordHash = passwordHash.Trim();
+            MarkAsUpdated();
+        }
+
+        public bool CanLogin()
+        {
+            return IsActive && HasEmail && HasPassword && MergeTargetUserId is null;
+        }
+
+        public bool CanBeClaimed()
+        {
+            return IsActive && !HasEmail && !HasPassword && MergeTargetUserId is null;
+        }
+
+        public void Claim(string email, string passwordHash, string firstName, string lastName)
+        {
+            if (!CanBeClaimed())
+            {
+                throw new InvalidOperationException("User cannot be claimed.");
+            }
+
+            Update(email, passwordHash, firstName, lastName, IsActive);
         }
 
         public void MergeIntoDifferentUser(Guid mergeTargetUserId, Guid mergedByUserId)
@@ -76,6 +115,8 @@ namespace JassTournamentManager.Domain.Entities
             MergeTargetUserId = mergeTargetUserId;
             MergedBy = mergedByUserId;
             MergedAt = DateTimeOffset.UtcNow;
+
+            MarkAsUpdated();
         }
 
         private static void VerifyArguments(string? email, string? passwordHash, string firstName, string lastName, UserSourceType sourceType)

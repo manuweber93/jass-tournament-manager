@@ -8,6 +8,25 @@ namespace JassTournamentManager.Application.Tests.Users
         private readonly List<User> _users = [];
 
         public IReadOnlyCollection<User> Users => _users.AsReadOnly();
+        public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_users.SingleOrDefault(user =>  user.Id == id));
+        }
+
+        public Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_users.SingleOrDefault(user => user.Email == email));
+        }
+
+        public Task<bool> ExistsAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_users.Any(user => user.Id == userId));
+        }
+
+        public Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_users.Any(user => user.Email == email));
+        }
 
         public Task AddAsync(User user, CancellationToken cancellationToken)
         {
@@ -15,9 +34,16 @@ namespace JassTournamentManager.Application.Tests.Users
             return Task.CompletedTask;
         }
 
-        public Task<bool> ExistsAsync(Guid userId, CancellationToken cancellationToken)
+        public Task<IReadOnlyCollection<User>> GetClaimableUsersAsync(CancellationToken cancellationToken)
         {
-            return Task.FromResult(_users.Any(user => user.Id == userId));
+            IReadOnlyCollection<User> claimableUsers = _users
+                .Where(user => user.CanBeClaimed())
+                .OrderBy(user => user.FirstName)
+                .ThenBy(user => user.LastName)
+                .ToList()
+                .AsReadOnly();
+
+            return Task.FromResult(claimableUsers);
         }
     }
 }

@@ -16,6 +16,37 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence.Repositories
         }
 
         [DockerAvailableFact]
+        public async Task GetByIdAsync_WithExistingTournamentTemplate_ReturnsTournamentTemplate()
+        {
+            await _fixture.ResetDatabaseAsync();
+
+            var organizer = PersistenceTestData.CreateUser();
+            var tournamentTemplate = PersistenceTestData.CreateTournamentTemplate(organizer.Id);
+
+            await PersistTournamentTemplate(organizer, tournamentTemplate);
+
+            await using var assertionContext = _fixture.CreateDbContext();
+            var tournamentTemplateRepository = new TournamentTemplateRepository(assertionContext);
+            var loadedTournamentTemplate = await tournamentTemplateRepository.GetByIdAsync(tournamentTemplate.Id, CancellationToken.None);
+
+            VerifyTournamentTemplate(organizer, loadedTournamentTemplate, tournamentTemplate);
+        }
+
+        [DockerAvailableFact]
+        public async Task GetByIdAsync_WithoutExistingTournamentTemplate_ReturnsNull()
+        {
+            await _fixture.ResetDatabaseAsync();
+
+            var missingTournamentTemplateId = Guid.NewGuid();
+
+            await using var assertionContext = _fixture.CreateDbContext();
+            var tournamentTemplateRepository = new TournamentTemplateRepository(assertionContext);
+            var loadedTournamentTemplate = await tournamentTemplateRepository.GetByIdAsync(missingTournamentTemplateId, CancellationToken.None);
+
+            loadedTournamentTemplate.Should().BeNull();
+        }
+
+        [DockerAvailableFact]
         public async Task AddAsync_PersistsTournamentTemplate()
         {
             await _fixture.ResetDatabaseAsync();
@@ -61,37 +92,6 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence.Repositories
             var exists = await tournamentTemplateRepository.ExistsForOrganizerAsync(organizer.Id, CancellationToken.None);
 
             exists.Should().BeFalse();
-        }
-
-        [DockerAvailableFact]
-        public async Task GetByIdAsync_WithExistingTournamentTemplate_ReturnsTournamentTemplate()
-        {
-            await _fixture.ResetDatabaseAsync();
-
-            var organizer = PersistenceTestData.CreateUser();
-            var tournamentTemplate = PersistenceTestData.CreateTournamentTemplate(organizer.Id);
-
-            await PersistTournamentTemplate(organizer, tournamentTemplate);
-
-            await using var assertionContext = _fixture.CreateDbContext();
-            var tournamentTemplateRepository = new TournamentTemplateRepository(assertionContext);
-            var loadedTournamentTemplate = await tournamentTemplateRepository.GetByIdAsync(tournamentTemplate.Id, CancellationToken.None);
-
-            VerifyTournamentTemplate(organizer, loadedTournamentTemplate, tournamentTemplate);
-        }
-
-        [DockerAvailableFact]
-        public async Task GetByIdAsync_WithoutExistingTournamentTemplate_ReturnsNull()
-        {
-            await _fixture.ResetDatabaseAsync();
-
-            var missingTournamentTemplateId = Guid.NewGuid();
-
-            await using var assertionContext = _fixture.CreateDbContext();
-            var tournamentTemplateRepository = new TournamentTemplateRepository(assertionContext);
-            var loadedTournamentTemplate = await tournamentTemplateRepository.GetByIdAsync(missingTournamentTemplateId, CancellationToken.None);
-
-            loadedTournamentTemplate.Should().BeNull();
         }
 
         private async Task PersistTournamentTemplate(User organizer, TournamentTemplate tournamentTemplate)

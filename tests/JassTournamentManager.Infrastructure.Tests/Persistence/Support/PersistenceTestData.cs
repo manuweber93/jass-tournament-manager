@@ -10,18 +10,20 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
             string? email = null,
             string firstName = "Test",
             string lastName = "User",
-            UserSourceType sourceType = UserSourceType.Manual)
+            UserSourceType sourceType = UserSourceType.Manual,
+            bool isActive = true)
         {
             return new User(
                 email,
                 passwordHash: null,
                 firstName,
                 lastName,
-                sourceType);
+                sourceType,
+                isActive);
         }
 
         public static User CreateSelfRegisteredUser(
-            string email,
+            string email = "self.registered@user.com",
             string firstName = "Self",
             string lastName = "Registered")
         {

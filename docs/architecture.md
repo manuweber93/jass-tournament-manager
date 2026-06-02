@@ -154,6 +154,7 @@ Services and responsibilities:
 6) Leaderboard Service
 - Compute standings and leaderboards
 - Aggregated statistics per organizer and tournament
+- Future version: Respect tournament-level exclusions when computing organizer-wide all-time leaderboards, while leaving tournament-specific leaderboards unchanged
 
 7) Excel Import Service
 - Parse Excel files using .NET libraries (e.g. ClosedXML or EPPlus)

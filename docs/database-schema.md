@@ -250,6 +250,10 @@ Note: Defaults listed in this document describe domain-level defaults unless exp
 2. **SYSADMIN Access**: System administrators can view and manage all tournaments of all organizers
 3. **Tournament Code / QR Code**: Each tournament has a unique link/code which participants can use to join the tournament
 4. **Single-Day Tournaments**: All tournaments last one day
+5. **Future leaderboard exclusion**: Future versions may allow organizers to exclude selected tournaments from organizer-wide all-time leaderboard calculations. The tournament remains visible and its tournament-specific leaderboard remains available.
+
+### Future Data Model Extensions
+1. **Organizer-wide all-time leaderboard exclusion**: A future version may add a tournament-level flag, for example `excludeFromOrganizerAllTimeLeaderboard`, defaulting to `false`, so organizers can keep specific tournaments out of their all-time leaderboard.
 
 ### Config Template Rules
 1. **Reusability**: Templates can be used for multiple tournaments

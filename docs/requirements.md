@@ -95,6 +95,7 @@ Tournament
 ### Leaderboards
 - Players can view leaderboards for tournaments
 - Reports across all tournaments of an organizer
+- Future version: Organizers can exclude selected tournaments from their organizer-wide all-time leaderboard ("ewige Rangliste") without removing those tournaments or their tournament-specific leaderboards.
 
 ### Excel Import
 - Primary purpose: import historical tournament data

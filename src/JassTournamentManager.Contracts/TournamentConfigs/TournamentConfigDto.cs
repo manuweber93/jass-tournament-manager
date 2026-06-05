@@ -8,11 +8,15 @@ namespace JassTournamentManager.Contracts.TournamentConfigs
         [property: Range(1, int.MaxValue)]
         [property: DefaultValue(5)]
         int NumberOfRounds,
+
         [property: Range(1, int.MaxValue)]
         [property: DefaultValue(8)]
         int GamesPerRound,
+
         bool MatchBonusEnabled,
+
         bool IsFixedTeams,
+
         [property: Range(0, 2)]
         [property: DefaultValue(1)]
         ScoreVisibility ScoreVisibility);

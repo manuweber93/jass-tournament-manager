@@ -18,6 +18,14 @@
             }
         }
 
+        public static void AgainstDefaultDateTimeOffset(DateTimeOffset value, string parameterName)
+        {
+            if (value == default)
+            {
+                throw new ArgumentException($"{parameterName} must not be the default date/time.", parameterName);
+            }
+        }
+
         public static void AgainstMaxLength(string value, int maxLength, string parameterName)
         {
             if (value.Length > maxLength)

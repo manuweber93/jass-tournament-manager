@@ -115,3 +115,5 @@ artifacts/
 
 # Optional
 .idea/
+.aider*
+secrets/

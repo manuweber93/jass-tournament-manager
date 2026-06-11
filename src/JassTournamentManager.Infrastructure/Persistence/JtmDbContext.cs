@@ -27,6 +27,8 @@ namespace JassTournamentManager.Infrastructure.Persistence
 
         public DbSet<Game> Games => Set<Game>();
 
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("jtm");

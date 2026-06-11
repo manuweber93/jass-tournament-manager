@@ -1,4 +1,4 @@
-﻿namespace JassTournamentManager.Contracts.Auth
+﻿namespace JassTournamentManager.Contracts.Users
 {
     public sealed record CurrentUserResponse(
         Guid Id,

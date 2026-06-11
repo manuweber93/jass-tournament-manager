@@ -3,7 +3,6 @@ using JassTournamentManager.Application.TournamentConfigs;
 using JassTournamentManager.Application.Users;
 using JassTournamentManager.Contracts.TournamentConfigs;
 using JassTournamentManager.Contracts.TournamentTemplates;
-using JassTournamentManager.Domain.Common;
 using JassTournamentManager.Domain.Entities;
 using JassTournamentManager.Domain.ValueObjects;
 

@@ -1,6 +1,8 @@
-﻿using JassTournamentManager.Application.Common;
+﻿using JassTournamentManager.Application.Auth;
+using JassTournamentManager.Application.Common;
 using JassTournamentManager.Application.TournamentTemplates;
 using JassTournamentManager.Application.Users;
+using JassTournamentManager.Infrastructure.Auth;
 using JassTournamentManager.Infrastructure.Persistence;
 using JassTournamentManager.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +22,11 @@ namespace JassTournamentManager.Infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITournamentTemplateRepository, TournamentTemplateRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
+            services.AddScoped<IUserPasswordHasher, UserPasswordHasher>();
+            services.AddScoped<ITokenGenerator, TokenGenerator>();
+
             return services;
         }
     }

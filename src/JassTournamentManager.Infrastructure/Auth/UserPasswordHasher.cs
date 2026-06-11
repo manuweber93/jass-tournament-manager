@@ -6,16 +6,16 @@ namespace JassTournamentManager.Infrastructure.Auth
 {
     public class UserPasswordHasher : IUserPasswordHasher
     {
-        private readonly PasswordHasher<User> _passwordHasher = new();
+        private readonly PasswordHasher<object> _passwordHasher = new();
 
-        public string HashPassword(User user, string password)
+        public string HashPassword(string password)
         {
-            return _passwordHasher.HashPassword(user, password);
+            return _passwordHasher.HashPassword(new object(), password);
         }
 
-        public bool VerifyPassword(User user, string passwordhash, string password)
+        public bool VerifyPassword(string passwordhash, string providedPassword)
         {
-            PasswordVerificationResult verificationResult = _passwordHasher.VerifyHashedPassword(user, passwordhash, password);
+            PasswordVerificationResult verificationResult = _passwordHasher.VerifyHashedPassword(new object(), passwordhash, providedPassword);
             return verificationResult is PasswordVerificationResult.Success or PasswordVerificationResult.SuccessRehashNeeded;
         }
     }

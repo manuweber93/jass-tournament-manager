@@ -67,6 +67,11 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
                 .HasForeignKey<TournamentTemplate>(tournamentTemplate => tournamentTemplate.OrganizerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasMany<RefreshToken>()
+                .WithOne()
+                .HasForeignKey(refreshToken => refreshToken.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasIndex(user => user.MergeTargetUserId)
                 .HasDatabaseName("idx_users_merge_target_user_id");
 

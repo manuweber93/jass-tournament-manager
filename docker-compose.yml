@@ -27,3 +27,7 @@ services:
 
 volumes:
   jass_postgres_data:
+
+secrets:
+  Jwt__Secret:
+    file: ./secrets/jwt_secret

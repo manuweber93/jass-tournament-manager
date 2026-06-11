@@ -1,4 +1,6 @@
-﻿namespace JassTournamentManager.Contracts.Auth
+﻿using JassTournamentManager.Contracts.Users;
+
+namespace JassTournamentManager.Contracts.Auth
 {
     public sealed record AuthResponse(
         string AccessToken,

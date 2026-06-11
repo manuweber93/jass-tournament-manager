@@ -4,8 +4,8 @@ namespace JassTournamentManager.Application.Auth
 {
     public interface IUserPasswordHasher
     {
-        string HashPassword(User user,  string password);
+        string HashPassword(string password);
 
-        bool VerifyPassword(User user, string passwordhash, string password);
+        bool VerifyPassword(string passwordhash, string providedPassword);
     }
 }

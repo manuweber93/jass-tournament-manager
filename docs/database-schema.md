@@ -344,6 +344,10 @@ CREATE INDEX idx_pairing_participant_participant ON PairingParticipant(participa
 -- Game
 CREATE INDEX idx_game_pairing ON Game(pairingId);
 
+-- Refresh Token
+CREATE INDEX idx_refresh_token_user_id ON RefreshToken(userId);
+CREATE INDEX idx_refresh_token_expires_at_utc ON RefreshToken(expiresAt);
+
 ```
 
 ### Unique indices
@@ -377,6 +381,10 @@ CREATE UNIQUE INDEX ux_pairing_participants_pairing_tournament_participant
 -- Game
 CREATE UNIQUE INDEX ux_games_pairing_game_number
     ON games(pairing_id, game_number);
+
+-- RefreshToken
+CREATE UNIQUE INDEX ux_refresh_token_token_hash
+    ON refresh_tokens(token_hash);
 ```
 
 ## Data Migration & Import

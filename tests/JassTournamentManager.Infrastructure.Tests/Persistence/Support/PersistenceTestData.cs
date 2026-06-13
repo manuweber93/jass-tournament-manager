@@ -125,5 +125,13 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
 
             return game;
         }
+
+        public static RefreshToken CreateRefreshToken(Guid userId, string? tokenHash = null)
+        {
+            return new(
+                userId,
+                tokenHash ?? "asldkfjakfdsj",
+                new DateTimeOffset(2043, 11, 30, 2, 0, 0, TimeSpan.Zero));
+        }
     }
 }

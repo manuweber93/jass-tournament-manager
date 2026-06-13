@@ -131,7 +131,7 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
         }
 
         [DockerAvailableFact]
-        public async Task Saving_DuplicatePairingTable_InRound_ThrowsDbUpdateException()
+        public async Task Saving_DuplicateJassTable_InPairingsOfTheSameRound_ThrowsDbUpdateException()
         {
             await _fixture.ResetDatabaseAsync();
             var graph = CreateRoundGraph("PAIRING-1");
@@ -192,8 +192,27 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
             await act.Should().ThrowAsync<DbUpdateException>();
         }
 
+
         [DockerAvailableFact]
-        public async Task Saving_Tournament_With_MissingOrganizer_ThrowsDbUpdateException()
+        public async Task Saving_DuplicateRefreshTokenHash_ThrowsDbUpdateException()
+        {
+            await _fixture.ResetDatabaseAsync();
+            var user = PersistenceTestData.CreateUser();
+            var duplicateTokenHash = "abc";
+            var firstRefreshToken = PersistenceTestData.CreateRefreshToken(user.Id, duplicateTokenHash);
+            var secondRefreshToken = PersistenceTestData.CreateRefreshToken(user.Id, duplicateTokenHash);
+
+            await using var dbContext = _fixture.CreateDbContext();
+            dbContext.Users.Add(user);
+            dbContext.RefreshTokens.AddRange(firstRefreshToken, secondRefreshToken);
+
+            var act = () => dbContext.SaveChangesAsync();
+
+            await act.Should().ThrowAsync<DbUpdateException>();
+        }
+
+        [DockerAvailableFact]
+        public async Task Saving_Tournament_With_UnknownOrganizer_ThrowsDbUpdateException()
         {
             await _fixture.ResetDatabaseAsync();
             var tournament = PersistenceTestData.CreateTournament(Guid.NewGuid(), "MISSING-ORGANIZER");
@@ -241,6 +260,38 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
 
             await act.Should().ThrowAsync<DbUpdateException>();
         }
+
+        [DockerAvailableFact]
+        public async Task Saving_RefreshToken_With_UnknownUserId_ThrowsDbUpdateException()
+        {
+            await _fixture.ResetDatabaseAsync();
+            var refreshToken = PersistenceTestData.CreateRefreshToken(Guid.NewGuid());
+
+            await using var dbContext = _fixture.CreateDbContext();
+            dbContext.RefreshTokens.Add(refreshToken);
+
+            var act = () => dbContext.SaveChangesAsync();
+
+            await act.Should().ThrowAsync<DbUpdateException>();
+        }
+
+        [DockerAvailableFact]
+        public async Task Saving_RefreshToken_With_UnknownReplacedByRefreshTokenId_ThrowsDbUpdateException()
+        {
+            await _fixture.ResetDatabaseAsync();
+            var user = PersistenceTestData.CreateUser();
+            var refreshToken = PersistenceTestData.CreateRefreshToken(user.Id);
+            refreshToken.Replace(Guid.NewGuid());
+
+            await using var dbContext = _fixture.CreateDbContext();
+            dbContext.Users.Add(user);
+            dbContext.RefreshTokens.Add(refreshToken);
+
+            var act = () => dbContext.SaveChangesAsync();
+
+            await act.Should().ThrowAsync<DbUpdateException>();
+        }
+
 
         private static TournamentSeed CreateTournamentWithPlayer(string tournamentCode)
         {

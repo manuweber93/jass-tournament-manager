@@ -99,7 +99,7 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence.Repositories
             await using var dbContext = _fixture.CreateDbContext();
             var tournamentTemplateRepository = new TournamentTemplateRepository(dbContext);
 
-            await dbContext.Users.AddAsync(organizer, CancellationToken.None);
+            dbContext.Users.Add(organizer);
             await tournamentTemplateRepository.AddAsync(tournamentTemplate, CancellationToken.None);
             await dbContext.SaveChangesAsync();
         }

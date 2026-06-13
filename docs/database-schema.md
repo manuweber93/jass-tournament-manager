@@ -12,6 +12,7 @@ erDiagram
     User o|--o{ User : "is merged into"
     User ||--o{ PairingParticipant : "enters"
     User ||--o{ Game : "enters result of"
+    User ||--o{ RefreshToken : "has"
 
     TournamentTemplate ||--o{ Tournament : "serves as template for"
 
@@ -243,6 +244,33 @@ Note: Defaults listed in this document describe domain-level defaults unless exp
 
 ---
 
+### 10. RefreshToken
+**Description**: Persisted refresh tokens used to renew authenticated sessions.
+
+| Field | Type | Description | Constraints |
+|------|-----|--------------|-------------|
+| id | UUID | Primary key | PK, NOT NULL |
+| userId | UUID | Token owner | FK, NOT NULL |
+| tokenHash | text | Hashed refresh token value | UNIQUE, NOT NULL |
+| expiresAtUtc | DateTimeOffset | Token expiration timestamp in UTC | NOT NULL |
+| revokedAtUtc | DateTimeOffset | Token revocation timestamp in UTC | |
+| replacedByTokenId | UUID | Replacement token id after token rotation | |
+| createdAt | DateTimeOffset | Creation timestamp | NOT NULL |
+| updatedAt | DateTimeOffset | Update timestamp | NOT NULL |
+
+**Constraints**:
+- `userId` references `User.id` and is deleted with the user.
+- `tokenHash` is unique so the server can look up exactly one stored token for a submitted refresh token.
+- `replacedByTokenId` stores the id of the newly issued refresh token when a refresh token is rotated. It is not currently modelled as a database foreign key.
+
+**Business rules**:
+- The plaintext refresh token is returned only to the client when issued; only the hash is persisted.
+- A refresh token is active only while it is not expired and not revoked.
+- Refreshing a session issues a new refresh token and revokes the previous one.
+- Logout revokes the submitted active refresh token.
+
+---
+
 ## Business Rules
 
 ### Tournament Rules
@@ -308,45 +336,53 @@ The configured score visibility mode determines who can see scores:
 3. Merged users must not be usable for authentication or new tournament registrations.
 4. Existing tournament participations remain assigned to the merged user account.
 
+### Authentication Session Rules
+1. Login, self-registration, and claiming an imported user issue both an access token and a refresh token.
+2. Refresh tokens are stored as hashes, not as plaintext token values.
+3. Refreshing a session rotates the refresh token: the old token is revoked and linked to the new token id.
+4. Expired or revoked refresh tokens must not be accepted for session refresh.
+5. Logout is idempotent and revokes the submitted active refresh token when it exists.
+
 ## Indices
 
 ### Performance optimization
 
 ```sql
 -- User
-CREATE INDEX idx_user_merge_target_user_id ON User(mergeTargetUserId);
+CREATE INDEX idx_user_merge_target_user_id ON users(mergeTargetUserId);
 
 -- Tournament
-CREATE INDEX idx_tournament_organizer ON Tournament(organizerId);
-CREATE INDEX idx_tournament_status ON Tournament(status);
+CREATE INDEX idx_tournament_organizer ON tournaments(organizerId);
+CREATE INDEX idx_tournament_status ON tournaments(status);
 
 -- TournamentTemplate
-CREATE INDEX idx_tournament_template_organizer ON TournamentTemplate(organizerId);
+CREATE INDEX idx_tournament_template_organizer ON tournament_templates(organizerId);
 
 -- TournamentParticipant
-CREATE INDEX idx_participant_tournament ON TournamentParticipant(tournamentId);
-CREATE INDEX idx_participant_user ON TournamentParticipant(userId);
+CREATE INDEX idx_participant_tournament ON tournament_participants(tournamentId);
+CREATE INDEX idx_participant_user ON tournament_participants(userId);
 
 -- Round
-CREATE INDEX idx_round_tournament ON Round(tournamentId);
+CREATE INDEX idx_round_tournament ON rounds(tournamentId);
 
 -- JassTable
-CREATE INDEX idx_table_organizer ON JassTable(organizerId);
-CREATE INDEX idx_table_active ON JassTable(organizerId, isActive);
+CREATE INDEX idx_table_organizer ON jass_tables(organizerId);
+CREATE INDEX idx_table_active ON jass_tables(organizerId, isActive);
 
 -- Pairing
-CREATE INDEX idx_pairing_round ON Pairing(roundId);
+CREATE INDEX idx_pairing_round ON pairings(roundId);
 
 -- PairingParticipant
-CREATE INDEX idx_pairing_participant_pairing ON PairingParticipant(pairingId);
-CREATE INDEX idx_pairing_participant_participant ON PairingParticipant(participantId);
+CREATE INDEX idx_pairing_participant_pairing ON pairing_participants(pairingId);
+CREATE INDEX idx_pairing_participant_participant ON CREATE INDEX idx_pairing_participant_pairing ON pairing_participants(pairingId);
+(participantId);
 
 -- Game
 CREATE INDEX idx_game_pairing ON Game(pairingId);
 
 -- Refresh Token
-CREATE INDEX idx_refresh_token_user_id ON RefreshToken(userId);
-CREATE INDEX idx_refresh_token_expires_at_utc ON RefreshToken(expiresAt);
+CREATE INDEX idx_refresh_token_user_id ON refresh_tokens(user_id);
+CREATE INDEX idx_refresh_token_expires_at_utc ON refresh_tokens(expires_at_utc);
 
 ```
 

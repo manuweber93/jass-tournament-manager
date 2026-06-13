@@ -109,6 +109,47 @@ dotnet user-secrets set "ConnectionStrings:DefaultConnection" \
   --project src/JassTournamentManager.Api
 ```
 
+## Database Migrations
+
+Create a new EF Core migration from the repository root in PowerShell:
+
+```powershell
+dotnet ef migrations add NameOfMigration `
+  --project src\JassTournamentManager.Infrastructure\JassTournamentManager.Infrastructure.csproj `
+  --startup-project src\JassTournamentManager.Api\JassTournamentManager.Api.csproj `
+  --context JtmDbContext `
+  --output-dir Persistence/Migrations
+```
+
+Apply pending migrations to the local database:
+
+```powershell
+docker compose up postgres -d
+
+dotnet ef database update `
+  --project src\JassTournamentManager.Infrastructure\JassTournamentManager.Infrastructure.csproj `
+  --startup-project src\JassTournamentManager.Api\JassTournamentManager.Api.csproj `
+  --context JtmDbContext
+```
+
+Remove the latest migration if it has not been applied to the database yet:
+
+```powershell
+dotnet ef migrations remove `
+  --project src\JassTournamentManager.Infrastructure\JassTournamentManager.Infrastructure.csproj `
+  --startup-project src\JassTournamentManager.Api\JassTournamentManager.Api.csproj `
+  --context JtmDbContext
+```
+
+Downgrade the local database to an earlier migration. `TargetMigrationName` is the migration that should remain applied after the downgrade:
+
+```powershell
+dotnet ef database update TargetMigrationName `
+  --project src\JassTournamentManager.Infrastructure\JassTournamentManager.Infrastructure.csproj `
+  --startup-project src\JassTournamentManager.Api\JassTournamentManager.Api.csproj `
+  --context JtmDbContext
+```
+
 ## Run Frontend
 
 Open the solution in Visual Studio, set `JassTournamentManager.App` as startup project and run it with the desired target platform.

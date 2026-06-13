@@ -132,7 +132,7 @@ namespace JassTournamentManager.Application.Auth
             User? userByEmail = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
             if (userByEmail is not null && userById.Id != userByEmail.Id)
             {
-                return Result<AuthResponse>.Failure(UserErrors.AlreadyExists);
+                return Result<AuthResponse>.Failure(AuthErrors.EmailAlreadyInUse);
             }
 
             string passwordHash = _passwordHasher.HashPassword(request.Password);

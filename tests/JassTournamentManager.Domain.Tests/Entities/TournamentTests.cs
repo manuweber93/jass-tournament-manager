@@ -13,7 +13,8 @@ namespace JassTournamentManager.Domain.Tests.Entities
         {
             var emptyGuid = Guid.Empty;
 
-            Action act = () => new Tournament(emptyGuid,
+            Action act = () => new Tournament(
+                emptyGuid,
                 TournamentTestData.CreateTournamentDetails(),
                 TournamentTestData.CreateTournamentConfigValues());
 

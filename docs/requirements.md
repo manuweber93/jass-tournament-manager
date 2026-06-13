@@ -82,6 +82,12 @@ Tournament
 
 ## Features
 
+### Authentication & Sessions
+- Users receive an access token and refresh token after successful login, registration, or claiming an imported user.
+- Refresh tokens allow clients to renew a session without asking the user to log in again.
+- Refresh tokens are rotated on session refresh, so the previous refresh token becomes invalid.
+- Users can log out, which revokes the submitted active refresh token.
+
 ### Pairing Management
 - Organizers can assign pairings manually
 - Organizers can run automatic pairing draws
@@ -115,6 +121,7 @@ Tournament
 - Players can see tournaments in which they are registered as participants.
 - A user can therefore see a tournament if they are either the organizer or a participant.
 - Tournaments of different organizers are logically separated, except for SYSADMIN access.
+- Refresh token plaintext values are not stored in the database; only token hashes are persisted.
 
 ## Configurable Parameters (per tournament)
 - Number of rounds (default: 5)

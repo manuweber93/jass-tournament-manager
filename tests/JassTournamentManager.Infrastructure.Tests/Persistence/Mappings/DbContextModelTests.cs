@@ -30,6 +30,7 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
             dbContext.Model.FindEntityType(typeof(Pairing)).Should().NotBeNull();
             dbContext.Model.FindEntityType(typeof(PairingParticipant)).Should().NotBeNull();
             dbContext.Model.FindEntityType(typeof(Game)).Should().NotBeNull();
+            dbContext.Model.FindEntityType(typeof(RefreshToken)).Should().NotBeNull();
         }
 
         [DockerAvailableFact]
@@ -48,6 +49,7 @@ namespace JassTournamentManager.Infrastructure.Tests.Persistence
             (await dbContext.Pairings.CountAsync()).Should().Be(0);
             (await dbContext.PairingParticipants.CountAsync()).Should().Be(0);
             (await dbContext.Games.CountAsync()).Should().Be(0);
+            (await dbContext.RefreshTokens.CountAsync()).Should().Be(0);
         }
     }
 }

@@ -30,6 +30,11 @@ namespace JassTournamentManager.Infrastructure.Persistence.Configurations
             builder.Property(refreshToken => refreshToken.ReplacedByTokenId)
                 .HasColumnName("replaced_by_token_id");
 
+            builder.HasOne<RefreshToken>()
+                .WithMany()
+                .HasForeignKey(refreshToken => refreshToken.ReplacedByTokenId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             builder.HasIndex(refreshToken => refreshToken.UserId)
                 .HasDatabaseName("idx_refresh_token_user_id");
 

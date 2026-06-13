@@ -124,6 +124,7 @@ Services and responsibilities:
 1) Authentication Service
 - User registration & login
 - JWT issuance and validation
+- Refresh token issuance, rotation, and revocation
 - Role-based access control (RBAC)
 - Password hashing via ASP.NET Core Identity (secure PBKDF2-based hasher)
 
@@ -190,6 +191,8 @@ Performance considerations:
 
 Authentication & authorization:
 - JWT-based auth (tokens sent via Authorization header or HTTP-only cookies)
+- Refresh tokens are persisted only as hashes and are rotated when a session is refreshed
+- Logout revokes the submitted active refresh token
 - Role-based access control (SYSADMIN, ORGANIZER, PLAYER)
 - Password hashing via ASP.NET Core Identity (recommended) or a vetted hashing algorithm
 

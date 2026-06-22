@@ -20,10 +20,13 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=jass_tournament_manager;Username=jass_app;Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
     ports:
       - "8080:8080"
     depends_on:
       - postgres
+    volumes:
+      - ./config/runtime-settings.json:/app/runtime-settings.json:ro
 
 volumes:
   jass_postgres_data:

@@ -11,6 +11,8 @@ namespace JassTournamentManager.Api.Common
                 ErrorType.Invalid => controller.BadRequest(error),
                 ErrorType.NotFound => controller.NotFound(error),
                 ErrorType.Conflict => controller.Conflict(error),
+                ErrorType.Forbidden => controller.StatusCode(StatusCodes.Status403Forbidden, error),
+                ErrorType.Unauthorized => controller.Unauthorized(error),
                 _ => controller.Problem(
                     title: "Unexpected application error.",
                     detail: error.Message,

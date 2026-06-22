@@ -78,5 +78,12 @@ namespace JassTournamentManager.Application.Tests.Auth
                 userId,
                 tokenHash,
                 CreateRefreshTokenExpiresAtUtc());
+
+        public static RefreshToken CreateRevokedRefreshToken(Guid userId, string tokenHash)
+        {
+            var refreshToken = CreateActiveRefreshToken(userId, tokenHash);
+            refreshToken.Revoke();
+            return refreshToken;
+        }
     }
 }

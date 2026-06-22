@@ -7,5 +7,5 @@ namespace JassTournamentManager.Contracts.Auth
         DateTimeOffset AccessTokenExpiresAt,
         string RefreshToken,
         DateTimeOffset RefreshTokenExpiresAt,
-        CurrentUserResponse User);
+        UserResponse User);
 }

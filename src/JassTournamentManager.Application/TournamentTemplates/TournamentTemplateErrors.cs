@@ -8,8 +8,6 @@ namespace JassTournamentManager.Application.TournamentTemplates
 
         public static readonly Error AlreadyExists = new("TournamentTemplates.AlreadyExists", "Organizer already has a tournament template.", ErrorType.Conflict);
 
-        public static readonly Error InvalidInput = new("TournamentTemplates.InvalidInput", "Input provided for the new tournament template is not valid.", ErrorType.Invalid);
-
         public static readonly Error NotFound = new("TournamentTemplates.NotFound", "No tournament template with the given id found.", ErrorType.NotFound);
     }
 }

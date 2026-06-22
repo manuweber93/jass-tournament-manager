@@ -7,7 +7,7 @@ namespace JassTournamentManager.Application.Auth
     {
         Task<Result<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken);
 
-        Task<bool> LogoutAsync(LogoutRequest request, CancellationToken cancellationToken);
+        Task LogoutAsync(LogoutRequest request, CancellationToken cancellationToken);
 
         Task<Result<AuthResponse>> RefreshSessionAsync(RefreshSessionRequest request, CancellationToken cancellationToken);
 

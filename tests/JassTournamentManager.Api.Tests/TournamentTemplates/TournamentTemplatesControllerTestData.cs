@@ -4,7 +4,7 @@ using JassTournamentManager.Domain.Enums;
 
 namespace JassTournamentManager.Api.Tests.TournamentTemplates
 {
-    internal static class TournamentTemplateControllerTestData
+    internal static class TournamentTemplatesControllerTestData
     {
         public static Guid CreateTournamentTemplateId() => Guid.NewGuid();
 
@@ -20,7 +20,6 @@ namespace JassTournamentManager.Api.Tests.TournamentTemplates
         public static string CreateLocation() => "Zeigerhüsli";
 
         public static CreateTournamentTemplateRequest CreateCreateTournamentTemplateRequest() => new(
-            CreateOrganizerId(),
             CreateConfig(),
             CreateLocation());
 

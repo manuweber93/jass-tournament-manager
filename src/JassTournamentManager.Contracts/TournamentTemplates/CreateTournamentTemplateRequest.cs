@@ -5,9 +5,6 @@ namespace JassTournamentManager.Contracts.TournamentTemplates
 {
     public sealed record CreateTournamentTemplateRequest(
         [property: Required]
-        Guid OrganizerId,
-
-        [property: Required]
         TournamentConfigDto Config,
 
         string? Location);

@@ -69,6 +69,7 @@ namespace JassTournamentManager.Infrastructure.Auth
                     new(JwtRegisteredClaimNames.Iat,
                         DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
                         ClaimValueTypes.Integer64),
+                    new(ClaimTypes.Email, user.Email ?? string.Empty),
                     new("is_sys_admin", user.IsSysAdmin ? "true" : "false")
                 ];
         }

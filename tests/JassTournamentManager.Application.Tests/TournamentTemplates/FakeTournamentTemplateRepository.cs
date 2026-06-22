@@ -24,5 +24,10 @@ namespace JassTournamentManager.Application.Tests.TournamentTemplates
         {
             return Task.FromResult(_tournamentTemplates.SingleOrDefault(tournamentTemplate => tournamentTemplate.Id == id));
         }
+
+        public Task<TournamentTemplate?> GetByOrganizerIdAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_tournamentTemplates.SingleOrDefault(tournamentTemplate => tournamentTemplate.OrganizerId == userId));
+        }
     }
 }

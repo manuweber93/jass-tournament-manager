@@ -1,10 +1,13 @@
+using JassTournamentManager.Api;
 using JassTournamentManager.Application;
+using JassTournamentManager.Application.Auth;
 using JassTournamentManager.Infrastructure;
 using JassTournamentManager.Infrastructure.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
+ConfigureRuntimeSettings(builder);
 ConfigureJwtOptions(builder);
 
 AddServices(builder);
@@ -14,6 +17,18 @@ var app = builder.Build();
 ConfigurePipeline(app);
 
 app.Run();
+
+static void ConfigureRuntimeSettings(WebApplicationBuilder builder)
+{
+    builder.Configuration.AddJsonFile(
+        "runtime-settings.json",
+        optional: true,
+        reloadOnChange: true);
+
+    builder.Services
+        .AddOptions<AuthOptions>()
+        .Bind(builder.Configuration.GetSection(AuthOptions.SectionName));
+}
 
 static void ConfigureJwtOptions(WebApplicationBuilder builder)
 {
@@ -34,9 +49,12 @@ static void ConfigureJwtOptions(WebApplicationBuilder builder)
 
 static void AddServices(WebApplicationBuilder builder)
 {
+    builder.Services.AddHttpContextAccessor();
     builder.Services.AddControllers();
+    builder.Services.AddProblemDetails();
 
     builder.Services
+        .AddApi()
         .AddApplication()
         .AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection"));
 
@@ -53,6 +71,8 @@ static void ConfigurePipeline(WebApplication app)
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+
+    app.UseExceptionHandler();
 
     app.UseHttpsRedirection();
 

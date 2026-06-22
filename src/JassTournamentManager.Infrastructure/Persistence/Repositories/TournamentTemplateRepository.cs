@@ -18,6 +18,11 @@ namespace JassTournamentManager.Infrastructure.Persistence.Repositories
             return _dbContext.TournamentTemplates.SingleOrDefaultAsync(tournamentTemplate => tournamentTemplate.Id == id, cancellationToken);
         }
 
+        public Task<TournamentTemplate?> GetByOrganizerIdAsync(Guid organizerId, CancellationToken cancellationToken)
+        {
+            return _dbContext.TournamentTemplates.SingleOrDefaultAsync(tournamentTemplate => tournamentTemplate.OrganizerId == organizerId, cancellationToken);
+        }
+
         public async Task AddAsync(TournamentTemplate tournamentTemplate, CancellationToken cancellationToken)
         {
             await _dbContext.TournamentTemplates.AddAsync(tournamentTemplate, cancellationToken);

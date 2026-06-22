@@ -8,6 +8,7 @@ namespace JassTournamentManager.Application.Tests.Users
         private readonly List<User> _users = [];
 
         public IReadOnlyCollection<User> Users => _users.AsReadOnly();
+
         public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             return Task.FromResult(_users.SingleOrDefault(user =>  user.Id == id));

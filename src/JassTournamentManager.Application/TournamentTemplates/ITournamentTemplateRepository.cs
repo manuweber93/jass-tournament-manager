@@ -6,6 +6,8 @@ namespace JassTournamentManager.Application.TournamentTemplates
     {
         Task<TournamentTemplate?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
+        Task<TournamentTemplate?> GetByOrganizerIdAsync(Guid organizerId, CancellationToken cancellationToken);
+
         Task AddAsync(TournamentTemplate tournamentTemplate, CancellationToken cancellationToken);
 
         Task<bool> ExistsForOrganizerAsync(Guid organizerId, CancellationToken cancellationToken);

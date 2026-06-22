@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace JassTournamentManager.Contracts.Auth
+namespace JassTournamentManager.Contracts.Users
 {
     public sealed record ResetPasswordRequest(
         [property: Required]

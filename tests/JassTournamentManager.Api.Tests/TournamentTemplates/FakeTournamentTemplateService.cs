@@ -10,6 +10,8 @@ namespace JassTournamentManager.Api.Tests.TournamentTemplates
 
         public Result<TournamentTemplateResponse>? GetByIdAsyncResult { get; set; }
 
+        public Result<TournamentTemplateResponse>? GetForCurrentUserAsyncResult {  get; set; }
+
         public CreateTournamentTemplateRequest? ReceivedCreateAsyncRequest { get; private set; }
 
         public Guid? ReceivedGetByIdAsyncRequest { get; private set; }
@@ -24,6 +26,11 @@ namespace JassTournamentManager.Api.Tests.TournamentTemplates
         {
             ReceivedGetByIdAsyncRequest = id;
             return Task.FromResult(GetByIdAsyncResult!);
+        }
+
+        public Task<Result<TournamentTemplateResponse>> GetForCurrentUserAsync(CancellationToken cancellationToken)
+        {
+            return Task.FromResult(GetForCurrentUserAsyncResult!);
         }
     }
 }

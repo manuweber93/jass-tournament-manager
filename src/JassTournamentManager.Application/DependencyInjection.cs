@@ -1,5 +1,6 @@
 ﻿using JassTournamentManager.Application.Auth;
 using JassTournamentManager.Application.TournamentTemplates;
+using JassTournamentManager.Application.Users;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JassTournamentManager.Application
@@ -10,6 +11,7 @@ namespace JassTournamentManager.Application
         {
             services.AddScoped<ITournamentTemplateService, TournamentTemplateService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
 
             return services;
         }

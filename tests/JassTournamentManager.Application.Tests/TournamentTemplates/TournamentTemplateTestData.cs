@@ -14,15 +14,12 @@ namespace JassTournamentManager.Application.Tests.TournamentTemplates
         public static string CreateTooLongLocation() => new('a', 201);
 
         public static CreateTournamentTemplateRequest CreateCreateTournamentTemplateRequest(
-            Guid? organizerId = null,
             TournamentConfigDto? config = null,
             string? location = null) => new(
-                organizerId ?? CreateOrganizerId(),
                 config ?? TournamentTestData.CreateTournamentConfigDto(),
                 location ?? CreateLocation());
 
         public static CreateTournamentTemplateRequest CreateCreateTournamentTemplateRequestWithNullConfig(Guid? userId = null) => new(
-            userId ?? CreateOrganizerId(),
             null!,
             CreateLocation());
 

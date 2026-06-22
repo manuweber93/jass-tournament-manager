@@ -4,6 +4,7 @@ using JassTournamentManager.Contracts.Auth;
 using JassTournamentManager.Contracts.Users;
 using JassTournamentManager.Domain.Entities;
 using JassTournamentManager.Domain.Enums;
+using Microsoft.Extensions.Options;
 
 namespace JassTournamentManager.Application.Auth
 {
@@ -14,19 +15,22 @@ namespace JassTournamentManager.Application.Auth
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserPasswordHasher _passwordHasher;
         private readonly ITokenGenerator _tokenGenerator;
+        private readonly IOptionsMonitor<AuthOptions> _authOptions;
 
         public AuthService(
             IUserRepository userRepository,
             IRefreshTokenRepository refreshTokenRepository,
             IUnitOfWork unitOfWork,
             IUserPasswordHasher passwordHasher,
-            ITokenGenerator tokenGenerator)
+            ITokenGenerator tokenGenerator,
+            IOptionsMonitor<AuthOptions> authOptions)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _refreshTokenRepository = refreshTokenRepository ?? throw new ArgumentNullException(nameof(refreshTokenRepository));
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
             _tokenGenerator = tokenGenerator ?? throw new ArgumentNullException(nameof(tokenGenerator));
+            _authOptions = authOptions ?? throw new ArgumentNullException(nameof(authOptions));
         }
 
         public async Task<Result<AuthResponse>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
@@ -38,7 +42,7 @@ namespace JassTournamentManager.Application.Auth
                 || string.IsNullOrWhiteSpace(request.FirstName)
                 || string.IsNullOrWhiteSpace(request.LastName))
             {
-                return Result<AuthResponse>.Failure(AuthErrors.InvalidInput);
+                return Result<AuthResponse>.Failure(CommonErrors.InvalidInput);
             }
 
             if (request.ClaimedUserId is not null)
@@ -57,19 +61,19 @@ namespace JassTournamentManager.Application.Auth
 
             if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
             {
-                return Result<AuthResponse>.Failure(AuthErrors.InvalidInput);
+                return Result<AuthResponse>.Failure(CommonErrors.InvalidInput);
             }
 
             User? user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
             if (user is null || !user.CanLogin())
             {
-                return Result<AuthResponse>.Failure(AuthErrors.InvalidInput);
+                return Result<AuthResponse>.Failure(CommonErrors.InvalidInput);
             }
 
             bool isPasswordCorrect = _passwordHasher.VerifyPassword(user.PasswordHash!, request.Password);
             if (!isPasswordCorrect)
             {
-                return Result<AuthResponse>.Failure(AuthErrors.InvalidInput);
+                return Result<AuthResponse>.Failure(CommonErrors.InvalidInput);
             }
 
             IssuedRefreshToken refreshToken = await IssueRefreshTokenAsync(user, cancellationToken);
@@ -87,13 +91,13 @@ namespace JassTournamentManager.Application.Auth
             RefreshToken? oldRefreshToken = await _refreshTokenRepository.GetByHashAsync(refreshTokenHash, cancellationToken);
             if (oldRefreshToken is null || !oldRefreshToken.IsActive)
             {
-                return Result<AuthResponse>.Failure(AuthErrors.InvalidInput);
+                return Result<AuthResponse>.Failure(CommonErrors.InvalidInput);
             }
 
             User? user = await _userRepository.GetByIdAsync(oldRefreshToken.UserId, cancellationToken);
             if (user is null || !user.CanLogin())
             {
-                return Result<AuthResponse>.Failure(AuthErrors.InvalidInput);
+                return Result<AuthResponse>.Failure(CommonErrors.InvalidInput);
             }
 
             IssuedRefreshToken newRefreshToken = await IssueRefreshTokenAsync(user, cancellationToken);
@@ -104,7 +108,7 @@ namespace JassTournamentManager.Application.Auth
             return Result<AuthResponse>.Success(response);
         }
 
-        public async Task<bool> LogoutAsync(LogoutRequest request, CancellationToken cancellationToken)
+        public async Task LogoutAsync(LogoutRequest request, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(request);
 
@@ -112,21 +116,24 @@ namespace JassTournamentManager.Application.Auth
             RefreshToken? refreshToken = await _refreshTokenRepository.GetByHashAsync(refreshTokenHash, cancellationToken);
             if (refreshToken is null || !refreshToken.IsActive)
             {
-                return true;
+                return;
             }
 
             refreshToken.Revoke();
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            return true;
         }
 
         private async Task<Result<AuthResponse>> ClaimExistingUser(RegisterRequest request, CancellationToken cancellationToken)
         {
+            if (!_authOptions.CurrentValue.EnableUserClaiming)
+            {
+                return Result<AuthResponse>.Failure(AuthErrors.UserClaimingDisabled);
+            }
+
             User? userById = await _userRepository.GetByIdAsync((Guid)request.ClaimedUserId!, cancellationToken);
             if (userById is null || !userById.CanBeClaimed())
             {
-                return Result<AuthResponse>.Failure(AuthErrors.InvalidInput);
+                return Result<AuthResponse>.Failure(CommonErrors.InvalidInput);
             }
 
             User? userByEmail = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
@@ -168,7 +175,7 @@ namespace JassTournamentManager.Application.Auth
         {
             var generatedAccessToken = _tokenGenerator.GenerateAccessTokenSecret(user);
 
-            var currentUserResponse = new CurrentUserResponse(
+            var currentUserResponse = new UserResponse(
                 user.Id,
                 user.Email!,
                 user.FirstName,

@@ -1,8 +1,8 @@
 using FluentAssertions;
 using JassTournamentManager.Application.Auth;
+using JassTournamentManager.Application.Common;
 using JassTournamentManager.Application.Tests.Common;
 using JassTournamentManager.Application.Tests.Users;
-using JassTournamentManager.Application.Users;
 using JassTournamentManager.Contracts.Auth;
 using JassTournamentManager.Domain.Entities;
 using JassTournamentManager.Domain.Enums;
@@ -16,6 +16,7 @@ namespace JassTournamentManager.Application.Tests.Auth
         private readonly FakeUnitOfWork _unitOfWork;
         private readonly FakeUserPasswordHasher _passwordHasher;
         private readonly FakeTokenGenerator _tokenGenerator;
+        private readonly FakeAuthOptionsMonitor _authOptions;
         private readonly AuthService _authService;
 
         public AuthServiceTests()
@@ -25,12 +26,14 @@ namespace JassTournamentManager.Application.Tests.Auth
             _unitOfWork = new FakeUnitOfWork();
             _passwordHasher = new FakeUserPasswordHasher();
             _tokenGenerator = new FakeTokenGenerator();
+            _authOptions = new FakeAuthOptionsMonitor(new AuthOptions());
             _authService = new AuthService(
                 _userRepository,
                 _refreshTokenRepository,
                 _unitOfWork,
                 _passwordHasher,
-                _tokenGenerator);
+                _tokenGenerator,
+                _authOptions);
         }
 
         [Fact]
@@ -71,8 +74,25 @@ namespace JassTournamentManager.Application.Tests.Auth
         }
 
         [Fact]
-        public async Task RegisterAsync_WithClaimableUser_ClaimsUserAndReturnsTokens()
+        public async Task RegisterAsync_WithClaimableUserAndDeactivatedClaiming_ReturnsUserClaimingDisabled()
         {
+            _authOptions.CurrentValue.EnableUserClaiming = false;
+            var claimableUser = AuthServiceTestData.CreateClaimableUser();
+            await _userRepository.AddAsync(claimableUser, CancellationToken.None);
+            var request = AuthServiceTestData.CreateClaimExistingUserRequest(claimableUser.Id);
+
+            var result = await _authService.RegisterAsync(request, CancellationToken.None);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Be(AuthErrors.UserClaimingDisabled);
+            _refreshTokenRepository.RefreshTokens.Should().BeEmpty();
+            _unitOfWork.SaveChangesCallCount.Should().Be(0);
+        }
+
+        [Fact]
+        public async Task RegisterAsync_WithClaimableUserAndActivatedClaiming_ClaimsUserAndReturnsTokens()
+        {
+            _authOptions.CurrentValue.EnableUserClaiming = true;
             var claimableUser = AuthServiceTestData.CreateClaimableUser();
             await _userRepository.AddAsync(claimableUser, CancellationToken.None);
             var request = AuthServiceTestData.CreateClaimExistingUserRequest(claimableUser.Id);
@@ -92,6 +112,7 @@ namespace JassTournamentManager.Application.Tests.Auth
         [Fact]
         public async Task RegisterAsync_WithClaimedUserEmailUsedByDifferentUser_ReturnsAlreadyExists()
         {
+            _authOptions.CurrentValue.EnableUserClaiming = true;
             var claimableUser = AuthServiceTestData.CreateClaimableUser();
             var existingUser = AuthServiceTestData.CreateLoginUser(AuthServiceTestData.CreateUsedEmail());
             await _userRepository.AddAsync(claimableUser, CancellationToken.None);
@@ -134,7 +155,7 @@ namespace JassTournamentManager.Application.Tests.Auth
             var result = await _authService.LoginAsync(request, CancellationToken.None);
 
             result.IsFailure.Should().BeTrue();
-            result.Error.Should().Be(AuthErrors.InvalidInput);
+            result.Error.Should().Be(CommonErrors.InvalidInput);
             _refreshTokenRepository.RefreshTokens.Should().BeEmpty();
             _unitOfWork.SaveChangesCallCount.Should().Be(0);
         }
@@ -170,7 +191,7 @@ namespace JassTournamentManager.Application.Tests.Auth
                 CancellationToken.None);
 
             result.IsFailure.Should().BeTrue();
-            result.Error.Should().Be(AuthErrors.InvalidInput);
+            result.Error.Should().Be(CommonErrors.InvalidInput);
             _unitOfWork.SaveChangesCallCount.Should().Be(0);
         }
 
@@ -181,24 +202,36 @@ namespace JassTournamentManager.Application.Tests.Auth
             var refreshToken = AuthServiceTestData.CreateActiveRefreshToken(user.Id, _tokenGenerator.RefreshTokenHash);
             await _refreshTokenRepository.AddAsync(refreshToken, CancellationToken.None);
 
-            var result = await _authService.LogoutAsync(
+            await _authService.LogoutAsync(
                 AuthServiceTestData.CreateLogoutRequest(_tokenGenerator.RefreshToken),
                 CancellationToken.None);
 
-            result.Should().BeTrue();
             refreshToken.IsRevoked.Should().BeTrue();
             refreshToken.IsActive.Should().BeFalse();
             _unitOfWork.SaveChangesCallCount.Should().Be(1);
         }
 
         [Fact]
-        public async Task LogoutAsync_WithMissingRefreshToken_ReturnsTrueWithoutSaving()
+        public async Task LogoutAsync_WithRevokedRefreshToken_DoesNothing()
         {
-            var result = await _authService.LogoutAsync(
+            var user = AuthServiceTestData.CreateLoginUser();
+            var refreshToken = AuthServiceTestData.CreateRevokedRefreshToken(user.Id, _tokenGenerator.RefreshTokenHash);
+            await _refreshTokenRepository.AddAsync(refreshToken, CancellationToken.None);
+
+            await _authService.LogoutAsync(
+                AuthServiceTestData.CreateLogoutRequest(_tokenGenerator.RefreshToken),
+                CancellationToken.None);
+
+            _unitOfWork.SaveChangesCallCount.Should().Be(0);
+        }
+
+        [Fact]
+        public async Task LogoutAsync_WithMissingRefreshToken_DoesNothing()
+        {
+            await _authService.LogoutAsync(
                 AuthServiceTestData.CreateLogoutRequest(AuthServiceTestData.CreateMissingRefreshToken()),
                 CancellationToken.None);
 
-            result.Should().BeTrue();
             _unitOfWork.SaveChangesCallCount.Should().Be(0);
         }
 

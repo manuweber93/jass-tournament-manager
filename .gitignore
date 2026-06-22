@@ -41,6 +41,10 @@ appsettings.Local.json
 # User secrets
 secrets.json
 
+# Settings
+runtime-settings.json
+!config/runtime-settings.example.json
+
 # =========================
 # MAUI / Xamarin
 # =========================

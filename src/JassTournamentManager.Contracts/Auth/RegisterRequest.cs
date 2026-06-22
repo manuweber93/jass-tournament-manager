@@ -5,21 +5,22 @@ namespace JassTournamentManager.Contracts.Auth
     public sealed record RegisterRequest(
         Guid? ClaimedUserId,
 
-        [property: Required]
-        [property: MaxLength(320)]
-        [property: EmailAddress]
+        [Required]
+        [MaxLength(320)]
+        [EmailAddress]
         string Email,
 
-        [property: Required]
-        [property: MinLength(8)]
-        [property: MaxLength(200)]
+        [Required]
+        [MinLength(8)]
+        [MaxLength(200)]
         string Password,
 
-        [property: Required]
-        [property: MaxLength(50)]
+        [Required]
+        [MaxLength(50)]
         string FirstName,
 
-        [property: Required]
-        [property: MaxLength(50)]
+        [Required]
+        [MaxLength(50)]
         string LastName);
 }
+

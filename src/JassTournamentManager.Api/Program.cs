@@ -1,4 +1,4 @@
-using JassTournamentManager.Api;
+﻿using JassTournamentManager.Api;
 using JassTournamentManager.Application;
 using JassTournamentManager.Application.Auth;
 using JassTournamentManager.Infrastructure;
@@ -93,3 +93,6 @@ static void AddAuth(WebApplicationBuilder builder)
     builder.Services.AddAuthorizationBuilder()
         .AddPolicy("RequireSysAdmin", policy => policy.RequireClaim("is_sys_admin", "true"));
 }
+
+public partial class Program;
+

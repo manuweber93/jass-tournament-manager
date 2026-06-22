@@ -4,8 +4,9 @@ using System.ComponentModel.DataAnnotations;
 namespace JassTournamentManager.Contracts.TournamentTemplates
 {
     public sealed record CreateTournamentTemplateRequest(
-        [property: Required]
+        [Required]
         TournamentConfigDto Config,
 
         string? Location);
 }
+

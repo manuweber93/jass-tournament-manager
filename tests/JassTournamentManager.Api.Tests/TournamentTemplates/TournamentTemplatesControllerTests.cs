@@ -29,7 +29,7 @@ namespace JassTournamentManager.Api.Tests.TournamentTemplates
             ActionResult<TournamentTemplateResponse> result = await _controller.CreateAsync(request, CancellationToken.None);
 
             var createdResult = result.Result.Should().BeOfType<CreatedAtActionResult>().Subject;
-            createdResult.ActionName.Should().Be(nameof(TournamentTemplatesController.GetByIdAsync));
+            createdResult.ActionName.Should().Be("GetById");
             createdResult.Value.Should().Be(response);
             createdResult.RouteValues.Should().ContainKey("id").WhoseValue.Should().Be(response.Id);
             _service.ReceivedCreateAsyncRequest.Should().Be(request);
@@ -145,3 +145,4 @@ namespace JassTournamentManager.Api.Tests.TournamentTemplates
         }
     }
 }
+

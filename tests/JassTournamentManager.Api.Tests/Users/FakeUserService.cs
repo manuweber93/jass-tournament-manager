@@ -22,9 +22,16 @@ namespace JassTournamentManager.Api.Tests.Users
 
         public ResetPasswordRequest? ReceivedResetPasswordRequest { get; private set; }
 
+        public int CreateClaimableAsyncCallCount { get; private set; }
+
+        public int GetClaimableUsersCallCount { get; private set; }
+
+        public int ResetPasswordCallCount { get; private set; }
+
         public Task<Result<UserResponse>> CreateClaimableAsync(CreateUserRequest request, CancellationToken cancellationToken)
         {
             ReceivedCreateAsyncRequest = request;
+            CreateClaimableAsyncCallCount++;
             return Task.FromResult(CreateAsyncResult!);
         }
 
@@ -36,6 +43,7 @@ namespace JassTournamentManager.Api.Tests.Users
 
         public Task<Result<IEnumerable<ClaimableUserResponse>>> GetClaimableUsers(CancellationToken cancellationToken)
         {
+            GetClaimableUsersCallCount++;
             return Task.FromResult(GetClaimableUsersResult!);
         }
 
@@ -43,7 +51,9 @@ namespace JassTournamentManager.Api.Tests.Users
         {
             ReceivedResetPasswordUserId = userId;
             ReceivedResetPasswordRequest = request;
+            ResetPasswordCallCount++;
             return Task.FromResult(ResetPasswordResult!);
         }
     }
 }
+

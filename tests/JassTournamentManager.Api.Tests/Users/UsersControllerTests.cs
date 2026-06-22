@@ -31,7 +31,7 @@ namespace JassTournamentManager.Api.Tests.Users
 
             var createdAtResult = result.Result.Should().BeOfType<CreatedAtActionResult>().Subject;
             createdAtResult.Value.Should().Be(response);
-            createdAtResult.ActionName.Should().Be(nameof(UsersController.GetByIdAsync));
+            createdAtResult.ActionName.Should().Be("GetById");
             createdAtResult.RouteValues.Should().ContainKey("id").WhoseValue.Should().Be(response.Id);
             _service.ReceivedCreateAsyncRequest.Should().Be(request);
         }
@@ -127,3 +127,4 @@ namespace JassTournamentManager.Api.Tests.Users
         }
     }
 }
+

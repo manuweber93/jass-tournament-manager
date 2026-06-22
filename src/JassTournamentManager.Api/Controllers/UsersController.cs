@@ -26,7 +26,7 @@ namespace JassTournamentManager.Api.Controllers
 
             if (result.IsSuccess)
             {
-                return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Value.Id }, result.Value);
+                return CreatedAtAction("GetById", new { id = result.Value.Id }, result.Value);
             }
 
             return this.ToActionResult(result.Error);

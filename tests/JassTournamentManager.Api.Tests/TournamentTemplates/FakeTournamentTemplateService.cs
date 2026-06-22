@@ -16,9 +16,14 @@ namespace JassTournamentManager.Api.Tests.TournamentTemplates
 
         public Guid? ReceivedGetByIdAsyncRequest { get; private set; }
 
+        public int CreateAsyncCallCount { get; private set; }
+
+        public int GetForCurrentUserAsyncCallCount { get; private set; }
+
         public Task<Result<TournamentTemplateResponse>> CreateAsync(CreateTournamentTemplateRequest request, CancellationToken cancellationToken)
         {
             ReceivedCreateAsyncRequest = request;
+            CreateAsyncCallCount++;
             return Task.FromResult(CreateAsyncResult!);
         }
 
@@ -30,7 +35,9 @@ namespace JassTournamentManager.Api.Tests.TournamentTemplates
 
         public Task<Result<TournamentTemplateResponse>> GetForCurrentUserAsync(CancellationToken cancellationToken)
         {
+            GetForCurrentUserAsyncCallCount++;
             return Task.FromResult(GetForCurrentUserAsyncResult!);
         }
     }
 }
+

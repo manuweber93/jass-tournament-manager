@@ -3,11 +3,12 @@
 namespace JassTournamentManager.Contracts.Auth
 {
     public sealed record LoginRequest(
-        [property: Required]
-        [property: EmailAddress]
-        [property: MaxLength(320)]
+        [Required]
+        [EmailAddress]
+        [MaxLength(320)]
         string Email,
 
-        [property: Required]
+        [Required]
         string Password);
 }
+

@@ -20,6 +20,8 @@ namespace JassTournamentManager.Api.Tests.Auth
 
         public RegisterRequest? ReceivedRegisterAsyncRequest { get; private set; }
 
+        public int LogoutAsyncCallCount { get; private set; }
+
         public Task<Result<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
         {
             ReceivedLoginAsyncRequest = request;
@@ -29,6 +31,7 @@ namespace JassTournamentManager.Api.Tests.Auth
         public Task LogoutAsync(LogoutRequest request, CancellationToken cancellationToken)
         {
             ReceivedLogoutAsyncRequest = request;
+            LogoutAsyncCallCount++;
             return Task.CompletedTask;
         }
 
@@ -45,3 +48,4 @@ namespace JassTournamentManager.Api.Tests.Auth
         }
     }
 }
+

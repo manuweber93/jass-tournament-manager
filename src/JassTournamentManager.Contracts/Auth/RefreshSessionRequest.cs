@@ -3,6 +3,7 @@
 namespace JassTournamentManager.Contracts.Auth
 {
     public sealed record RefreshSessionRequest(
-        [property: Required]
+        [Required]
         string RefreshToken);
 }
+

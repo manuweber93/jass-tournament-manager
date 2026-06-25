@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="JassTournamentManager.App.Features.Authentication.Components.LoginFormView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:resources="clr-namespace:JassTournamentManager.App.Resources.Localization"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material">
+
+    <VerticalStackLayout
+    Spacing="12">
+        <Label
+        Text="{x:Static resources:AppResources.Login_Title}"
+        FontSize="22"
+        FontAttributes="Bold" />
+
+        <material:TextField Title="{x:Static resources:AppResources.Login_Email}" Text="{Binding Email}" Keyboard="Email" />
+        <material:TextField Title="{x:Static resources:AppResources.Login_Password}" Text="{Binding Password}" IsPassword="True" />
+
+        <Button
+            Text="{x:Static resources:AppResources.Login_Login}"
+            Command="{Binding LoginCommand}" />
+    </VerticalStackLayout>
+
+</ContentView>

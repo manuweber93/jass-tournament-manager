@@ -1,5 +1,6 @@
 # Agent Instructions
 
+- Please communicate in German, but write all code—including variable names, method names, comments, and similar elements—in English.
 - Preserve existing line endings when editing files.
 - Do not rewrite unrelated files.
 - Keep constructor happy-path tests focused on explicitly provided values.

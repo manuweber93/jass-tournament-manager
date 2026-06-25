@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="JassTournamentManager.App.Features.Authentication.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:resources="clr-namespace:JassTournamentManager.App.Resources.Localization"
+    xmlns:components="clr-namespace:JassTournamentManager.App.Features.Authentication.Components"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    Title="{x:Static resources:AppResources.App_Title}"
+    >
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="24"
+            Spacing="24"
+            VerticalOptions="Center">
+
+            <VerticalStackLayout Spacing="8">
+                <Label
+                    Text="{x:Static resources:AppResources.Auth_Subtitle}"
+                    FontSize="16"
+                    HorizontalTextAlignment="Center"
+                    Opacity="0.75" />
+            </VerticalStackLayout>
+
+            <Border
+                Padding="20"
+                StrokeShape="RoundRectangle 18">
+
+                <VerticalStackLayout Spacing="16">
+
+                    <components:LoginFormView IsVisible="{Binding IsLoginMode}" />
+                    
+                    <components:RegisterFormView IsVisible="{Binding IsRegisterMode}" />
+
+                    <BoxView HeightRequest="1" Opacity="0.2" />
+
+                    <Button
+                        Text="{x:Static resources:AppResources.Auth_SwitchToRegister}"
+                        IsVisible="{Binding IsLoginMode}"
+                        Command="{Binding ShowRegisterCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource Primary}" />
+
+                    <Button
+                        Text="{x:Static resources:AppResources.Auth_SwitchToLogin}"
+                        IsVisible="{Binding IsRegisterMode}"
+                        Command="{Binding ShowLoginCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource Primary}" />
+
+                </VerticalStackLayout>
+
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

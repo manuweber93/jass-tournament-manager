@@ -60,8 +60,11 @@ runtime-settings.json
 # iOS
 *.ipa
 
-# macOS
-*.app
+# macOS app bundles generated as build/publish artifacts
+[Bb]in/**/*.app/
+[Oo]bj/**/*.app/
+publish/**/*.app/
+artifacts/**/*.app/
 
 # Windows App Packages
 AppPackages/

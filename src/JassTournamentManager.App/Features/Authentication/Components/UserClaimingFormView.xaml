@@ -30,8 +30,8 @@
                         Margin="0,0,0,10"
                         Padding="16"
                         StrokeShape="RoundRectangle 18"
-                        Stroke="{StaticResource AppBorder}"
-                        BackgroundColor="{StaticResource AppSurface}">
+                        Stroke="{AppThemeBinding Light={StaticResource AppBorder}, Dark={StaticResource AppBorderDark}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource AppSurface}, Dark={StaticResource AppSurfaceDark}}">
 
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup Name="CommonStates">
@@ -39,8 +39,8 @@
 
                                 <VisualState Name="Selected">
                                     <VisualState.Setters>
-                                        <Setter Property="BackgroundColor" Value="{StaticResource AppSurfaceMuted}" />
-                                        <Setter Property="Stroke" Value="{StaticResource AppPrimary}" />
+                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource AppSurfaceMuted}, Dark={StaticResource AppSurfaceMutedDark}}" />
+                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource AppPrimary}, Dark={StaticResource AppPrimaryDark}}" />
                                         <Setter Property="StrokeThickness" Value="2" />
                                     </VisualState.Setters>
                                 </VisualState>

@@ -69,6 +69,7 @@ namespace JassTournamentManager.App.Features.Authentication
 
         partial void OnClaimableUsersFilterTextChanged(string value)
         {
+            SelectedClaimableUser = null;
             ApplyClaimableUserFilter();
         }
 
@@ -128,6 +129,8 @@ namespace JassTournamentManager.App.Features.Authentication
         {
             SelectedClaimableUser = null;
             CurrentRegisterStep = RegisterStep.RegistrationForm;
+            FirstName = string.Empty;
+            LastName = string.Empty;
         }
 
         [RelayCommand(CanExecute = nameof(CanContinueWithSelectedClaimableUser))]

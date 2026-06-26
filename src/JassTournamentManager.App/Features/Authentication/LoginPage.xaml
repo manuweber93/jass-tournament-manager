@@ -16,7 +16,7 @@
             VerticalOptions="Center">
 
             <Image
-                Source="logo.png"
+                Source="{AppThemeBinding Light=logo.png, Dark=logo_dark.png}"
                 WidthRequest="300"
                 Aspect="AspectFit"
                 SemanticProperties.Description="Jass Tournament Manager Logo" />

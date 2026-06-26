@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="JassTournamentManager.App.Features.Authentication.Components.UserClaimingFormView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:resources="clr-namespace:JassTournamentManager.App.Resources.Localization">
+
+    <VerticalStackLayout Spacing="16">
+        <SearchBar
+            Placeholder="{x:Static resources:AppResources.Register_SearchPlayer}"
+            Text="{Binding ClaimableUsersFilterText}" />
+
+        <CollectionView
+            ItemsSource="{Binding FilteredClaimableUsers}"
+            SelectedItem="{Binding SelectedClaimableUser}"
+            SelectionMode="Single">
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout Padding="12" Spacing="6">
+                    <Label
+                        Text="{x:Static resources:AppResources.Register_NoClaimableUsersFound}"
+                        Style="{StaticResource MutedLabel}"
+                        HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border
+                        Margin="0,0,0,10"
+                        Padding="16"
+                        StrokeShape="RoundRectangle 18"
+                        Stroke="{StaticResource AppBorder}"
+                        BackgroundColor="{StaticResource AppSurface}">
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup Name="CommonStates">
+                                <VisualState Name="Normal" />
+
+                                <VisualState Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="{StaticResource AppSurfaceMuted}" />
+                                        <Setter Property="Stroke" Value="{StaticResource AppPrimary}" />
+                                        <Setter Property="StrokeThickness" Value="2" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <VerticalStackLayout Spacing="4">
+                            <Label
+                                Text="{Binding DisplayName}"
+                                Style="{StaticResource SectionTitleLabel}" />
+
+                            <Label
+                                Text="{x:Static resources:AppResources.Register_ClaimUser}"
+                                Style="{StaticResource CaptionLabel}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+            <Button
+                Grid.Column="0"
+                Text="Zurück"
+                Command="{Binding RegisterNavigateBackCommand}"
+                Style="{StaticResource SecondaryButton}" />
+
+            <Button
+                Grid.Column="1"
+                Text="{x:Static resources:AppResources.Register_NextButton}"
+                Command="{Binding ContinueWithSelectedClaimableUserCommand}" />
+        </Grid>
+    </VerticalStackLayout>
+</ContentView>

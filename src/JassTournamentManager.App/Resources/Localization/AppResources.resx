@@ -138,14 +138,8 @@
   <data name="Login_Title" xml:space="preserve">
     <value>Einloggen</value>
   </data>
-  <data name="Register_ChooseUserPicker" xml:space="preserve">
-    <value>Bestehenden Benutzer auswählen</value>
-  </data>
-  <data name="Register_ChooseUserText" xml:space="preserve">
-    <value>Wähle deinen bestehenden Benutzer:</value>
-  </data>
-  <data name="Register_ClaimUserCheckboxText" xml:space="preserve">
-    <value>Ich habe bereits einmal an einem Jass-Turnier mitgespielt</value>
+  <data name="Register_ClaimUserQuestion" xml:space="preserve">
+    <value>Bist du bereits auf einer ewigen Rangliste erfasst?</value>
   </data>
   <data name="Register_ConfirmPassword" xml:space="preserve">
     <value>Passwort bestätigen</value>
@@ -169,9 +163,33 @@
     <value>Registrieren</value>
   </data>
   <data name="Register_ClaimAccount" xml:space="preserve">
-    <value>Benutzer übernehmen und Konto erstellen</value>
+    <value>Spieler übernehmen und Konto erstellen</value>
   </data>
   <data name="Auth_SwitchToRegister" xml:space="preserve">
     <value>Noch kein Konto? =&gt; Registrieren</value>
+  </data>
+  <data name="Register_BackButton" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="Register_NextButton" xml:space="preserve">
+    <value>Weiter</value>
+  </data>
+  <data name="Register_ClaimUserQuestionAddOn" xml:space="preserve">
+    <value>Falls ja, existiert bereits ein Spielerprofil für dich.</value>
+  </data>
+  <data name="Register_ClaimUserYesButton" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="Register_ClaimUserNoButton" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="Register_SearchPlayer" xml:space="preserve">
+    <value>Spieler suchen</value>
+  </data>
+  <data name="Register_NoClaimableUsersFound" xml:space="preserve">
+    <value>Keine Spieler gefunden.</value>
+  </data>
+  <data name="Register_ClaimUser" xml:space="preserve">
+    <value>Spieler übernehmen</value>
   </data>
 </root>

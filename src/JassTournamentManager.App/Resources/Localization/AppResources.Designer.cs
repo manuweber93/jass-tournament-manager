@@ -79,7 +79,7 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {x:Static resources:AppResources.Register_Register}.
+        ///   Looks up a localized string similar to Bereits ein Konto? =&gt; Anmelden.
         /// </summary>
         public static string Auth_SwitchToLogin {
             get {
@@ -133,25 +133,16 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Bestehenden Benutzer auswählen.
+        ///   Looks up a localized string similar to Zurück.
         /// </summary>
-        public static string Register_ChooseUserPicker {
+        public static string Register_BackButton {
             get {
-                return ResourceManager.GetString("Register_ChooseUserPicker", resourceCulture);
+                return ResourceManager.GetString("Register_BackButton", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wähle deinen bestehenden Benutzer:.
-        /// </summary>
-        public static string Register_ChooseUserText {
-            get {
-                return ResourceManager.GetString("Register_ChooseUserText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Benutzer übernehmen und Konto erstellen.
+        ///   Looks up a localized string similar to Spieler übernehmen und Konto erstellen.
         /// </summary>
         public static string Register_ClaimAccount {
             get {
@@ -160,11 +151,47 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ich habe bereits einmal an einem Jass-Turnier mitgespielt.
+        ///   Looks up a localized string similar to Spieler übernehmen.
         /// </summary>
-        public static string Register_ClaimUserCheckboxText {
+        public static string Register_ClaimUser {
             get {
-                return ResourceManager.GetString("Register_ClaimUserCheckboxText", resourceCulture);
+                return ResourceManager.GetString("Register_ClaimUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nein.
+        /// </summary>
+        public static string Register_ClaimUserNoButton {
+            get {
+                return ResourceManager.GetString("Register_ClaimUserNoButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bist du bereits auf einer ewigen Rangliste erfasst?.
+        /// </summary>
+        public static string Register_ClaimUserQuestion {
+            get {
+                return ResourceManager.GetString("Register_ClaimUserQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Falls ja, existiert bereits ein Spielerprofil für dich..
+        /// </summary>
+        public static string Register_ClaimUserQuestionAddOn {
+            get {
+                return ResourceManager.GetString("Register_ClaimUserQuestionAddOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ja.
+        /// </summary>
+        public static string Register_ClaimUserYesButton {
+            get {
+                return ResourceManager.GetString("Register_ClaimUserYesButton", resourceCulture);
             }
         }
         
@@ -214,11 +241,38 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Weiter.
+        /// </summary>
+        public static string Register_NextButton {
+            get {
+                return ResourceManager.GetString("Register_NextButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keine Spieler gefunden..
+        /// </summary>
+        public static string Register_NoClaimableUsersFound {
+            get {
+                return ResourceManager.GetString("Register_NoClaimableUsersFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Passwort.
         /// </summary>
         public static string Register_Password {
             get {
                 return ResourceManager.GetString("Register_Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spieler suchen.
+        /// </summary>
+        public static string Register_SearchPlayer {
+            get {
+                return ResourceManager.GetString("Register_SearchPlayer", resourceCulture);
             }
         }
         

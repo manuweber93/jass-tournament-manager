@@ -45,6 +45,16 @@ namespace JassTournamentManager.Application.Auth
                 return Result<AuthResponse>.Failure(CommonErrors.InvalidInput);
             }
 
+            if (!EmailAddressValidator.IsValid(request.Email))
+            {
+                return Result<AuthResponse>.Failure(AuthErrors.InvalidEmailAddress);
+            }
+
+            if (!PasswordPolicy.IsValid(request.Password))
+            {
+                return Result<AuthResponse>.Failure(AuthErrors.PasswordRequirementsNotMet);
+            }
+
             if (request.ClaimedUserId is not null)
             {
                 return await ClaimExistingUser(request, cancellationToken);

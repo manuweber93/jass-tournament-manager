@@ -79,7 +79,7 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Bereits ein Konto? =&gt; Anmelden.
+        ///   Looks up a localized string similar to Bereits ein Konto? → Anmelden.
         /// </summary>
         public static string Auth_SwitchToLogin {
             get {
@@ -88,7 +88,7 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Noch kein Konto? =&gt; Registrieren.
+        ///   Looks up a localized string similar to Noch kein Konto? → Registrieren.
         /// </summary>
         public static string Auth_SwitchToRegister {
             get {
@@ -97,7 +97,7 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to E-Mail.
+        ///   Looks up a localized string similar to E-Mail *.
         /// </summary>
         public static string Login_Email {
             get {
@@ -106,7 +106,7 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Einloggen.
+        ///   Looks up a localized string similar to Anmelden.
         /// </summary>
         public static string Login_Login {
             get {
@@ -115,7 +115,7 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Passwort.
+        ///   Looks up a localized string similar to Passwort *.
         /// </summary>
         public static string Login_Password {
             get {
@@ -138,15 +138,6 @@ namespace JassTournamentManager.App.Resources.Localization {
         public static string Register_BackButton {
             get {
                 return ResourceManager.GetString("Register_BackButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Spieler übernehmen und Konto erstellen.
-        /// </summary>
-        public static string Register_ClaimAccount {
-            get {
-                return ResourceManager.GetString("Register_ClaimAccount", resourceCulture);
             }
         }
         
@@ -196,7 +187,7 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Passwort bestätigen.
+        ///   Looks up a localized string similar to Passwort bestätigen *.
         /// </summary>
         public static string Register_ConfirmPassword {
             get {
@@ -214,7 +205,7 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to E-Mail.
+        ///   Looks up a localized string similar to E-Mail *.
         /// </summary>
         public static string Register_Email {
             get {
@@ -223,7 +214,115 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vorname.
+        ///   Looks up a localized string similar to Bitte bestätige dein Passwort, indem du es wiederholst..
+        /// </summary>
+        public static string Register_ErrorMessage_ConfirmPasswordRequired {
+            get {
+                return ResourceManager.GetString("Register_ErrorMessage_ConfirmPasswordRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Die E-Mail-Adresse darf höchstens 320 Zeichen lang sein..
+        /// </summary>
+        public static string Register_ErrorMessage_EmailMaxLength {
+            get {
+                return ResourceManager.GetString("Register_ErrorMessage_EmailMaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bitte gib eine gültige E-Mail-Adresse ein..
+        /// </summary>
+        public static string Register_ErrorMessage_EmailNotValid {
+            get {
+                return ResourceManager.GetString("Register_ErrorMessage_EmailNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bitte gib deine E-Mail-Adresse ein..
+        /// </summary>
+        public static string Register_ErrorMessage_EmailRequired {
+            get {
+                return ResourceManager.GetString("Register_ErrorMessage_EmailRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Der Vorname darf höchstens 50 Zeichen lang sein..
+        /// </summary>
+        public static string Register_ErrorMessage_FirstNameMaxLength {
+            get {
+                return ResourceManager.GetString("Register_ErrorMessage_FirstNameMaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bitte gib deinen Vornamen ein..
+        /// </summary>
+        public static string Register_ErrorMessage_FirstNameRequired {
+            get {
+                return ResourceManager.GetString("Register_ErrorMessage_FirstNameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Der Nachname darf höchstens 50 Zeichen lang sein..
+        /// </summary>
+        public static string Register_ErrorMessage_LastNameMaxLength {
+            get {
+                return ResourceManager.GetString("Register_ErrorMessage_LastNameMaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bitte gib deinen Nachnamen ein..
+        /// </summary>
+        public static string Register_ErrorMessage_LastNameRequired {
+            get {
+                return ResourceManager.GetString("Register_ErrorMessage_LastNameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verwende mindestens 8 Zeichen, eine Zahl und ein Sonderzeichen..
+        /// </summary>
+        public static string Register_ErrorMessage_PasswordMinRequirements {
+            get {
+                return ResourceManager.GetString("Register_ErrorMessage_PasswordMinRequirements", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Die Passwörter stimmen nicht überein..
+        /// </summary>
+        public static string Register_ErrorMessage_PasswordMismatch {
+            get {
+                return ResourceManager.GetString("Register_ErrorMessage_PasswordMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bitte gib dein Passwort ein..
+        /// </summary>
+        public static string Register_ErrorMessage_PasswordRequired {
+            get {
+                return ResourceManager.GetString("Register_ErrorMessage_PasswordRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bitte prüfe deine obigen Angaben..
+        /// </summary>
+        public static string Register_ErrorMessage_RegisterFormInvalid {
+            get {
+                return ResourceManager.GetString("Register_ErrorMessage_RegisterFormInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vorname *.
         /// </summary>
         public static string Register_FirstName {
             get {
@@ -232,7 +331,7 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Nachname.
+        ///   Looks up a localized string similar to Nachname *.
         /// </summary>
         public static string Register_LastName {
             get {
@@ -259,7 +358,7 @@ namespace JassTournamentManager.App.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Passwort.
+        ///   Looks up a localized string similar to Passwort *.
         /// </summary>
         public static string Register_Password {
             get {

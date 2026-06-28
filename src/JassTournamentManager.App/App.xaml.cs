@@ -1,16 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace JassTournamentManager.App;
+﻿namespace JassTournamentManager.App;
 
 public partial class App : Application
 {
-	public App()
-	{
-		InitializeComponent();
-	}
+    private readonly IServiceProvider serviceProvider;
 
-	protected override Window CreateWindow(IActivationState? activationState)
-	{
-		return new Window(new AppShell());
-	}
+    public App(IServiceProvider serviceProvider)
+    {
+        InitializeComponent();
+        this.serviceProvider = serviceProvider;
+    }
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        AppShell appShell = serviceProvider.GetRequiredService<AppShell>();
+        return new Window(appShell);
+    }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using JassTournamentManager.App.Features.Authentication;
+using Microsoft.Extensions.Logging;
 using UraniumUI;
 
 namespace JassTournamentManager.App;
@@ -18,8 +19,16 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
+        builder.Services.AddSingleton<AppShell>();
+
+        builder.Services.AddTransient<LoginPage>();
+
+        builder.Services.AddTransient<AuthenticationViewModel>();
+        builder.Services.AddTransient<LoginFormViewModel>();
+        builder.Services.AddTransient<RegisterFlowViewModel>();
+
 #if DEBUG
-		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
 		return builder.Build();

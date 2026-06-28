@@ -2,10 +2,10 @@
 {
     public partial class LoginPage : ContentPage
     {
-        public LoginPage()
+        public LoginPage(AuthenticationViewModel authenticationViewModel)
         {
             InitializeComponent();
-            BindingContext = new LoginViewModel();
+            BindingContext = authenticationViewModel;
         }
     }
 }

@@ -4,7 +4,9 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:resources="clr-namespace:JassTournamentManager.App.Resources.Localization"
-    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material">
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
+    xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui">
 
     <VerticalStackLayout
     Spacing="12">
@@ -13,8 +15,14 @@
         FontSize="22"
         FontAttributes="Bold" />
 
-        <material:TextField Title="{x:Static resources:AppResources.Login_Email}" Text="{Binding Email}" Keyboard="Email" />
-        <material:TextField Title="{x:Static resources:AppResources.Login_Password}" Text="{Binding Password}" IsPassword="True" />
+        <material:TextField Title="{x:Static resources:AppResources.Login_Email}" Text="{Binding Email}" Keyboard="Email">
+            <validation:RequiredValidation Message="{x:Static resources:AppResources.Register_ErrorMessage_EmailRequired}" />
+            <validation:RegexValidation Pattern="{x:Static input:AdvancedEntry.REGEX_EMAIL}" />
+        </material:TextField>
+
+        <material:TextField Title="{x:Static resources:AppResources.Login_Password}" Text="{Binding Password}" IsPassword="True">
+            <validation:RequiredValidation Message="{x:Static resources:AppResources.Register_ErrorMessage_PasswordRequired}" />
+        </material:TextField>
 
         <Button
             Text="{x:Static resources:AppResources.Login_Login}"

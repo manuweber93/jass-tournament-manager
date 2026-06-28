@@ -57,6 +57,32 @@ namespace JassTournamentManager.Application.Tests.Auth
         }
 
         [Fact]
+        public async Task RegisterAsync_WithInvalidEmailAddress_ReturnsInvalidEmailAddress()
+        {
+            var request = AuthServiceTestData.CreateRegisterRequest(null, email: AuthServiceTestData.CreateInvalidEmail());
+
+            var result = await _authService.RegisterAsync(request, CancellationToken.None);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Be(AuthErrors.InvalidEmailAddress);
+            _refreshTokenRepository.RefreshTokens.Should().BeEmpty();
+            _unitOfWork.SaveChangesCallCount.Should().Be(0);
+        }
+
+        [Fact]
+        public async Task RegisterAsync_WithPasswordRequirementsNotMet_ReturnsPasswordRequirementsNotMet()
+        {
+            var request = AuthServiceTestData.CreateRegisterRequest(null, password: AuthServiceTestData.CreateWeakPassword());
+
+            var result = await _authService.RegisterAsync(request, CancellationToken.None);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Be(AuthErrors.PasswordRequirementsNotMet);
+            _refreshTokenRepository.RefreshTokens.Should().BeEmpty();
+            _unitOfWork.SaveChangesCallCount.Should().Be(0);
+        }
+
+        [Fact]
         public async Task RegisterAsync_WithExistingEmail_ReturnsEmailAlreadyInUse()
         {
             var existingUser = AuthServiceTestData.CreateLoginUser(AuthServiceTestData.CreateExistingEmail());

@@ -3,12 +3,17 @@ using CommunityToolkit.Mvvm.Input;
 using JassTournamentManager.App.Features.Authentication.Models;
 using JassTournamentManager.App.Resources.Localization;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 
 namespace JassTournamentManager.App.Features.Authentication
 {
-    public partial class LoginViewModel : ObservableObject
+    public partial class RegisterFlowViewModel : ObservableObject
     {
         private readonly List<ClaimableUserListItem> allClaimableUsers = new();
+
+        private readonly Regex PasswordRegex = new(PasswordPattern, RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(250));
+
+        public const string PasswordPattern = @"^(?=.*\d)(?=.*[^\w\s]).{8,}$";
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsPreviousParticipationQuestionVisible))]
@@ -18,9 +23,6 @@ namespace JassTournamentManager.App.Features.Authentication
 
         [ObservableProperty]
         public partial string Email { get; set; } = string.Empty;
-
-        [ObservableProperty]
-        public partial string Password { get; set; } = string.Empty;
 
         [ObservableProperty]
         public partial string FirstName { get; set; } = string.Empty;
@@ -34,30 +36,27 @@ namespace JassTournamentManager.App.Features.Authentication
         [ObservableProperty]
         public partial string ConfirmPassword { get; set; } = string.Empty;
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(IsLoginMode))]
-        public partial bool IsRegisterMode { get; set; }
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(RegisterButtonText))]
-        public partial bool WantsToClaimExistingUser { get; set; }
-
         public ObservableCollection<ClaimableUserListItem> FilteredClaimableUsers { get; } = new();
 
         [ObservableProperty]
-        public partial string ClaimableUsersFilterText { get; set;  } = string.Empty;
+        public partial string ClaimableUsersFilterText { get; set; } = string.Empty;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(ContinueWithSelectedClaimableUserCommand))]
-
         public partial ClaimableUserListItem? SelectedClaimableUser { get; set; }
 
-        public LoginViewModel()
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsRegisterPasswordMismatch))]
+        public partial string RegisterPasswordMismatchErrorMessage { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsRegisterFormInvalid))]
+        public partial string InvalidRegisterFormErrorMessage { get; set; } = string.Empty;
+
+        public RegisterFlowViewModel()
         {
             LoadDummyClaimableUsers();
         }
-
-        public bool IsLoginMode => !IsRegisterMode;
 
         public bool IsPreviousParticipationQuestionVisible => CurrentRegisterStep == RegisterStep.PreviousParticipationQuestion;
 
@@ -65,7 +64,9 @@ namespace JassTournamentManager.App.Features.Authentication
 
         public bool IsRegistrationFormVisible => CurrentRegisterStep == RegisterStep.RegistrationForm;
 
-        public string RegisterButtonText => WantsToClaimExistingUser ? AppResources.Register_ClaimAccount : AppResources.Register_CreateAccount;
+        public bool IsRegisterPasswordMismatch => RegisterPasswordMismatchErrorMessage != string.Empty;
+
+        public bool IsRegisterFormInvalid => InvalidRegisterFormErrorMessage != string.Empty;
 
         partial void OnClaimableUsersFilterTextChanged(string value)
         {
@@ -73,29 +74,30 @@ namespace JassTournamentManager.App.Features.Authentication
             ApplyClaimableUserFilter();
         }
 
-        [RelayCommand]
-        private void ShowLogin()
+        partial void OnRegisterPasswordChanged(string value)
         {
-            IsRegisterMode = false;
+            ValidateIfPasswordsMatch();
         }
 
-        [RelayCommand]
-        private void ShowRegister()
+        partial void OnConfirmPasswordChanged(string value)
         {
-            IsRegisterMode = true;
-            CurrentRegisterStep = RegisterStep.PreviousParticipationQuestion;
-        }
-
-        [RelayCommand]
-        private void Login()
-        {
-            // Later: call login endpoint.
+            ValidateIfPasswordsMatch();
         }
 
         [RelayCommand]
         private void Register()
         {
+            if (!IsRegisterFormValid())
+            {
+                InvalidRegisterFormErrorMessage = AppResources.Register_ErrorMessage_RegisterFormInvalid;
+                return;
+            }
+
+            InvalidRegisterFormErrorMessage = string.Empty;
+
             // Later: call register endpoint.
+
+            // Show error message if backend sends error back (e.g. duplicate email)
         }
 
         [RelayCommand]
@@ -111,7 +113,8 @@ namespace JassTournamentManager.App.Features.Authentication
                 if (SelectedClaimableUser is not null)
                 {
                     CurrentRegisterStep = RegisterStep.ClaimableUserSelection;
-                } else
+                }
+                else
                 {
                     CurrentRegisterStep = RegisterStep.PreviousParticipationQuestion;
                 }
@@ -129,8 +132,6 @@ namespace JassTournamentManager.App.Features.Authentication
         {
             SelectedClaimableUser = null;
             CurrentRegisterStep = RegisterStep.RegistrationForm;
-            FirstName = string.Empty;
-            LastName = string.Empty;
         }
 
         [RelayCommand(CanExecute = nameof(CanContinueWithSelectedClaimableUser))]
@@ -154,6 +155,23 @@ namespace JassTournamentManager.App.Features.Authentication
             allClaimableUsers.Add(new(Guid.NewGuid(), "Seraina", "Huber"));
 
             ApplyClaimableUserFilter();
+        }
+
+        private void ValidateIfPasswordsMatch()
+        {
+            if (RegisterPassword == string.Empty || ConfirmPassword == string.Empty)
+            {
+                RegisterPasswordMismatchErrorMessage = string.Empty;
+                return;
+            }
+
+            if (RegisterPassword == ConfirmPassword)
+            {
+                RegisterPasswordMismatchErrorMessage = string.Empty;
+                return;
+            }
+
+            RegisterPasswordMismatchErrorMessage = AppResources.Register_ErrorMessage_PasswordMismatch;
         }
 
         private void ApplyClaimableUserFilter()
@@ -184,6 +202,49 @@ namespace JassTournamentManager.App.Features.Authentication
         {
             FirstName = selectedClaimableUser.FirstName;
             LastName = selectedClaimableUser.LastName;
+        }
+
+        private bool IsRegisterFormValid()
+        {
+            if (string.IsNullOrWhiteSpace(FirstName) || FirstName.Length > 50)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(LastName) || LastName.Length > 50)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(Email) || Email.Length > 320 || !IsValidEmailAddress(Email))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(RegisterPassword) || !PasswordRegex.IsMatch(RegisterPassword))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(ConfirmPassword) || ConfirmPassword != RegisterPassword)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool IsValidEmailAddress(string email)
+        {
+            try
+            {
+                var mailAddress = new System.Net.Mail.MailAddress(email);
+                return string.Equals(mailAddress.Address, email, StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

@@ -36,9 +36,13 @@
 
                 <VerticalStackLayout Spacing="16">
 
-                    <components:LoginFormView IsVisible="{Binding IsLoginMode}" />
-                    
-                    <components:RegisterFlow IsVisible="{Binding IsRegisterMode}" />
+                    <ContentView IsVisible="{Binding IsLoginMode}">
+                        <components:LoginFormView  BindingContext="{Binding LoginForm}" />
+                    </ContentView>
+
+                    <ContentView IsVisible="{Binding IsRegisterMode}">
+                        <components:RegisterFlow BindingContext="{Binding RegisterFlow}" />
+                    </ContentView>
 
                     <BoxView HeightRequest="1" Opacity="0.2" />
 

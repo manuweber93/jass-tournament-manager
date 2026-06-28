@@ -124,16 +124,16 @@
     <value>Melde dich an oder erstelle dein Konto.</value>
   </data>
   <data name="Auth_SwitchToLogin" xml:space="preserve">
-    <value>Bereits ein Konto? =&gt; Anmelden</value>
+    <value>Bereits ein Konto? → Anmelden</value>
   </data>
   <data name="Login_Email" xml:space="preserve">
-    <value>E-Mail</value>
+    <value>E-Mail *</value>
   </data>
   <data name="Login_Login" xml:space="preserve">
-    <value>Einloggen</value>
+    <value>Anmelden</value>
   </data>
   <data name="Login_Password" xml:space="preserve">
-    <value>Passwort</value>
+    <value>Passwort *</value>
   </data>
   <data name="Login_Title" xml:space="preserve">
     <value>Einloggen</value>
@@ -142,31 +142,28 @@
     <value>Bist du bereits auf einer ewigen Rangliste erfasst?</value>
   </data>
   <data name="Register_ConfirmPassword" xml:space="preserve">
-    <value>Passwort bestätigen</value>
+    <value>Passwort bestätigen *</value>
   </data>
   <data name="Register_CreateAccount" xml:space="preserve">
     <value>Konto erstellen</value>
   </data>
   <data name="Register_Email" xml:space="preserve">
-    <value>E-Mail</value>
+    <value>E-Mail *</value>
   </data>
   <data name="Register_FirstName" xml:space="preserve">
-    <value>Vorname</value>
+    <value>Vorname *</value>
   </data>
   <data name="Register_LastName" xml:space="preserve">
-    <value>Nachname</value>
+    <value>Nachname *</value>
   </data>
   <data name="Register_Password" xml:space="preserve">
-    <value>Passwort</value>
+    <value>Passwort *</value>
   </data>
   <data name="Register_Title" xml:space="preserve">
     <value>Registrieren</value>
   </data>
-  <data name="Register_ClaimAccount" xml:space="preserve">
-    <value>Spieler übernehmen und Konto erstellen</value>
-  </data>
   <data name="Auth_SwitchToRegister" xml:space="preserve">
-    <value>Noch kein Konto? =&gt; Registrieren</value>
+    <value>Noch kein Konto? → Registrieren</value>
   </data>
   <data name="Register_BackButton" xml:space="preserve">
     <value>Zurück</value>
@@ -191,5 +188,41 @@
   </data>
   <data name="Register_ClaimUser" xml:space="preserve">
     <value>Spieler übernehmen</value>
+  </data>
+  <data name="Register_ErrorMessage_FirstNameRequired" xml:space="preserve">
+    <value>Bitte gib deinen Vornamen ein.</value>
+  </data>
+  <data name="Register_ErrorMessage_FirstNameMaxLength" xml:space="preserve">
+    <value>Der Vorname darf höchstens 50 Zeichen lang sein.</value>
+  </data>
+  <data name="Register_ErrorMessage_LastNameRequired" xml:space="preserve">
+    <value>Bitte gib deinen Nachnamen ein.</value>
+  </data>
+  <data name="Register_ErrorMessage_LastNameMaxLength" xml:space="preserve">
+    <value>Der Nachname darf höchstens 50 Zeichen lang sein.</value>
+  </data>
+  <data name="Register_ErrorMessage_EmailRequired" xml:space="preserve">
+    <value>Bitte gib deine E-Mail-Adresse ein.</value>
+  </data>
+  <data name="Register_ErrorMessage_EmailMaxLength" xml:space="preserve">
+    <value>Die E-Mail-Adresse darf höchstens 320 Zeichen lang sein.</value>
+  </data>
+  <data name="Register_ErrorMessage_PasswordRequired" xml:space="preserve">
+    <value>Bitte gib dein Passwort ein.</value>
+  </data>
+  <data name="Register_ErrorMessage_PasswordMinRequirements" xml:space="preserve">
+    <value>Verwende mindestens 8 Zeichen, eine Zahl und ein Sonderzeichen.</value>
+  </data>
+  <data name="Register_ErrorMessage_ConfirmPasswordRequired" xml:space="preserve">
+    <value>Bitte bestätige dein Passwort, indem du es wiederholst.</value>
+  </data>
+  <data name="Register_ErrorMessage_PasswordMismatch" xml:space="preserve">
+    <value>Die Passwörter stimmen nicht überein.</value>
+  </data>
+  <data name="Register_ErrorMessage_EmailNotValid" xml:space="preserve">
+    <value>Bitte gib eine gültige E-Mail-Adresse ein.</value>
+  </data>
+  <data name="Register_ErrorMessage_RegisterFormInvalid" xml:space="preserve">
+    <value>Bitte prüfe deine obigen Angaben.</value>
   </data>
 </root>

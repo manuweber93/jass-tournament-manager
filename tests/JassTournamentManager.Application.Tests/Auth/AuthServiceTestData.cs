@@ -14,7 +14,11 @@ namespace JassTournamentManager.Application.Tests.Auth
 
         public static string CreateUsedEmail() => "used.user@mail.com";
 
+        public static string CreateInvalidEmail() => "abc";
+
         public static string CreatePassword() => "very_s3cure";
+
+        public static string CreateWeakPassword() => "abc";
 
         public static string CreateWrongPassword() => "wrong-password";
 
